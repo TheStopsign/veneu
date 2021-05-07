@@ -1,0 +1,7 @@
+#import "./RegistrationSectionFrag.gql"
+
+query($_id: ID!) {
+  registrationSection(_id: $_id) {
+    ...RegistrationSection
+  }
+}

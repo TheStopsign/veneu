@@ -1,0 +1,15 @@
+query($_id: ID!) {
+  checkin(_id: $_id) {
+    _id
+    tickets {
+      first_name
+      last_name
+      user {
+        _id
+      }
+      code
+    }
+    creator
+    created_at
+  }
+}

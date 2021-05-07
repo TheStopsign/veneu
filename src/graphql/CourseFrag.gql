@@ -1,0 +1,56 @@
+fragment Course on Course {
+  _id
+  name
+  prefix
+  suffix
+  start
+  end
+  auths {
+    _id
+    role
+    user {
+      first_name
+      last_name
+      email
+    }
+  }
+  user_groups {
+    _id
+    name
+    auths {
+      _id
+      role
+      user {
+        first_name
+        last_name
+        email
+      }
+    }
+  }
+  registration_sections {
+    _id
+    name
+    auths {
+      _id
+      role
+      user {
+        first_name
+        last_name
+        email
+      }
+    }
+    user_groups {
+      _id
+      name
+      auths {
+        _id
+        role
+        user {
+          first_name
+          last_name
+          email
+        }
+      }
+    }
+  }
+}

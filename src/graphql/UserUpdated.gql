@@ -1,0 +1,7 @@
+#import "./UserFrag.gql"
+
+subscription userUpdated {
+  userUpdated {
+    ...User
+  }
+}

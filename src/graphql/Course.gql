@@ -1,0 +1,58 @@
+query($_id: ID!) {
+  course(_id: $_id) {
+    _id
+    name
+    prefix
+    suffix
+    start
+    end
+    description
+    auths {
+      _id
+      role
+      user {
+        first_name
+        last_name
+        email
+      }
+    }
+    user_groups {
+      _id
+      name
+      auths {
+        _id
+        role
+      }
+    }
+    registration_sections {
+      _id
+      name
+      auths {
+        _id
+        role
+      }
+      user_groups {
+        _id
+        name
+        auths {
+          _id
+          role
+        }
+      }
+    }
+    lectures {
+      _id
+      name
+      start
+      end
+      parent_resource {
+        ... on SharedResource {
+          _id
+          name
+          type
+        }
+      }
+      parent_resource_type
+    }
+  }
+}

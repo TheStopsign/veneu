@@ -1,0 +1,7 @@
+#import "./RegistrationSectionFrag.gql"
+
+mutation($_id: ID!) {
+  deleteRegistrationSection(_id: $_id) {
+    ...RegistrationSection
+  }
+}

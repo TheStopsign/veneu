@@ -1,0 +1,34 @@
+fragment RegistrationSection on RegistrationSection {
+  _id
+  name
+  auths {
+    _id
+    role
+  }
+  user_groups {
+    _id
+    name
+    auths {
+      _id
+      role
+    }
+  }
+  lectures {
+    _id
+    name
+    start
+    end
+    auths {
+      _id
+      role
+    }
+  }
+  meeting_times {
+    weekday
+    event {
+      name
+      start
+      end
+    }
+  }
+}

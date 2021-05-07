@@ -1,0 +1,19 @@
+fragment UserGroup on UserGroup {
+  _id
+  name
+  parent_resource {
+    ... on SharedResource {
+      _id
+      type
+    }
+  }
+  auths {
+    _id
+    role
+    user {
+      _id
+      first_name
+      last_name
+    }
+  }
+}

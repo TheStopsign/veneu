@@ -1,0 +1,24 @@
+fragment Lecture on Lecture {
+  _id
+  name
+  type
+  start
+  end
+  auths {
+    _id
+    role
+    user {
+      _id
+      first_name
+      last_name
+    }
+  }
+  parent_resource {
+    ... on SharedResource {
+      _id
+      name
+      type
+    }
+  }
+  parent_resource_type
+}

@@ -1,0 +1,12 @@
+query auths($shared_resource: ID!) {
+  auths(shared_resource: $shared_resource) {
+    _id
+    user {
+      first_name
+      last_name
+      name
+      email
+    }
+    role
+  }
+}

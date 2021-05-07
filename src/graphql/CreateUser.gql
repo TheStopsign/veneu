@@ -1,0 +1,7 @@
+#import "./UserFrag.gql"
+
+mutation createUser($email: String!) {
+  createUser(email: $email) {
+    ...User
+  }
+}

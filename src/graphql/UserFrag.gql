@@ -1,0 +1,15 @@
+fragment User on User {
+  _id
+  first_name
+  last_name
+  email
+  auths {
+    _id
+    role
+    shared_resource {
+      _id
+      name
+    }
+    shared_resource_type
+  }
+}

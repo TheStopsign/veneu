@@ -1,0 +1,13 @@
+#import "./CourseFrag.gql"
+
+subscription addedToCourse($user: ID!) {
+  authCreated(user: $user) {
+    _id
+    role
+    shared_resource {
+      ... on Course {
+        ...Course
+      }
+    }
+  }
+}

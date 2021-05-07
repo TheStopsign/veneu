@@ -1,0 +1,36 @@
+query me {
+  me {
+    _id
+    first_name
+    last_name
+    email
+    auths {
+      _id
+      role
+      shared_resource {
+        _id
+        name
+        type
+        parent_resource {
+          ... on Course {
+            _id
+            name
+            type
+          }
+          ... on UserGroup {
+            _id
+            name
+            type
+          }
+          ... on RegistrationSection {
+            _id
+            name
+            type
+          }
+        }
+        parent_resource_type
+      }
+      shared_resource_type
+    }
+  }
+}

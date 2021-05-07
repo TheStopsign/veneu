@@ -1,0 +1,18 @@
+query userGroups {
+  userGroups {
+    name
+    parent_resource {
+      _id
+      name
+    }
+    auths {
+      _id
+      role
+      user {
+        _id
+        first_name
+        last_name
+      }
+    }
+  }
+}

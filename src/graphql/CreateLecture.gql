@@ -1,0 +1,19 @@
+#import "./LectureFrag.gql"
+
+mutation createLecture(
+  $name: String!
+  $parent_resource: ID!
+  $parent_resource_type: String!
+  $start: Date!
+  $end: Date!
+) {
+  createLecture(
+    name: $name
+    parent_resource: $parent_resource
+    parent_resource_type: $parent_resource_type
+    start: $start
+    end: $end
+  ) {
+    ...Lecture
+  }
+}

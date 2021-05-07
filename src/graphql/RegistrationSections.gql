@@ -1,0 +1,18 @@
+query registrationSections {
+  registrationSections {
+    name
+    course {
+      _id
+      name
+    }
+    auths {
+      _id
+      role
+      user {
+        _id
+        first_name
+        last_name
+      }
+    }
+  }
+}

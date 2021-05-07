@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "mikestead.dotenv",
+    "knisterpeter.vscode-github",
+    "github.vscode-pull-request-github",
+    "eamodio.gitlens",
+    "octref.vetur",
+    "graphql.vscode-graphql",
+    "esbenp.prettier-vscode"
+  ]
+}

@@ -1,0 +1,7 @@
+#import "./CourseFrag.gql"
+
+mutation($_id: ID!) {
+  deleteCourse(_id: $_id) {
+    ...Course
+  }
+}

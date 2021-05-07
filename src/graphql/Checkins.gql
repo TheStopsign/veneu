@@ -1,0 +1,6 @@
+query checkins {
+  checkins {
+    _id
+    created_at
+  }
+}

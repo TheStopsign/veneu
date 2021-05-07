@@ -1,0 +1,3 @@
+mutation firstLogin($access_code: String!, $first_name: String!, $last_name: String!, $password: String!) {
+  firstLogin(access_code: $access_code, first_name: $first_name, last_name: $last_name, password: $password)
+}

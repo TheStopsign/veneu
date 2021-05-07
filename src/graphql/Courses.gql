@@ -1,0 +1,41 @@
+query {
+  courses {
+    _id
+    name
+    prefix
+    suffix
+    start
+    end
+    auths {
+      _id
+      role
+      user {
+        email
+      }
+    }
+    user_groups {
+      _id
+      name
+      auths {
+        _id
+        role
+      }
+    }
+    registration_sections {
+      _id
+      name
+      auths {
+        _id
+        role
+      }
+      user_groups {
+        _id
+        name
+        auths {
+          _id
+          role
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+#import "./RegistrationSectionFrag.gql"
+
+mutation createRegistrationSection($name: String!, $course: ID!, $meeting_times: [WeekDayEventInput]) {
+  createRegistrationSection(name: $name, course: $course, meeting_times: $meeting_times) {
+    ...RegistrationSection
+  }
+}
