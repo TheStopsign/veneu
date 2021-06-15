@@ -44,12 +44,19 @@ const SearchResultResolvers = {
   }
 };
 
+const VideoStreamResolvers = {
+  VideoStream: {
+    __resolveType: videoStream => videoStream.type
+  }
+};
+
 module.exports = [
   ParentResourceResolvers,
   SharedResourceResolvers,
   CalendarizableEventResolvers,
   CalendarDeadlineResolvers,
   SearchResultResolvers,
+  VideoStreamResolvers,
   require("./Auth.Resolvers"),
   require("./Checkin.Resolvers"),
   require("./Course.Resolvers"),
@@ -58,5 +65,6 @@ module.exports = [
   require("./RegistrationSection.Resolvers"),
   require("./Ticket.Resolvers"),
   require("./User.Resolvers"),
-  require("./UserGroup.Resolvers")
+  require("./UserGroup.Resolvers"),
+  require("./YTVideoStream.Resolvers")
 ];

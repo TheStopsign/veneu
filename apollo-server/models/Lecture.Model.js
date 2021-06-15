@@ -35,6 +35,12 @@ const Lecture = new mongoose.Schema(
     parent_resource_type: {
       type: String,
       required: true
+    },
+    recording: {
+      type: mongoose.Schema.Types.ObjectId
+    },
+    recording_type: {
+      type: String
     }
   },
   {
@@ -44,6 +50,7 @@ const Lecture = new mongoose.Schema(
   .pre("deleteOne", { document: true }, function(next) {
     Promise.all([
       mongoose.model("Auth").deleteMany({ shared_resource: this._id }),
+      mongoose.model("YTVideoStream").deleteOne({ parent_resource: this._id }),
       mongoose
         .model(this.parent_resource_type)
         .updateOne({ _id: this.parent_resource }, { $pull: { lectures: this._id } })
@@ -56,6 +63,7 @@ const Lecture = new mongoose.Schema(
         const lecturesparents = lectures.map(a => a.parent_resource);
         Promise.all([
           mongoose.model("Auth").deleteMany({ shared_resource: { $in: lecturesids } }),
+          mongoose.model("YTVideoStream").deleteMany({ parent_resource: { $in: lecturesids } }),
           mongoose
             .model("Course")
             .updateMany({ _id: { $in: lecturesparents } }, { $pullAll: { lectures: lecturesids } }),

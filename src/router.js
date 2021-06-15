@@ -21,6 +21,8 @@ import Settings from "./components/Settings.vue";
 import CheckinShow from "./pages/CheckinShow.vue";
 import CheckinScan from "./pages/CheckinScan.vue";
 
+import Watch from "./pages/Watch.vue";
+
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -154,6 +156,11 @@ const router = new VueRouter({
       meta: {
         auth: true
       }
+    },
+    {
+      path: "/watch",
+      name: "Watch",
+      component: Watch
     }
   ],
   mode: "history"

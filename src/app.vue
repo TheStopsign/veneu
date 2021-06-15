@@ -131,6 +131,14 @@
                       :disabled="!canCreateLectures(data.me.auths)"
                       >Lecture</q-item
                     >
+                    <q-item
+                      class="items-center"
+                      title="Video"
+                      :clickable="canCreateVideos(data.me.auths) && $route.name != 'CreateVideo'"
+                      @click="$router.push({ name: 'CreateVideo' })"
+                      :disabled="!canCreateVideos(data.me.auths)"
+                      >Video</q-item
+                    >
                   </q-list>
                 </q-menu>
               </q-btn>
@@ -273,6 +281,15 @@ export default {
         auths.filter(
           a =>
             ["Course", "RegistrationSection", "UserGroup"].includes(a.shared_resource_type) &&
+            ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
+        ).length > 0
+      );
+    },
+    canCreateVideos(auths) {
+      return (
+        auths.filter(
+          a =>
+            ["Course", "RegistrationSection", "UserGroup", "Lecture"].includes(a.shared_resource_type) &&
             ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
         ).length > 0
       );
