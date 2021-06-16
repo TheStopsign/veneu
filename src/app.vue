@@ -9,7 +9,11 @@
             <q-pull-to-refresh @refresh="refresh" color="white" bg-color="primary">
               <q-toolbar
                 id="headertoolbar"
-                :class="'q-pa-none q-pr-sm neu-convex ' + ($q.platform.is.mobile ? 'q-mt-sm' : 'q-mt-md')"
+                :class="
+                  'q-pa-none q-pr-sm ' +
+                    (data.me ? 'neu-convex ' : '') +
+                    ($q.platform.is.mobile ? 'q-mt-sm' : 'q-mt-md')
+                "
               >
                 <q-btn
                   v-if="data.me"
