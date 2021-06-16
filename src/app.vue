@@ -1,24 +1,27 @@
 <template>
-  <q-layout id="app" view="lhr Lpr lfr" class="text-primary">
+  <q-layout id="app" view="lHr Lpr lfr" class="text-primary">
     <q-ajax-bar position="top" color="primary" size="0.25rem" />
     <ApolloQuery :query="require('./graphql/Me.gql')">
       <template slot-scope="{ result: { data, error } }">
         <div v-if="error">{{ tryLogout() }}</div>
         <div v-if="data">
-          <q-header class="text-primary">
+          <q-header class="text-primary q-px-md">
             <q-pull-to-refresh @refresh="refresh" color="white" bg-color="primary">
-              <q-toolbar class="q-pt-md">
+              <q-toolbar id="headertoolbar" class="q-pa-none q-pr-sm neu-convex q-mt-md">
                 <q-btn
                   v-if="data.me"
                   round
                   size="sm"
                   icon="menu"
-                  class="q-mx-sm"
+                  class="q-ma-md"
                   title="Menu"
                   aria-label="Menu"
                   @click="left = !left"
                 />
-                <q-toolbar-title v-if="!['Landing', 'Login', 'Signup', 'FirstTimeLogin'].includes($route.name)">
+                <q-toolbar-title
+                  class="q-px-none"
+                  v-if="!['Landing', 'Login', 'Signup', 'FirstTimeLogin'].includes($route.name)"
+                >
                   <q-avatar @click="$router.push({ name: 'Dashboard' })">
                     <VeneuLogo id="nav-logo" />
                   </q-avatar>

@@ -54,7 +54,6 @@ html,
 body,
 #app,
 .q-drawer__content,
-.q-header,
 .q-card,
 .q-time,
 .q-time__container-child,
@@ -78,6 +77,7 @@ body,
 .q-focusable,
 .q-hoverable,
 #me,
+.q-header,
 .q-menu,
 .q-item__section--side > .q-icon,
 .q-date,
@@ -353,4 +353,22 @@ h1 {
 
 .q-timeline__content {
   padding-bottom: 0px !important;
+}
+
+.q-layout__section--marginal {
+  background: none !important;
+}
+
+#headertoolbar {
+  -webkit-backdrop-filter: saturate(200%) blur(20px) !important;
+  backdrop-filter: saturate(200%) blur(20px) !important;
+  * {
+    background: none;
+  }
+}
+
+@-moz-document url-prefix() {
+  #headertoolbar {
+    background-color: var(--veneu-background-backdrop) !important;
+  }
 }
