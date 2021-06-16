@@ -77,7 +77,7 @@
                   size="sm"
                   round
                   icon="logout"
-                  class="q-mx-sm text-primary"
+                  class="text-primary"
                   title="Logout"
                   aria-label="Logout"
                   @click="confirmLogout = true"

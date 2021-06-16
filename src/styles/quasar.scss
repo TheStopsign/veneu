@@ -359,16 +359,24 @@ h1 {
   background: none !important;
 }
 
-#headertoolbar {
-  -webkit-backdrop-filter: saturate(200%) blur(20px) !important;
-  backdrop-filter: saturate(200%) blur(20px) !important;
-  * {
-    background: none;
-  }
+#headertoolbar,
+.q-dialog__inner > .q-card {
+  -webkit-backdrop-filter: saturate(150%) blur(16px) !important;
+  backdrop-filter: saturate(150%) blur(16px) !important;
+  background: none !important;
 }
 
 @-moz-document url-prefix() {
   #headertoolbar {
     background-color: var(--veneu-background-backdrop) !important;
   }
+  .q-dialog__inner > .q-card {
+    background-color: var(--veneu-background) !important;
+  }
+}
+
+h1 {
+  white-space: unset !important;
+  overflow: unset !important;
+  text-overflow: unset !important;
 }
