@@ -356,7 +356,7 @@ h1 {
 }
 
 .q-layout__section--marginal {
-  background-color: unset;
+  background-color: unset !important;
 }
 
 #headertoolbar,
@@ -364,6 +364,7 @@ h1 {
   -webkit-backdrop-filter: saturate(150%) blur(16px) !important;
   backdrop-filter: saturate(150%) blur(16px) !important;
   background: none !important;
+  background-color: unset !important;
 }
 
 @-moz-document url-prefix() {
