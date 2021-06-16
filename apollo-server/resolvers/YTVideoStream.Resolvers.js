@@ -25,7 +25,7 @@ module.exports = {
       info
     ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return YTVideoStream.create({ url, name, parent_resource, parent_resource_type });
+      return YTVideoStream.create({ url, name, parent_resource, parent_resource_type, creator: requester._id });
     },
     deleteYTVideoStream: (parent, { _id }, { requester, models: { YTVideoStream } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");

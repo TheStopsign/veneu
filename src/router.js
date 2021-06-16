@@ -16,6 +16,7 @@ import CreateCourse from "./pages/CreateCourse.vue";
 import CreateUserGroup from "./pages/CreateUserGroup.vue";
 import CreateRegistrationSection from "./pages/CreateRegistrationSection.vue";
 import CreateLecture from "./pages/CreateLecture.vue";
+import CreateVideo from "./pages/CreateVideo.vue";
 import Settings from "./components/Settings.vue";
 
 import CheckinShow from "./pages/CheckinShow.vue";
@@ -161,6 +162,11 @@ const router = new VueRouter({
       path: "/watch",
       name: "Watch",
       component: Watch
+    },
+    {
+      path: "/create-video",
+      name: "CreateVideo",
+      component: CreateVideo
     }
   ],
   mode: "history"

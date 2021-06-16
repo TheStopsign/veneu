@@ -18,7 +18,12 @@ module.exports = gql`
   }
 
   extend type Mutation {
-    createYTVideoStream(url: ID!, name: String!, parent_resource: ID!, parent_resource_type: String!): YTVideoStream!
+    createYTVideoStream(
+      url: String!
+      name: String!
+      parent_resource: ID!
+      parent_resource_type: String!
+    ): YTVideoStream!
     deleteYTVideoStream(_id: ID!): YTVideoStream!
   }
 

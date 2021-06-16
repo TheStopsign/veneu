@@ -27,6 +27,11 @@ query me {
             name
             type
           }
+          ... on Lecture {
+            _id
+            name
+            type
+          }
         }
         parent_resource_type
       }

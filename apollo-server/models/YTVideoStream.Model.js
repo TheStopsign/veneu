@@ -15,7 +15,7 @@ const YTVideoStream = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true
     },
-    parent_resource_type: { type: mongoose.Schema.Types.ObjectId, required: true },
+    parent_resource_type: { type: String, required: true },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     auths: [
       {
@@ -76,7 +76,16 @@ const YTVideoStream = new mongoose.Schema(
           shared_resource_type: "YTVideoStream",
           user: this.creator._id,
           role: "INSTRUCTOR"
-        })
+        }),
+        this.model(this.parent_resource_type).updateOne(
+          {
+            _id: this.parent_resource
+          },
+          {
+            recording: this._id,
+            recording_type: this.type
+          }
+        )
       ])
         .then(auth => {
           return global.pubsub.publish("AUTH_CREATED", {
