@@ -5,9 +5,12 @@
       <template slot-scope="{ result: { data, error } }">
         <div v-if="error">{{ tryLogout() }}</div>
         <div v-if="data">
-          <q-header class="text-primary q-px-md">
+          <q-header :class="'text-primary ' + ($q.platform.is.mobile ? 'q-mx-sm' : 'q-mx-md')">
             <q-pull-to-refresh @refresh="refresh" color="white" bg-color="primary">
-              <q-toolbar id="headertoolbar" class="q-pa-none q-pr-sm neu-convex q-mt-md">
+              <q-toolbar
+                id="headertoolbar"
+                :class="'q-pa-none q-pr-sm neu-convex ' + ($q.platform.is.mobile ? 'q-mt-sm' : 'q-mt-md')"
+              >
                 <q-btn
                   v-if="data.me"
                   round
