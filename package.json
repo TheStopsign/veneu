@@ -12,7 +12,8 @@
     "apollo:schema:generate": "vue-cli-service apollo:schema:generate",
     "apollo:schema:publish": "vue-cli-service apollo:schema:publish",
     "db": "sudo killall mongod;mongod",
-    "seed": "node apollo-server/seed.js",
+    "db:clear": "node apollo-server/dbclear.js",
+    "db:seed": "node apollo-server/dbseed.js",
     "start": "npm run start --prefix ./apollo-server"
   },
   "dependencies": {

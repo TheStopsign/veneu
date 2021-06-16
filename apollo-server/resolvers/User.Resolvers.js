@@ -60,11 +60,11 @@ module.exports = {
                 hbs({
                   viewEngine: {
                     extName: ".handlebars",
-                    partialsDir: "./email_templates/",
-                    layoutsDir: "./email_templates/",
+                    partialsDir: "./apollo-server/email_templates/",
+                    layoutsDir: "./apollo-server/email_templates/",
                     defaultLayout: ""
                   },
-                  viewPath: "./email_templates/",
+                  viewPath: "./apollo-server/email_templates/",
                   extName: ".handlebars"
                 })
               );
@@ -79,7 +79,7 @@ module.exports = {
                 attachments: [
                   {
                     filename: "venue-logo.png",
-                    path: "./email_templates/venue-logo.png",
+                    path: "./apollo-server/email_templates/venue-logo.png",
                     cid: "logo"
                   }
                 ]
