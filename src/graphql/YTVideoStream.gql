@@ -1,0 +1,8 @@
+mutation YTVideoStream($_id: ID!) {
+  YTVideoStream(_id: $_id) {
+    _id
+    url
+    name
+    type
+  }
+}

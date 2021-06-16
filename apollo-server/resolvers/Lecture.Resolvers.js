@@ -68,5 +68,9 @@ module.exports = {
       subscribe: () => global.pubsub.asyncIterator([eventName.LECTURE_DELETED])
     }
   },
-  Lecture: {}
+  Lecture: {
+    recording: (parent, args, { models }, info) => {
+      return parent.recording ? models[parent.recording_type].findOne({ _id: parent.recording }) : null;
+    }
+  }
 };

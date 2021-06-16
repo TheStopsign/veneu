@@ -39,6 +39,9 @@ export default {
   watch: {
     selected: function(val, oldVal) {
       this.$emit("change", val);
+    },
+    ticked: function(val, oldVal) {
+      this.$emit("change", val);
     }
   },
   created() {
@@ -55,12 +58,16 @@ export default {
       const groupauths = this.me.auths.filter(
         a => a.shared_resource_type === "UserGroup" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
       );
+      const lectureauths = this.me.auths.filter(
+        a => a.shared_resource_type === "Lecture" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
+      );
       let self = this;
       courseauths.forEach(function(courseauth) {
         self.simple.push({
           label: courseauth.shared_resource.name,
           ...courseauth.shared_resource,
           icon: "school"
+          // disabled: self.selectable && !self.selectable.includes(courseauth._id) ? true : false
         });
       });
       sectionauths.forEach(function(sectionauth) {
@@ -73,7 +80,7 @@ export default {
             label: sectionauth.shared_resource.name,
             ...sectionauth.shared_resource,
             icon: "event_seat",
-            disabled: self.selectable && !self.selectable.includes(sectionauth.shared_resource._id) ? true : false
+            disabled: self.selectable && !self.selectable.includes(sectionauth._id) ? true : false
           });
         }
       });
@@ -87,7 +94,21 @@ export default {
             label: groupauth.shared_resource.name,
             ...groupauth.shared_resource,
             icon: "groups",
-            disabled: self.selectable && !self.selectable.includes(groupauth.shared_resource._id) ? true : false
+            disabled: self.selectable && !self.selectable.includes(groupauth._id) ? true : false
+          });
+        }
+      });
+      lectureauths.forEach(function(lectureauth) {
+        let a = self.simple.find(a => a._id == lectureauth.shared_resource.parent_resource._id);
+        if (a) {
+          if (!a.children) {
+            a.children = [];
+          }
+          a.children.push({
+            label: lectureauth.shared_resource.name,
+            ...lectureauth.shared_resource,
+            icon: "book",
+            disabled: self.selectable && !self.selectable.includes(lectureauth._id) ? true : false
           });
         }
       });

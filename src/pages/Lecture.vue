@@ -9,6 +9,17 @@
             <h1 class="q-pa-sm q-mb-md">{{ data.lecture.name }}</h1>
             {{ getFormattedDate(data.lecture.start) }} - {{ getFormattedDate(data.lecture.end) }}
           </div>
+          <div v-if="data.lecture.recording || true">
+            <!-- <q-btn label="Join Live" icon-right="cast" size="lg" class="q-mt-md q-mr-md" /> -->
+            <q-btn
+              label="Watch Recording"
+              icon="theaters"
+              icon-right="visibility"
+              size="lg"
+              class="q-mt-md"
+              :to="{ path: getWatchPath(data.lecture.recording) }"
+            />
+          </div>
         </div>
       </template>
     </ApolloQuery>
@@ -27,6 +38,7 @@ export default {
     };
   },
   methods: {
+    getWatchPath: recording => (recording ? "/watch?v=" + recording._id : "/watch"),
     getFormattedDate(d) {
       return date.formatDate(d, "MMM Do, YYYY @ h:mma");
     },

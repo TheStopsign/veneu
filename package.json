@@ -12,7 +12,8 @@
     "apollo:schema:generate": "vue-cli-service apollo:schema:generate",
     "apollo:schema:publish": "vue-cli-service apollo:schema:publish",
     "db": "sudo killall mongod;mongod",
-    "seed": "node apollo-server/seed.js",
+    "db:clear": "node apollo-server/dbclear.js",
+    "db:seed": "node apollo-server/dbseed.js",
     "start": "npm run start --prefix ./apollo-server"
   },
   "dependencies": {
@@ -22,6 +23,8 @@
     "qr-scanner": "^1.2.0",
     "quasar": "^1.0.0",
     "register-service-worker": "^1.7.1",
+    "video.js": "^7.12.3",
+    "videojs-youtube": "^2.6.1",
     "vue": "^2.6.11",
     "vue-apollo": "^3.0.0-beta.11",
     "vue-qr": "^2.3.0",

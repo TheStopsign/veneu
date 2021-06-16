@@ -11,6 +11,8 @@ module.exports = gql`
     end: Date!
     parent_resource: ParentResource!
     parent_resource_type: String!
+    recording: VideoStream
+    recording_type: String
   }
 
   extend type Query {

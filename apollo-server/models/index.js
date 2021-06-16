@@ -7,3 +7,4 @@ exports.RegistrationSection = require("./RegistrationSection.Model");
 exports.Ticket = require("./Ticket.Model");
 exports.User = require("./User.Model");
 exports.UserGroup = require("./UserGroup.Model");
+exports.YTVideoStream = require("./YTVideoStream.Model");

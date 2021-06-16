@@ -22,5 +22,13 @@ query lecture($_id: ID!) {
       }
     }
     parent_resource_type
+    recording {
+      ... on VideoStream {
+        _id
+        url
+        type
+      }
+    }
+    recording_type
   }
 }

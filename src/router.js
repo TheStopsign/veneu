@@ -16,10 +16,13 @@ import CreateCourse from "./pages/CreateCourse.vue";
 import CreateUserGroup from "./pages/CreateUserGroup.vue";
 import CreateRegistrationSection from "./pages/CreateRegistrationSection.vue";
 import CreateLecture from "./pages/CreateLecture.vue";
+import CreateVideo from "./pages/CreateVideo.vue";
 import Settings from "./components/Settings.vue";
 
 import CheckinShow from "./pages/CheckinShow.vue";
 import CheckinScan from "./pages/CheckinScan.vue";
+
+import Watch from "./pages/Watch.vue";
 
 Vue.use(VueRouter);
 
@@ -154,6 +157,16 @@ const router = new VueRouter({
       meta: {
         auth: true
       }
+    },
+    {
+      path: "/watch",
+      name: "Watch",
+      component: Watch
+    },
+    {
+      path: "/create-video",
+      name: "CreateVideo",
+      component: CreateVideo
     }
   ],
   mode: "history"

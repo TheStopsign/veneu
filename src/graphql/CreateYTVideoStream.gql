@@ -1,0 +1,21 @@
+mutation createYTVideoStream($url: String!, $name: String!, $parent_resource: ID!, $parent_resource_type: String!) {
+  createYTVideoStream(
+    url: $url
+    name: $name
+    parent_resource: $parent_resource
+    parent_resource_type: $parent_resource_type
+  ) {
+    _id
+    url
+    name
+    type
+    parent_resource {
+      ... on SharedResource {
+        _id
+        name
+        type
+      }
+    }
+    parent_resource_type
+  }
+}

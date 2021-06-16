@@ -54,10 +54,12 @@
                 <q-icon name="close" @click="searchString = ''" class="cursor-pointer" />
               </template>
             </q-input>
-            <q-item clickable class="rounded-borders" id="me">
+            <q-item clickable class="rounded-borders q-mx-md neu-convex" id="me">
               <q-item-section avatar>
                 <q-avatar class="spinner">
-                  <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+                  <img
+                    src="https://media-exp3.licdn.com/dms/image/C4D03AQF7o9NKHcPZ_A/profile-displayphoto-shrink_200_200/0/1611645299650?e=1629331200&v=beta&t=BeMiOL21CFOSqGOT6m05A9Wg2Na4Frd0ma-XLHDi6MQ"
+                  />
                 </q-avatar>
               </q-item-section>
 
@@ -99,7 +101,7 @@
               </q-item-section>
             </q-item>
             <div class="row full-width q-px-md q-mt-md">
-              <q-btn size="sm" label="New" icon="add" class="full-width">
+              <q-btn size="md" label="New" icon="add" class="full-width">
                 <q-menu anchor="bottom middle" self="top middle" :offset="[0, 8]">
                   <q-list class="q-pa-xs text-primary">
                     <q-item class="items-center" title="Checkin" clickable @click="handleHost">
@@ -130,6 +132,14 @@
                       @click="$router.push({ name: 'CreateLecture' })"
                       :disabled="!canCreateLectures(data.me.auths)"
                       >Lecture</q-item
+                    >
+                    <q-item
+                      class="items-center"
+                      title="Video"
+                      :clickable="canCreateVideos(data.me.auths) && $route.name != 'CreateVideo'"
+                      @click="$router.push({ name: 'CreateVideo' })"
+                      :disabled="!canCreateVideos(data.me.auths)"
+                      >Video</q-item
                     >
                   </q-list>
                 </q-menu>
@@ -273,6 +283,15 @@ export default {
         auths.filter(
           a =>
             ["Course", "RegistrationSection", "UserGroup"].includes(a.shared_resource_type) &&
+            ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
+        ).length > 0
+      );
+    },
+    canCreateVideos(auths) {
+      return (
+        auths.filter(
+          a =>
+            ["Course", "RegistrationSection", "UserGroup", "Lecture"].includes(a.shared_resource_type) &&
             ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
         ).length > 0
       );

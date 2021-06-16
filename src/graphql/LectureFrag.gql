@@ -21,4 +21,7 @@ fragment Lecture on Lecture {
     }
   }
   parent_resource_type
+  recording {
+    _id
+  }
 }

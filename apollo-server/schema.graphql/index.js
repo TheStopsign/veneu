@@ -14,6 +14,12 @@ const linkSchema = gql`
 
   union ParentResource = User | Course | RegistrationSection | UserGroup | Lecture
 
+  interface VideoStream {
+    _id: ID!
+    url: String!
+    type: String!
+  }
+
   interface SharedResource {
     _id: ID!
     creator: User!
@@ -70,7 +76,7 @@ const linkSchema = gql`
     type: String!
   }
 
-  union SearchResult = User | Course | UserGroup
+  union SearchResult = User | Course | UserGroup | RegistrationSection | Lecture
 
   scalar Date
 
@@ -96,5 +102,6 @@ module.exports = [
   require("./RegistrationSection.Schema"),
   require("./Ticket.Schema"),
   require("./User.Schema"),
-  require("./UserGroup.Schema")
+  require("./UserGroup.Schema"),
+  require("./YTVideoStream.Schema")
 ];
