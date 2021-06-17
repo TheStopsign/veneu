@@ -361,8 +361,8 @@ h1 {
 
 #headertoolbar,
 .q-dialog__inner > .q-card {
-  -webkit-backdrop-filter: saturate(150%) blur(16px) !important;
-  backdrop-filter: saturate(150%) blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  backdrop-filter: blur(16px) !important;
   background: none !important;
   background-color: unset !important;
 }
