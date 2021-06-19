@@ -43,6 +43,18 @@
               </video>
             </q-responsive>
           </div>
+
+          <div class="q-ma-md q-px-md row full-width">
+            <q-toggle
+              v-model="is_assignment"
+              checked-icon="check"
+              color="green"
+              unchecked-icon="clear"
+              label="Assignment"
+              size="xl"
+            />
+          </div>
+
           <q-bar class="q-pa-none q-gutter-x-md">
             <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
             <q-btn type="submit" color="primary" label="Continue" class="q-ml-sm full-width" :disabled="!formValid()" />
@@ -73,7 +85,8 @@ export default {
       parent_resource_type: "Lecture",
       yt_valid: false,
       vjs: null,
-      duration: -1
+      duration: -1,
+      is_assignment: false
     };
   },
   beforeDestroy() {

@@ -14,10 +14,16 @@ aside.q-drawer--mobile {
   max-width: 25rem !important;
 }
 
-.q-field--standout .q-field__control {
+.q-field--standout .q-field__control,
+.q-toggle__track {
   background: none;
   transition: color 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
   animation: grow-in-input 0.5s forwards;
+}
+
+.q-toggle__inner--truthy .q-toggle__track,
+.q-toggle__inner--falsy .q-toggle__track {
+  opacity: 1;
 }
 
 .q-gutter-x-md > *,
@@ -62,7 +68,8 @@ body,
 .q-menu,
 .q-table__card,
 .q-tab-panels,
-.q-calendar {
+.q-calendar,
+.q-toggle__inner--falsy .q-toggle__thumb:after {
   background-color: var(--veneu-background) !important;
 }
 
