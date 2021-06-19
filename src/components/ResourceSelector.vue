@@ -6,7 +6,7 @@
       default-expand-all
       :nodes="simple"
       node-key="_id"
-      :selected.sync="selected"
+      :selected.sync="selected_resource"
       :expanded.sync="expanded"
     />
   </div>
@@ -23,6 +23,10 @@ export default {
       type: Array,
       required: false
     },
+    selected: {
+      type: String,
+      required: false
+    },
     label: {
       type: String,
       required: false
@@ -31,13 +35,18 @@ export default {
   data() {
     return {
       simple: [],
-      selected: null,
+      selected_resource: null,
       ticked: [],
-      expanded: []
+      expanded: [],
+      error: ""
     };
   },
   watch: {
-    selected: function(val, oldVal) {
+    selected_resource: function(val, oldVal) {
+      if (this.me.auths.find(a => a.shared_resource._id == val && a.shared_resource_type != "Lecture")) {
+        this.selected_resource = oldVal;
+        this.errorMsg("Not a lecture");
+      }
       this.$emit("change", val);
     },
     ticked: function(val, oldVal) {
@@ -45,9 +54,18 @@ export default {
     }
   },
   created() {
+    this.selected_resource = this.selected ? this.selected : null;
     this.buildTree();
   },
   methods: {
+    errorMsg(error) {
+      this.$q.notify({
+        progress: true,
+        message: error,
+        icon: "error",
+        color: "negative"
+      });
+    },
     buildTree() {
       const courseauths = this.me.auths.filter(
         a => a.shared_resource_type === "Course" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)

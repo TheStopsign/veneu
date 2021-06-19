@@ -32,9 +32,15 @@ const CalendarizableEventResolvers = {
   }
 };
 
-const CalendarDeadlineResolvers = {
-  CalendarDeadline: {
-    __resolveType: calendarDeadline => calendarDeadline.type
+const AssignableResolvers = {
+  Assignable: {
+    __resolveType: assignable => assignable.type
+  }
+};
+
+const SubmittableResolvers = {
+  Submittable: {
+    __resolveType: submittable => submittable.type
   }
 };
 
@@ -54,7 +60,8 @@ module.exports = [
   ParentResourceResolvers,
   SharedResourceResolvers,
   CalendarizableEventResolvers,
-  CalendarDeadlineResolvers,
+  AssignableResolvers,
+  SubmittableResolvers,
   SearchResultResolvers,
   VideoStreamResolvers,
   require("./Auth.Resolvers"),

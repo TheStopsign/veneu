@@ -3,6 +3,8 @@ const { gql } = require("apollo-server-express");
 const linkSchema = gql`
   # directive @auth(requires: Role!) on OBJECT | FIELD_DEFINITION
 
+  scalar Date
+
   enum Role {
     ADMIN
     INSTRUCTOR
@@ -12,12 +14,38 @@ const linkSchema = gql`
     UNKNOWN
   }
 
-  union ParentResource = User | Course | RegistrationSection | UserGroup | Lecture
+  enum WeekDay {
+    MONDAY
+    TUESDAY
+    WEDNESDAY
+    THURSDAY
+    FRIDAY
+    SATURDAY
+    SUNDAY
+  }
 
-  interface VideoStream {
+  union ParentResource = User | Course | RegistrationSection | UserGroup | Lecture
+  union SearchResult = User | Course | UserGroup | RegistrationSection | Lecture
+
+  interface Assignable {
     _id: ID!
-    url: String!
     type: String!
+    assignment: Assignment
+  }
+
+  interface Submittable {
+    _id: ID!
+    type: String!
+    submission: Submission
+    created_at: Date!
+    updated_at: Date!
+  }
+
+  interface VideoStream implements Assignable {
+    _id: ID!
+    type: String!
+    assignment: Assignment
+    url: String!
   }
 
   interface SharedResource {
@@ -38,31 +66,10 @@ const linkSchema = gql`
     type: String!
   }
 
-  type CalendarEvent {
-    name: String!
-    start: Date!
-    end: Date!
-  }
-
   input CalendarEventInput {
     name: String!
     start: Date!
     end: Date!
-  }
-
-  enum WeekDay {
-    MONDAY
-    TUESDAY
-    WEDNESDAY
-    THURSDAY
-    FRIDAY
-    SATURDAY
-    SUNDAY
-  }
-
-  type WeekDayEvent {
-    weekday: WeekDay!
-    event: CalendarEvent!
   }
 
   input WeekDayEventInput {
@@ -70,15 +77,16 @@ const linkSchema = gql`
     event: CalendarEventInput!
   }
 
-  interface CalendarDeadline {
-    _id: ID!
-    due: Date!
-    type: String!
+  type CalendarEvent {
+    name: String!
+    start: Date!
+    end: Date!
   }
 
-  union SearchResult = User | Course | UserGroup | RegistrationSection | Lecture
-
-  scalar Date
+  type WeekDayEvent {
+    weekday: WeekDay!
+    event: CalendarEvent!
+  }
 
   type Query {
     _: Boolean
@@ -94,14 +102,17 @@ const linkSchema = gql`
 
 module.exports = [
   linkSchema,
+  require("./Assignment.Schema"),
   require("./Auth.Schema"),
   require("./Checkin.Schema"),
   require("./Course.Schema"),
   require("./Lecture.Schema"),
   require("./Notification.Schema"),
   require("./RegistrationSection.Schema"),
+  require("./Submission.Schema"),
   require("./Ticket.Schema"),
   require("./User.Schema"),
   require("./UserGroup.Schema"),
+  require("./VideoStreamPlayback.Schema"),
   require("./YTVideoStream.Schema")
 ];
