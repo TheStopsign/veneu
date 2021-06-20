@@ -1,9 +1,16 @@
-mutation createYTVideoStream($url: String!, $name: String!, $parent_resource: ID!, $parent_resource_type: String!) {
+mutation createYTVideoStream(
+  $url: String!
+  $name: String!
+  $parent_resource: ID!
+  $parent_resource_type: String!
+  $assignment: Boolean
+) {
   createYTVideoStream(
     url: $url
     name: $name
     parent_resource: $parent_resource
     parent_resource_type: $parent_resource_type
+    assignment: $assignment
   ) {
     _id
     url

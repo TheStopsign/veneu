@@ -1,51 +1,113 @@
 <template>
   <q-page id="create-course" class="q-pa-md">
-    <ApolloMutation
-      :mutation="require('../graphql/CreateYTVideoStream.gql')"
-      :variables="{ url, name, parent_resource, parent_resource_type }"
-      class="form q-pb-md"
-      @done="handleCreateVideo"
-    >
-      <template slot-scope="{ mutate }">
-        <q-form @submit.prevent="mutate()" class="q-gutter-md q-ma-md q-py-md q-pt-lg neu-convex">
-          <div>
-            <i><h1>Create a New Video</h1></i>
-          </div>
-          <ResourceSelector
-            :me="me"
-            label="For Lecture..."
-            :selectable="me.auths.filter(a => a.shared_resource_type === 'Lecture').map(a => a._id)"
-            @change="handleChangeLecture"
-            class="q-mt-md"
-          />
-          <q-input
-            standout="bg-primary text-white q-ma-none"
+    <q-form @submit.prevent="handleCreateVideo" class="q-gutter-md q-ma-md q-py-md q-pt-lg neu-convex">
+      <div>
+        <i><h1>Create a New Video</h1></i>
+      </div>
+      <q-input
+        standout="bg-primary text-white q-ma-none"
+        color="primary"
+        class="text-primary q-mt-md"
+        v-model="name"
+        label="Video Name"
+        placeholder="e.g. Syllabus Day Recording"
+      />
+      <ResourceSelector
+        :me="me"
+        label="For Lecture..."
+        :selected="parent_resource"
+        :selectable="me.auths.filter(a => a.shared_resource_type === 'Lecture').map(a => a._id)"
+        @change="handleChangeLecture"
+        class="q-mt-lg q-mb-lg"
+      />
+      <q-input
+        standout="bg-primary text-white q-ma-none"
+        color="primary"
+        class="text-primary q-mt-md"
+        v-model="url"
+        label="YT Link"
+        placeholder="e.g. https://www.youtube.com/watch?v=tz56ac6BaJQ"
+        @change="handleYTUrlChange()"
+      />
+      <div class="q-pa-sm neu-convex" v-if="yt_valid">
+        <q-responsive :ratio="16 / 9">
+          <video id="video_player" class="video-js vjs-big-play-centered" controls playsinline autoplay>
+            <source :src="url" type="video/youtube" />
+          </video>
+        </q-responsive>
+      </div>
+
+      <div class="q-ma-md q-px-md row full-width justify-center">
+        <q-toggle
+          v-model="is_assignment"
+          checked-icon="check"
+          color="primary"
+          unchecked-icon="clear"
+          label="Is this an assignment?"
+          size="xl"
+        />
+      </div>
+
+      <div class="q-mb-md q-px-md full-width" v-if="is_assignment">
+        <div class="row full-width justify-center q-mt-md">
+          Watch by...
+        </div>
+        <div class="row full-width q-mb-lg">
+          <q-date
+            v-model="assignment.due"
+            mask="YYYY-MM-DD HH:mm"
             color="primary"
-            class="text-primary q-mt-none"
-            v-model="name"
-            label="Video Name"
-            placeholder="e.g. Syllabus Day Recording"
+            class="col-12 col-sm q-mr-md q-mt-md neu-convex"
           />
-          <q-input
-            standout="bg-primary text-white q-ma-none"
+          <q-time
+            v-model="assignment.due"
+            mask="YYYY-MM-DD HH:mm"
             color="primary"
-            class="text-primary q-mt-md"
-            v-model="url"
-            label="YouTube Link"
-            placeholder="e.g. https://www.youtube.com/watch?v=tz56ac6BaJQ"
+            class="col-12 col-sm q-mt-md neu-convex"
           />
-          <q-bar class="q-pa-none q-gutter-x-md">
-            <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
-            <q-btn type="submit" color="primary" label="Continue" class="q-ml-sm full-width" :disabled="!formValid()" />
-          </q-bar>
-        </q-form>
-      </template>
-    </ApolloMutation>
+        </div>
+        <div class="row full-width justify-center q-mt-xl"><h3>Optional</h3></div>
+        <q-input
+          type="number"
+          standout="bg-primary text-white q-ma-none"
+          color="primary"
+          class="text-primary q-mt-md"
+          v-model="points"
+          label="Points"
+          placeholder="e.g. 20"
+        />
+        <div class="row full-width justify-center q-mt-md">
+          Hidden until...
+        </div>
+        <div class="row full-width">
+          <q-date
+            v-model="assignment.hidden_until"
+            mask="YYYY-MM-DD HH:mm"
+            color="primary"
+            class="col-12 col-sm q-mr-md q-mt-md neu-convex"
+          />
+          <q-time
+            v-model="assignment.hidden_until"
+            mask="YYYY-MM-DD HH:mm"
+            color="primary"
+            class="col-12 col-sm q-mt-md neu-convex"
+          />
+        </div>
+      </div>
+
+      <q-bar class="q-pa-none q-gutter-x-md q-mt-md">
+        <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
+        <q-btn type="submit" color="primary" label="Continue" class="q-ml-sm full-width" :disabled="!formValid()" />
+      </q-bar>
+    </q-form>
   </q-page>
 </template>
 
 <script>
 import ResourceSelector from "../components/ResourceSelector";
+import videojs from "video.js";
+import gql from "graphql-tag";
+require("videojs-youtube");
 export default {
   name: "CreateRegistrationSection",
   props: {
@@ -58,11 +120,65 @@ export default {
     return {
       name: "",
       url: "",
-      parent_resource: null,
-      parent_resource_type: "Lecture"
+      parent_resource: this.$route.query.from ? this.$route.query.from : null,
+      parent_resource_type: "Lecture",
+      yt_valid: false,
+      vjs: null,
+      duration: -1,
+      is_assignment: false,
+      assignment: {
+        hidden_until: null,
+        due: null
+      },
+      points: null
     };
   },
+  beforeDestroy() {
+    this.tryDisposeVjs();
+  },
   methods: {
+    handleYTUrlChange() {
+      let self = this;
+      if (self.vjs) {
+        document.getElementsByClassName("video-js")[0].remove();
+        self.vjs.dispose();
+        self.vjs = null;
+        self.duration = -1;
+        self.yt_valid = false;
+      }
+      self.$nextTick(() => {
+        if (/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/gm.test(self.url)) {
+          self.yt_valid = true;
+          self.$nextTick(() => {
+            if (self.vjs) {
+              self.vjs.src({
+                type: "video/youtube",
+                src: self.url
+              });
+              self.vjs.pause();
+              self.duration = self.vjs.duration();
+            } else {
+              videojs("video_player", {}, function() {
+                self.vjs = this;
+                self.vjs.one("loadedmetadata", function() {
+                  self.vjs.pause();
+                  self.duration = self.vjs.duration();
+                });
+              });
+            }
+          });
+        } else {
+          self.yt_valid = false;
+        }
+      });
+    },
+    tryDisposeVjs() {
+      if (this.vjs) {
+        this.vjs.dispose();
+        this.vjs = null;
+      }
+      this.yt_valid = false;
+    },
     handleBack() {
       this.$router.go(-1);
     },
@@ -78,7 +194,13 @@ export default {
       if (!this.name.length) {
         return false;
       }
-      if (!this.url.length) {
+      if (!this.url.length || !this.yt_valid) {
+        return false;
+      }
+      if (this.duration < 0) {
+        return false;
+      }
+      if (!this.assignment.due) {
         return false;
       }
       return true;
@@ -89,9 +211,71 @@ export default {
       });
     },
     handleCreateVideo() {
-      this.name = "";
-      this.url = "";
-      this.$router.push({ name: "Dashboard" });
+      if (this.formValid()) {
+        this.$apollo
+          .mutate({
+            mutation: gql`
+              mutation createYTVideoStream(
+                $url: String!
+                $name: String!
+                $parent_resource: ID!
+                $parent_resource_type: String!
+                $assignment: Boolean
+                $hidden_until: Date
+                $due: Date
+                $points: Float
+                $duration: Int!
+              ) {
+                createYTVideoStream(
+                  url: $url
+                  name: $name
+                  parent_resource: $parent_resource
+                  parent_resource_type: $parent_resource_type
+                  assignment: $assignment
+                  hidden_until: $hidden_until
+                  due: $due
+                  points: $points
+                  duration: $duration
+                ) {
+                  _id
+                  url
+                  name
+                  type
+                  parent_resource {
+                    ... on SharedResource {
+                      _id
+                      name
+                      type
+                    }
+                  }
+                  parent_resource_type
+                }
+              }
+            `,
+            variables: {
+              url: this.url,
+              name: this.name,
+              parent_resource: this.parent_resource,
+              parent_resource_type: this.parent_resource_type,
+              assignment: this.is_assignment,
+              hidden_until: this.assignment.hidden_until,
+              due: this.assignment.due,
+              points: parseFloat(this.points),
+              duration: this.duration
+            }
+          })
+          .then(({ data: { createYTVideoStream } }) => {
+            this.$router.push({ name: "Dashboard" });
+          })
+          .catch(e => {
+            this.$q.notify({
+              progress: true,
+              message: "Issue creating video, try again " + e,
+              icon: "error",
+              color: "negative"
+            });
+          });
+      }
     },
     handleChangeLecture(parent_resource) {
       this.parent_resource = parent_resource;

@@ -10,9 +10,9 @@
         active-color="secondary"
         class="full-width"
       >
-        <q-tab name="calendar" label="Calendar" class="q-mr-sm q-ml-md q-mt-md q-mb-sm" />
-        <q-tab name="timeline" label="Timeline" class="q-mx-sm q-mt-md q-mb-sm" />
-        <q-tab name="resource" label="Resource" class="q-mr-md q-ml-sm q-mt-md q-mb-sm" />
+        <q-tab name="calendar" label="" icon="today" class="q-mr-sm q-ml-md q-mt-md q-mb-sm" />
+        <q-tab name="timeline" label="" icon="timeline" class="q-mx-sm q-mt-md q-mb-sm" />
+        <q-tab name="resource" label="" icon="account_tree" class="q-mr-md q-ml-sm q-mt-md q-mb-sm" />
       </q-tabs>
       <q-tab-panels v-model="tab" animated style="display: flex; flex-direction: column; height: 100%; width: 100%;">
         <q-tab-panel name="calendar" class="q-pt-sm">

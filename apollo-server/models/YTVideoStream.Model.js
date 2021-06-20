@@ -6,10 +6,19 @@ const YTVideoStream = new mongoose.Schema(
       type: String,
       required: true
     },
+    duration: {
+      type: Number,
+      required: true
+    },
     type: {
       type: String,
       required: true,
       default: "YTVideoStream"
+    },
+    assignment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Assignment",
+      required: false
     },
     parent_resource: {
       type: mongoose.Schema.Types.ObjectId,
@@ -36,6 +45,7 @@ const YTVideoStream = new mongoose.Schema(
   .pre("deleteOne", { document: true }, function(next) {
     Promise.all([
       mongoose.model("Auth").deleteMany({ shared_resource: this._id }),
+      mongoose.model("Assignment").deleteOne({ assignable: this._id }),
       mongoose.model(this.parent_resource_type).updateOne({ recording: null, recording_type: null })
     ]).then(resolved => {
       next();
@@ -48,6 +58,7 @@ const YTVideoStream = new mongoose.Schema(
         const ytvsparents = ytvs.map(a => a.parent_resource);
         Promise.all([
           mongoose.model("Auth").deleteMany({ shared_resource: { $in: ytvsids } }),
+          mongoose.model("Assignment").deleteMany({ assignable: { $in: ytvsids } }),
           mongoose.model("Course").updateMany({ _id: { $in: ytvsparents } }, { recording: null, recording_type: null }),
           mongoose
             .model("RegistrationSection")

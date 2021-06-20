@@ -64,8 +64,8 @@
                 <q-icon name="close" @click="searchString = ''" class="cursor-pointer" />
               </template>
             </q-input>
-            <q-item clickable class="rounded-borders q-mx-md neu-convex" id="me">
-              <q-item-section avatar>
+            <q-item clickable class="rounded-borders q-mx-md neu-concave" id="me">
+              <q-item-section avatar class="q-my-xs">
                 <q-avatar class="spinner">
                   <img
                     src="https://media-exp3.licdn.com/dms/image/C4D03AQF7o9NKHcPZ_A/profile-displayphoto-shrink_200_200/0/1611645299650?e=1629331200&v=beta&t=BeMiOL21CFOSqGOT6m05A9Wg2Na4Frd0ma-XLHDi6MQ"

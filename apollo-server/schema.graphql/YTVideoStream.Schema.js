@@ -1,15 +1,17 @@
 const { gql } = require("apollo-server-express");
 
 module.exports = gql`
-  type YTVideoStream implements VideoStream & SharedResource {
+  type YTVideoStream implements VideoStream & SharedResource & Assignable {
     _id: ID!
-    url: String!
     type: String!
+    assignment: Assignment
     parent_resource: ParentResource!
     parent_resource_type: String!
     creator: User!
     auths: [Auth!]!
     name: String!
+    url: String!
+    duration: Int!
   }
 
   extend type Query {
@@ -23,6 +25,11 @@ module.exports = gql`
       name: String!
       parent_resource: ID!
       parent_resource_type: String!
+      assignment: Boolean
+      hidden_until: Date
+      due: Date
+      points: Float
+      duration: Int!
     ): YTVideoStream!
     deleteYTVideoStream(_id: ID!): YTVideoStream!
   }

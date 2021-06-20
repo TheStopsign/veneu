@@ -14,10 +14,16 @@ aside.q-drawer--mobile {
   max-width: 25rem !important;
 }
 
-.q-field--standout .q-field__control {
+.q-field--standout .q-field__control,
+.q-toggle__track {
   background: none;
   transition: color 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
   animation: grow-in-input 0.5s forwards;
+}
+
+.q-toggle__inner--truthy .q-toggle__track,
+.q-toggle__inner--falsy .q-toggle__track {
+  opacity: 1;
 }
 
 .q-gutter-x-md > *,
@@ -62,7 +68,8 @@ body,
 .q-menu,
 .q-table__card,
 .q-tab-panels,
-.q-calendar {
+.q-calendar,
+.q-toggle__inner--falsy .q-toggle__thumb:after {
   background-color: var(--veneu-background) !important;
 }
 
@@ -221,7 +228,6 @@ body,
 h1 {
   text-align: center;
   border-radius: 1rem;
-  animation: grow-in 0.5s forwards;
 }
 
 .form h1,
@@ -271,6 +277,22 @@ h1 {
     color: var(--veneu-light);
     margin-bottom: 0.5rem;
   }
+}
+
+.q-tree__node-header-content {
+  color: var(--veneu-blue);
+}
+.q-tree__node--selected .q-tree__node-header-content {
+  color: var(--veneu-light);
+}
+
+.q-time--landscape .q-time__header {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  min-width: 6rem !important;
+}
+.q-time--landscape .q-time__header-label {
+  font-size: 1.5rem !important;
 }
 
 .q-calendar {
@@ -361,15 +383,15 @@ h1 {
 
 #headertoolbar,
 .q-dialog__inner > .q-card {
-  -webkit-backdrop-filter: blur(16px) !important;
-  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  backdrop-filter: blur(4px) !important;
   background: none !important;
-  background-color: unset !important;
+  background-color: var(--veneu-background-backdrop) !important;
 }
 
 @-moz-document url-prefix() {
   #headertoolbar {
-    background-color: var(--veneu-background-backdrop) !important;
+    background-color: var(--veneu-firefox-glass) !important;
   }
   .q-dialog__inner > .q-card {
     background-color: var(--veneu-background) !important;
