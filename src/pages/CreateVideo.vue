@@ -163,7 +163,8 @@ export default {
                   techOrder: ["youtube"],
                   sources: [{ src: self.url, type: "video/youtube" }],
                   autoplay: true,
-                  controls: true
+                  controls: true,
+                  forceSSL: true
                 },
                 function() {
                   self.vjs = this;
