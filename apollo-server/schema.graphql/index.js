@@ -46,6 +46,7 @@ const linkSchema = gql`
     type: String!
     assignment: Assignment
     url: String!
+    duration: Int!
   }
 
   interface SharedResource {

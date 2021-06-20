@@ -228,7 +228,6 @@ body,
 h1 {
   text-align: center;
   border-radius: 1rem;
-  animation: grow-in 0.5s forwards;
 }
 
 .form h1,
@@ -278,6 +277,22 @@ h1 {
     color: var(--veneu-light);
     margin-bottom: 0.5rem;
   }
+}
+
+.q-tree__node-header-content {
+  color: var(--veneu-blue);
+}
+.q-tree__node--selected .q-tree__node-header-content {
+  color: var(--veneu-light);
+}
+
+.q-time--landscape .q-time__header {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  min-width: 6rem !important;
+}
+.q-time--landscape .q-time__header-label {
+  font-size: 1.5rem !important;
 }
 
 .q-calendar {
@@ -368,15 +383,15 @@ h1 {
 
 #headertoolbar,
 .q-dialog__inner > .q-card {
-  -webkit-backdrop-filter: blur(16px) !important;
-  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  backdrop-filter: blur(4px) !important;
   background: none !important;
-  background-color: unset !important;
+  background-color: var(--veneu-background-backdrop) !important;
 }
 
 @-moz-document url-prefix() {
   #headertoolbar {
-    background-color: var(--veneu-background-backdrop) !important;
+    background-color: var(--veneu-firefox-glass) !important;
   }
   .q-dialog__inner > .q-card {
     background-color: var(--veneu-background) !important;

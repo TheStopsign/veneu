@@ -11,6 +11,7 @@ module.exports = gql`
     auths: [Auth!]!
     name: String!
     url: String!
+    duration: Int!
   }
 
   extend type Query {
@@ -24,6 +25,11 @@ module.exports = gql`
       name: String!
       parent_resource: ID!
       parent_resource_type: String!
+      assignment: Boolean
+      hidden_until: Date
+      due: Date
+      points: Float
+      duration: Int!
     ): YTVideoStream!
     deleteYTVideoStream(_id: ID!): YTVideoStream!
   }

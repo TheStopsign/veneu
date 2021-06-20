@@ -13,15 +13,17 @@
   --veneu-green-lowlight: #3f6549;
 
   --veneu-light: #dfdfdf;
-  --veneu-light-backdrop: #dfdfdff8;
+  --veneu-light-backdrop: #dfdfdfbb;
   --veneu-light-highlight: #bebebe;
   --veneu-light-lowlight: #ffffff66;
+  --veneu-light-firefox-glass: #dfdfdff8;
 
   --veneu-dark: #2c3e50;
-  --veneu-dark-backdrop: #2c3e50f8;
+  --veneu-dark-backdrop: #2c3e50bb;
   --veneu-dark-highlight: #253544;
   --veneu-dark-lowlight: #33475c;
   --veneu-dark-blue: #234462;
+  --veneu-dark-firefox-glass: #2c3e50f8;
 
   --calendar-border-current: var(--veneu-red) 2px solid !important;
 
@@ -30,7 +32,13 @@
   --veneu-background-backdrop: var(--veneu-light-backdrop);
   --veneu-background-highlight: var(--veneu-light-highlight);
   --veneu-background-lowlight: var(--veneu-light-lowlight);
+  --veneu-firefox-glass: var(--veneu-light-firefox-glass);
   @media (prefers-color-scheme: dark) {
+    --veneu-background: var(--veneu-dark);
+    --veneu-background-backdrop: var(--veneu-dark-backdrop);
+    --veneu-background-highlight: var(--veneu-dark-highlight);
+    --veneu-background-lowlight: var(--veneu-dark-lowlight);
+    --veneu-firefox-glass: var(--veneu-dark-firefox-glass);
     .q-calendar {
       * {
         border-color: var(--veneu-light) !important;
@@ -42,10 +50,6 @@
         color: var(--veneu-light) !important;
       }
     }
-    --veneu-background: var(--veneu-dark);
-    --veneu-background-backdrop: var(--veneu-dark-backdrop);
-    --veneu-background-highlight: var(--veneu-dark-highlight);
-    --veneu-background-lowlight: var(--veneu-dark-lowlight);
     * {
       color: var(--veneu-light) !important;
     }

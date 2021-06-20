@@ -20,12 +20,33 @@ module.exports = {
   Mutation: {
     createYTVideoStream: (
       parent,
-      { url, name, parent_resource, parent_resource_type },
-      { requester, models: { YTVideoStream } },
+      { url, name, parent_resource, parent_resource_type, duration, assignment, hidden_until, due, points },
+      { requester, models: { YTVideoStream, Assignment } },
       info
     ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return YTVideoStream.create({ url, name, parent_resource, parent_resource_type, creator: requester._id });
+      return YTVideoStream.create({
+        url,
+        name,
+        parent_resource,
+        parent_resource_type,
+        creator: requester._id,
+        duration
+      }).then(ytVideoStream => {
+        if (assignment) {
+          return Assignment.create({
+            assignable: ytVideoStream._id,
+            assignable_type: "YTVideoStream",
+            hidden_until,
+            due,
+            points
+          }).then(assignment => {
+            return ytVideoStream;
+          });
+        } else {
+          return ytVideoStream;
+        }
+      });
     },
     deleteYTVideoStream: (parent, { _id }, { requester, models: { YTVideoStream } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");

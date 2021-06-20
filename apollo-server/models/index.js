@@ -1,3 +1,4 @@
+exports.Assignment = require("./Assignment.Model");
 exports.Auth = require("./Auth.Model");
 exports.Checkin = require("./Checkin.Model");
 exports.Course = require("./Course.Model");

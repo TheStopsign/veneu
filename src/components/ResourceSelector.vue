@@ -1,8 +1,8 @@
 <template>
-  <div class="resource-selector q-mt-none q-mb-lg">
+  <div>
     {{ label || "Select a resource" }}
     <q-tree
-      class="col-12"
+      class="col-12 text-primary"
       default-expand-all
       :nodes="simple"
       node-key="_id"
@@ -43,7 +43,10 @@ export default {
   },
   watch: {
     selected_resource: function(val, oldVal) {
-      if (this.me.auths.find(a => a.shared_resource._id == val && a.shared_resource_type != "Lecture")) {
+      if (
+        this.$route.path.includes("create-video") &&
+        this.me.auths.find(a => a.shared_resource._id == val && a.shared_resource_type != "Lecture")
+      ) {
         this.selected_resource = oldVal;
         this.errorMsg("Not a lecture");
       }
