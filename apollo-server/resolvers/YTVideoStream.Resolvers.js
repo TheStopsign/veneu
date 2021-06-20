@@ -71,5 +71,10 @@ module.exports = {
     YTVideoStreamDeleted: {
       subscribe: () => global.pubsub.asyncIterator([eventName.YTVIDEOSTREAM_DELETED])
     }
+  },
+  YTVideoStream: {
+    assignment: (parent, args, { models: { Assignment } }, info) => {
+      return Assignment.findOne({ assignable: parent._id });
+    }
   }
 };

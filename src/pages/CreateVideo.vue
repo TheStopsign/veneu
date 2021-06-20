@@ -29,11 +29,9 @@
         placeholder="e.g. https://www.youtube.com/watch?v=tz56ac6BaJQ"
         @change="handleYTUrlChange()"
       />
-      <div class="q-pa-sm neu-convex" v-if="yt_valid">
+      <div class="q-pa-xs neu-convex" v-if="yt_valid">
         <q-responsive :ratio="16 / 9">
-          <video id="video_player" class="video-js vjs-big-play-centered" controls playsinline autoplay>
-            <source :src="url" type="video/youtube" />
-          </video>
+          <video id="video_player" class="video-js vjs-big-play-centered" playsinline></video>
         </q-responsive>
       </div>
 
@@ -104,10 +102,10 @@
 </template>
 
 <script>
-import ResourceSelector from "../components/ResourceSelector";
 import videojs from "video.js";
-import gql from "graphql-tag";
 require("videojs-youtube");
+import gql from "graphql-tag";
+import ResourceSelector from "../components/ResourceSelector";
 export default {
   name: "CreateRegistrationSection",
   props: {
@@ -157,14 +155,25 @@ export default {
               });
               self.vjs.pause();
               self.duration = self.vjs.duration();
+              console.log("CHANGE - " + self.duration);
             } else {
-              videojs("video_player", {}, function() {
-                self.vjs = this;
-                self.vjs.one("loadedmetadata", function() {
-                  self.vjs.pause();
-                  self.duration = self.vjs.duration();
-                });
-              });
+              videojs(
+                "video_player",
+                {
+                  techOrder: ["youtube"],
+                  sources: [{ src: self.url, type: "video/youtube" }],
+                  autoplay: true,
+                  controls: true
+                },
+                function() {
+                  self.vjs = this;
+                  self.vjs.one("loadedmetadata", function() {
+                    self.vjs.pause();
+                    self.duration = self.vjs.duration();
+                    console.log("START - " + self.duration);
+                  });
+                }
+              );
             }
           });
         } else {
@@ -197,7 +206,7 @@ export default {
       if (!this.url.length || !this.yt_valid) {
         return false;
       }
-      if (this.duration < 0) {
+      if (!this.duration > 0) {
         return false;
       }
       if (!this.assignment.due) {

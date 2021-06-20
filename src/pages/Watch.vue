@@ -5,17 +5,9 @@
       <q-skeleton height="75vh" square />
     </div>
     <div v-if="YTVideoStream" id="videostreamloaded">
-      <div class="q-pa-sm neu-convex">
+      <div class="q-pa-xs neu-convex">
         <q-responsive :ratio="16 / 9">
-          <video id="video_player" class="video-js vjs-big-play-centered" controls playsinline>
-            <source
-              v-bind:src="
-                lecture.video_ref +
-                  (lecture.video_type == 'video/youtube' ? '?showinfo=0&enablejsapi=1&origin=' + getBaseUrl() : '')
-              "
-              :type="lecture.video_type"
-            />
-          </video>
+          <video id="video_player" class="video-js vjs-big-play-centered" playsinline></video>
         </q-responsive>
       </div>
     </div>
@@ -23,9 +15,9 @@
 </template>
 
 <script>
+import "videojs-youtube/dist/Youtube.min.js";
 import videojs from "video.js";
 import gql from "graphql-tag";
-require("videojs-youtube");
 export default {
   name: "Watch",
   props: {
@@ -57,6 +49,11 @@ export default {
               url
               name
               type
+              assignment {
+                _id
+                due
+              }
+              duration
             }
           }
         `,
@@ -67,11 +64,20 @@ export default {
         this.YTVideoStream = data.data.YTVideoStream;
         let self = this;
         self.lecture.video_type = "video/youtube";
-        self.lecture.video_ref = this.YTVideoStream.url;
+        self.lecture.video_ref = self.YTVideoStream.url;
         self.$nextTick(function() {
-          videojs("video_player", {}, function() {
-            self.vjs = this;
-          });
+          videojs(
+            "video_player",
+            {
+              techOrder: ["youtube"],
+              sources: [{ src: self.lecture.video_ref, type: self.lecture.video_type }],
+              controls: true,
+              autoplay: false
+            },
+            function() {
+              self.vjs = this;
+            }
+          );
         });
       })
       .catch(e => {

@@ -4,5 +4,8 @@ mutation YTVideoStream($_id: ID!) {
     url
     name
     type
+    assignment {
+      _id
+    }
   }
 }
