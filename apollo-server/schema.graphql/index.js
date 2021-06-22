@@ -3,6 +3,14 @@ const { gql } = require("apollo-server-express");
 const linkSchema = gql`
   # directive @auth(requires: Role!) on OBJECT | FIELD_DEFINITION
 
+  directive @rateLimit(
+      max: Int,
+      window: String,
+      message: String,
+      identityArgs: [String],
+      arrayLengthField: String
+    ) on FIELD_DEFINITION
+
   scalar Date
 
   enum Role {

@@ -11,7 +11,16 @@
           <div>
             <i><h1>Create a New Group</h1></i>
           </div>
-          <ResourceSelector :me="me" label="For Resource..." @change="handleChangeResource" />
+          <ResourceSelector
+            :me="me"
+            label="For Resource..."
+            @change="handleChangeResource"
+            :selectable="
+              me.auths
+                .filter(a => ['Course', 'RegistrationSection', 'UserGroup'].includes(a.shared_resource_type))
+                .map(a => a._id)
+            "
+          />
           <q-input
             standout="bg-primary text-white q-ma-none"
             color="primary"

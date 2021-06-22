@@ -141,9 +141,7 @@ export default {
                   self.prevTime = self.vjs.currentTime();
                 }
               };
-              this.bigbrotherinstance = setInterval(function() {
-                bigbrother();
-              }, 1000);
+              self.bigbrotherinstance = setInterval(bigbrother, 1000);
               self.vjs.on("ended", function() {
                 self.submission.video_progress = self.lecture.video_length;
                 self.submission.video_percent = 1;

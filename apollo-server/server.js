@@ -19,13 +19,13 @@ mongoose.connect(process.env.DB_URL, {
 const typeDefs = require("./schema.graphql");
 const resolvers = require("./resolvers");
 const context = require("./context");
-// const schemaDirectives = require("./directives");
+const schemaDirectives = require("./directives");
 
 const server = new ApolloServer({
   schema: makeExecutableSchema({
     typeDefs,
     resolvers,
-    // schemaDirectives,
+    schemaDirectives,
     inheritResolversFromInterfaces: true
   }),
   context,

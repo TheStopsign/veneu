@@ -19,6 +19,8 @@ module.exports = gql`
   extend type Mutation {
     createVideoStreamPlayback(video_stream: ID!): VideoStreamPlayback!
     deleteVideoStreamPlayback(_id: ID!): VideoStreamPlayback!
+    watchVideoStreamPlayback(_id: ID!, seconds_in: Int!): VideoStreamPlayback!
+      @rateLimit(window: "10s", max: 10, message: "It's not a race") # Allow playback speed of ~2x
   }
 
   extend type Subscription {
