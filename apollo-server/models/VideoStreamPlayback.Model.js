@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const YTVideoStream = new mongoose.Schema(
+const VideoStreamPlayback = new mongoose.Schema(
   {
     url: {
       type: String,
@@ -13,7 +13,7 @@ const YTVideoStream = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      default: "YTVideoStream"
+      default: "VideoStreamPlayback"
     },
     assignment: {
       type: mongoose.Schema.Types.ObjectId,
@@ -52,16 +52,16 @@ const YTVideoStream = new mongoose.Schema(
     });
   })
   .pre("deleteMany", function(next) {
-    this.model.find(this.getFilter()).then(ytvs => {
-      if (ytvs.length) {
-        const ytvsids = ytvs.map(a => a._id);
-        const ytvsparents = ytvs.map(a => a.parent_resource);
+    this.model.find(this.getFilter()).then(videostreamplaybacks => {
+      if (videostreamplaybacks.length) {
+        const videostreamplaybacksids = videostreamplaybacks.map(a => a._id);
+        const videostreamplaybacksparents = videostreamplaybacks.map(a => a.parent_resource);
         Promise.all([
-          mongoose.model("Auth").deleteMany({ shared_resource: { $in: ytvsids } }),
-          mongoose.model("Assignment").deleteMany({ assignable: { $in: ytvsids } }),
+          mongoose.model("Auth").deleteMany({ shared_resource: { $in: videostreamplaybacksids } }),
+          mongoose.model("Assignment").deleteMany({ assignable: { $in: videostreamplaybacksids } }),
           mongoose
             .model(this.parent_resource_type)
-            .updateMany({ _id: { $in: ytvsparents } }, { recording: null, recording_type: null })
+            .updateMany({ _id: { $in: videostreamplaybacksparents } }, { recording: null, recording_type: null })
         ]).then(resolved => {
           next();
         });
@@ -79,7 +79,7 @@ const YTVideoStream = new mongoose.Schema(
       Promise.all([
         this.model("Auth").create({
           shared_resource: this._id,
-          shared_resource_type: "YTVideoStream",
+          shared_resource_type: "VideoStreamPlayback",
           user: this.creator._id,
           role: "INSTRUCTOR"
         }),
@@ -104,4 +104,4 @@ const YTVideoStream = new mongoose.Schema(
     }
   });
 
-module.exports = mongoose.model("YTVideoStream", YTVideoStream);
+module.exports = mongoose.model("VideoStreamPlayback", VideoStreamPlayback);

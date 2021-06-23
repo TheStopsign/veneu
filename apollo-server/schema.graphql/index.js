@@ -49,12 +49,17 @@ const linkSchema = gql`
     updated_at: Date!
   }
 
-  interface VideoStream implements Assignable {
+  interface VideoStream implements SharedResource & Assignable {
     _id: ID!
     type: String!
     assignment: Assignment
     url: String!
     duration: Int!
+    creator: User!
+    auths: [Auth!]!
+    name: String!
+    parent_resource: ParentResource
+    parent_resource_type: String
   }
 
   interface SharedResource {

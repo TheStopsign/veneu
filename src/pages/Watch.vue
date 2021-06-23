@@ -17,6 +17,7 @@
 <script>
 import "videojs-youtube/dist/Youtube.min.js";
 import videojs from "video.js";
+import vjsConstantTime from "videojs-constant-timeupdate";
 import gql from "graphql-tag";
 export default {
   name: "Watch",
@@ -32,9 +33,13 @@ export default {
       loading: true,
       error: null,
       YTVideoStream: null,
-      submission: {},
-      prevTime: 0,
-      bigbrotherinstance: null
+      videoPlayback: {
+        seconds_in: 0,
+        prevTime: 0,
+        updated_at: Date.now()
+      },
+      bigbrotherinstance: null,
+      seconds_in: 0
     };
   },
   beforeDestroy() {
@@ -46,12 +51,12 @@ export default {
     }
   },
   created() {
-    if (!this.submission.video_progress) {
-      this.submission.video_progress = 0;
-    }
-    if (!this.submission.video_percent) {
-      this.submission.video_percent = 0;
-    }
+    // if (!this.submission.video_progress) {
+    //   this.submission.video_progress = 0;
+    // }
+    // if (!this.submission.video_percent) {
+    //   this.submission.video_percent = 0;
+    // }
     this.$apollo
       .query({
         query: gql`
@@ -92,61 +97,45 @@ export default {
             },
             function() {
               self.vjs = this;
-              self.vjs.on("fullscreenchange", function() {
-                if (self.vjs.isFullscreen()) {
-                  self.vjs.exitFullscreen();
-                }
-              });
 
-              var bigbrother = () => {
-                let currTime = self.vjs.currentTime();
-                let committed = false;
-                if (currTime - self.prevTime < 1.5 && currTime >= self.prevTime) {
-                  //Considered NOT a 'seek', video is playing normally
-                  if (self.submission.video_progress < Math.floor(currTime)) {
-                    self.submission.video_progress = Math.floor(currTime);
-                    self.submission.video_percent = Math.floor(currTime) / self.lecture.video_length;
-                    if (self.submission.video_progress % 5 == 0) {
-                      self.submission.playback_submission_time = new Date();
-                    }
+              const constantTimePlugin = new vjsConstantTime(self.vjs, { interval: 1000, roundFn: Math.round });
+              const bigbrother = function() {
+                let currTime = self.vjs.currentTime(),
+                  dPlayTime = currTime - self.videoPlayback.prevTime,
+                  dRealTime = (Date.now() - self.videoPlayback.updated_at) / 1000;
+                const MOE = 2.25;
+                if (currTime > self.videoPlayback.seconds_in) {
+                  if (dPlayTime / dRealTime > MOE) {
+                    self.vjs.currentTime(Math.max(self.videoPlayback.prevTime - 1, 0));
+                    self.videoPlayback.updated_at = Date.now();
+                  } else {
+                    //WATCH MUTATION
+                    self.videoPlayback.prevTime = currTime;
+                    self.videoPlayback.updated_at = Date.now();
+                    self.videoPlayback.seconds_in = currTime;
                   }
-                  // for (let i = 0; i < self.polls.length; i++) {
-                  //   if (currTime > self.polls[i].timestamp) {
-                  //     //if there is not an answer for the code, and there is not an answer for the timestamp, show the poll
-                  //     if (
-                  //       !(
-                  //         (self.polls[i].code && self.submission.student_poll_answers[self.polls[i].code]) ||
-                  //         (self.polls[i].timestamp && self.submission.student_poll_answers[self.polls[i].timestamp])
-                  //       )
-                  //     ) {
-                  //       self.vjs.currentTime(self.polls[i].timestamp);
-                  //       self.vjs.pause();
-                  //       // self.startPoll(i);
-                  //       committed = true;
-                  //     }
-                  //   }
-                  // }
                 } else {
-                  //Considered a 'seek'
-                  if (currTime > self.submission.video_progress) {
-                    self.vjs.currentTime(self.prevTime);
-                    committed = true;
-                  } else if (currTime < self.prevTime) {
-                    for (let i = 0; i < self.polls.length; i++) {
-                      self.hidePoll(i);
-                    }
-                  }
-                }
-                if (!committed) {
-                  self.prevTime = self.vjs.currentTime();
+                  self.videoPlayback.prevTime = currTime;
+                  self.videoPlayback.updated_at = Date.now();
                 }
               };
-              self.bigbrotherinstance = setInterval(bigbrother, 1000);
-              self.vjs.on("ended", function() {
-                self.submission.video_progress = self.lecture.video_length;
-                self.submission.video_percent = 1;
-                self.submission.playback_submission_time = new Date();
-              });
+              if (self.YTVideoStream.assignment) {
+                self.vjs.on("play", function() {
+                  self.videoPlayback.updated_at = Date.now();
+                });
+                self.vjs.on("seeked", bigbrother);
+                self.vjs.on("constant-timeupdate", bigbrother);
+                self.vjs.on("fullscreenchange", function() {
+                  if (self.vjs.isFullscreen()) {
+                    self.vjs.exitFullscreen();
+                  }
+                });
+                self.vjs.on("ended", function() {
+                  // self.submission.video_progress = self.lecture.video_length;
+                  // self.submission.video_percent = 1;
+                  // self.submission.playback_submission_time = new Date();
+                });
+              }
             }
           );
         });
