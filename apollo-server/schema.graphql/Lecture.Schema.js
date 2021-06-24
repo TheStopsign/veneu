@@ -16,7 +16,7 @@ module.exports = gql`
   }
 
   extend type Query {
-    lecture(_id: ID!): Lecture! @rateLimit(window: "5s", max: 1, message: "TOO MUCH")
+    lecture(_id: ID!): Lecture!
     lectures: [Lecture!]!
   }
 

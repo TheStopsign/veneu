@@ -22,7 +22,7 @@ module.exports = gql`
     createVideoStreamPlayback(video_stream: ID!, video_stream_type: String!): VideoStreamPlayback!
     deleteVideoStreamPlayback(_id: ID!): VideoStreamPlayback!
     watchVideoStreamPlayback(_id: ID!, seconds_watched: Int!): VideoStreamPlayback!
-      @rateLimit(window: "10s", max: 10, message: "Rate Limit Reached")
+      @rateLimit(window: "10s", max: 11, message: "Rate Limit Reached")
   }
 
   extend type Subscription {
