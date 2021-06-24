@@ -177,28 +177,33 @@ export default {
                   self.videoPlayback.prevTime = currTime;
                   self.videoPlayback.updated_at = Date.now();
                   self.videoPlayback.seconds_watched = currTime;
-                  self.$apollo.mutate({
-                    mutation: gql`
-                      mutation watchVideoStreamPlayback($_id: ID!, $seconds_watched: Int!) {
-                        watchVideoStreamPlayback(_id: $_id, seconds_watched: $seconds_watched) {
-                          _id
-                          type
-                          video_stream {
+                  self.$apollo
+                    .mutate({
+                      mutation: gql`
+                        mutation watchVideoStreamPlayback($_id: ID!, $seconds_watched: Int!) {
+                          watchVideoStreamPlayback(_id: $_id, seconds_watched: $seconds_watched) {
                             _id
                             type
+                            video_stream {
+                              _id
+                              type
+                            }
+                            video_stream_type
+                            seconds_watched
+                            updated_at
+                            created_at
                           }
-                          video_stream_type
-                          seconds_watched
-                          updated_at
-                          created_at
                         }
-                      }
-                    `,
-                    variables: {
-                      _id: self.videoPlayback._id,
-                      seconds_watched: parseInt(self.videoPlayback.seconds_watched),
-                    },
-                  });
+                      `,
+                      variables: {
+                        _id: self.videoPlayback._id,
+                        seconds_watched: parseInt(self.videoPlayback.seconds_watched),
+                      },
+                    })
+                    .catch((e) => {
+                      self.vjs.currentTime(Math.max(self.videoPlayback.prevTime - 1, 0));
+                      self.videoPlayback.updated_at = Date.now();
+                    });
                 }
               } else {
                 self.videoPlayback.prevTime = currTime;
