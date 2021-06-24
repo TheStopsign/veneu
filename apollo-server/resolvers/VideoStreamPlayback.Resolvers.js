@@ -54,7 +54,6 @@ module.exports = {
           dRealTime = (Date.now() - new Date(videoStreamPlayback.updated_at).getTime()) / 1000;
         const MOE = 2.25;
         if (seconds_watched > videoStreamPlayback.seconds_watched) {
-          console.log(dPlayTime / dRealTime);
           if (dPlayTime / dRealTime > MOE) {
             throw new Error("Too fast");
           } else {
