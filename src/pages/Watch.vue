@@ -205,7 +205,7 @@ export default {
                 self.videoPlayback.updated_at = Date.now();
               }
             };
-            if (self.YTVideoStream.assignment) {
+            if (self.YTVideoStream.assignment && self.YTVideoStream.duration - self.videoPlayback.seconds_watched > 5) {
               self.vjs.on("play", function () {
                 self.videoPlayback.updated_at = Date.now();
               });
