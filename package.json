@@ -6,14 +6,14 @@
     "serve": "vue-cli-service apollo:schema:generate && vue-cli-service serve --prefix .",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "apollo": "node apollo-server/server.js",
+    "apollo": "vue-cli-service apollo:schema:generate && node ./apollo-server/server.js",
     "apollo:dev": "vue-cli-service apollo:schema:generate && nodemon ./apollo-server/server.js",
     "apollo:schema:generate": "vue-cli-service apollo:schema:generate",
     "apollo:schema:publish": "vue-cli-service apollo:schema:publish",
     "db": "sudo killall mongod;mongod",
     "db:clear": "node apollo-server/dbclear.js",
     "db:seed": "node apollo-server/dbseed.js",
-    "start": "node apollo-server/server.js"
+    "start": "npm run apollo"
   },
   "dependencies": {
     "@quasar/extras": "^1.10.7",
