@@ -5,5 +5,5 @@ module.exports = {
   // auth: AuthDirective,
   // authorized: AuthDirective,
   // authenticated: AuthDirective,
-  rateLimit: createRateLimitDirective({ identifyContext: ctx => (ctx.requester ? ctx.requester._id : null) })
+  rateLimit: createRateLimitDirective({ identifyContext: (ctx) => (ctx.requester ? ctx.requester._id : null) }),
 };
