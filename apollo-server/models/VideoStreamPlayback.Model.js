@@ -20,6 +20,11 @@ const VideoStreamPlayback = new mongoose.Schema(
       type: String,
       required: true,
     },
+    creator: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     seconds_watched: {
       type: Number,
       required: true,
