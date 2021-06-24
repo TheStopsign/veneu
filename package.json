@@ -11,9 +11,9 @@
     "apollo:schema:generate": "vue-cli-service apollo:schema:generate",
     "apollo:schema:publish": "vue-cli-service apollo:schema:publish",
     "db": "sudo killall mongod;mongod",
-    "db:clear": "node apollo-server/dbclear.js",
-    "db:seed": "node apollo-server/dbseed.js",
-    "start": "node apollo-server/server.js"
+    "db:clear": "node ./apollo-server/dbclear.js",
+    "db:seed": "node ./apollo-server/dbseed.js",
+    "start": "node ./apollo-server/server.js"
   },
   "dependencies": {
     "@quasar/extras": "^1.10.7",
