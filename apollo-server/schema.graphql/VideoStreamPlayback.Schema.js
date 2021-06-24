@@ -6,21 +6,23 @@ module.exports = gql`
     type: String!
     submission: Submission
     video_stream: VideoStream!
-    seconds_in: Int!
+    video_stream_type: String!
+    creator: User!
+    seconds_watched: Int!
     created_at: Date!
     updated_at: Date!
   }
 
   extend type Query {
-    videoStreamPlayback(_id: ID!): VideoStreamPlayback!
+    videoStreamPlayback(video_stream: ID!): VideoStreamPlayback
     videoStreamPlaybacks: [VideoStreamPlayback!]!
   }
 
   extend type Mutation {
-    createVideoStreamPlayback(video_stream: ID!): VideoStreamPlayback!
+    createVideoStreamPlayback(video_stream: ID!, video_stream_type: String!): VideoStreamPlayback!
     deleteVideoStreamPlayback(_id: ID!): VideoStreamPlayback!
-    watchVideoStreamPlayback(_id: ID!, seconds_in: Int!): VideoStreamPlayback!
-      @rateLimit(window: "10s", max: 10, message: "It's not a race") # Allow playback speed of ~2x
+    watchVideoStreamPlayback(_id: ID!, seconds_watched: Int!): VideoStreamPlayback!
+      @rateLimit(window: "10s", max: 10, message: "Rate Limit Reached")
   }
 
   extend type Subscription {

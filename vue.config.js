@@ -1,18 +1,18 @@
 module.exports = {
   devServer: {
-    progress: false
+    progress: false,
   },
   pluginOptions: {
     apollo: {
       enableMocks: false,
       enableEngine: false,
-      lintGQL: false
+      lintGQL: false,
     },
     quasar: {
       importStrategy: "kebab",
-      rtlSupport: false
-    }
+      rtlSupport: false,
+    },
   },
 
-  transpileDependencies: ["quasar"]
+  transpileDependencies: ["quasar"],
 };

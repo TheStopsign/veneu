@@ -3,7 +3,7 @@ const { AuthenticationError, ForbiddenError } = require("apollo-server-express")
 const eventName = {
   YTVIDEOSTREAM_CREATED: "YTVIDEOSTREAM_CREATED",
   YTVIDEOSTREAM_UPDATED: "YTVIDEOSTREAM_UPDATED",
-  YTVIDEOSTREAM_DELETED: "YTVIDEOSTREAM_DELETED"
+  YTVIDEOSTREAM_DELETED: "YTVIDEOSTREAM_DELETED",
 };
 
 module.exports = {
@@ -15,7 +15,7 @@ module.exports = {
     YTVideoStreams: (parent, args, { requester, models: { YTVideoStream } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return YTVideoStream.find();
-    }
+    },
   },
   Mutation: {
     createYTVideoStream: (
@@ -31,16 +31,16 @@ module.exports = {
         parent_resource,
         parent_resource_type,
         creator: requester._id,
-        duration
-      }).then(ytVideoStream => {
+        duration,
+      }).then((ytVideoStream) => {
         if (assignment) {
           return Assignment.create({
             assignable: ytVideoStream._id,
             assignable_type: "YTVideoStream",
             hidden_until,
             due,
-            points
-          }).then(assignment => {
+            points,
+          }).then((assignment) => {
             return ytVideoStream;
           });
         } else {
@@ -51,30 +51,30 @@ module.exports = {
     deleteYTVideoStream: (parent, { _id }, { requester, models: { YTVideoStream } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return YTVideoStream.findOne({ _id })
-        .then(ytVideoStream => ytVideoStream.deleteOne())
-        .then(ytVideoStream => {
+        .then((ytVideoStream) => ytVideoStream.deleteOne())
+        .then((ytVideoStream) => {
           return global.pubsub
             .publish(eventName.YTVIDEOSTREAM_DELETED, { ytVideoStreamDeleted: ytVideoStream })
-            .then(done => {
+            .then((done) => {
               return ytVideoStream;
             });
         });
-    }
+    },
   },
   Subscription: {
     YTVideoStreamCreated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.YTVIDEOSTREAM_CREATED])
+      subscribe: () => global.pubsub.asyncIterator([eventName.YTVIDEOSTREAM_CREATED]),
     },
     YTVideoStreamUpdated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.YTVIDEOSTREAM_UPDATED])
+      subscribe: () => global.pubsub.asyncIterator([eventName.YTVIDEOSTREAM_UPDATED]),
     },
     YTVideoStreamDeleted: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.YTVIDEOSTREAM_DELETED])
-    }
+      subscribe: () => global.pubsub.asyncIterator([eventName.YTVIDEOSTREAM_DELETED]),
+    },
   },
   YTVideoStream: {
     assignment: (parent, args, { models: { Assignment } }, info) => {
       return Assignment.findOne({ assignable: parent._id });
-    }
-  }
+    },
+  },
 };

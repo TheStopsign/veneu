@@ -1,5 +1,5 @@
 const { SchemaDirectiveVisitor, ForbiddenError } = require("apollo-server-express");
-const { defaultFieldResolver } = require("graphql");
+// const { defaultFieldResolver } = require("graphql");
 
 const hasRoleForResource = (requiredRole, resourceType, resourceId) => {
   return true;

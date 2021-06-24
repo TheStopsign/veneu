@@ -4,12 +4,12 @@ const linkSchema = gql`
   # directive @auth(requires: Role!) on OBJECT | FIELD_DEFINITION
 
   directive @rateLimit(
-      max: Int,
-      window: String,
-      message: String,
-      identityArgs: [String],
-      arrayLengthField: String
-    ) on FIELD_DEFINITION
+    max: Int
+    window: String
+    message: String
+    identityArgs: [String]
+    arrayLengthField: String
+  ) on FIELD_DEFINITION
 
   scalar Date
 
@@ -128,5 +128,5 @@ module.exports = [
   require("./User.Schema"),
   require("./UserGroup.Schema"),
   require("./VideoStreamPlayback.Schema"),
-  require("./YTVideoStream.Schema")
+  require("./YTVideoStream.Schema"),
 ];

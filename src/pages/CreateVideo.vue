@@ -16,7 +16,7 @@
         :me="me"
         label="For Lecture..."
         :selected="parent_resource"
-        :selectable="me.auths.filter(a => a.shared_resource_type === 'Lecture').map(a => a._id)"
+        :selectable="me.auths.filter((a) => a.shared_resource_type === 'Lecture').map((a) => a._id)"
         @change="handleChangeLecture"
         class="q-mt-lg q-mb-lg"
       />
@@ -47,9 +47,7 @@
       </div>
 
       <div class="q-mb-md q-px-md full-width" v-if="is_assignment">
-        <div class="row full-width justify-center q-mt-md">
-          Watch by...
-        </div>
+        <div class="row full-width justify-center q-mt-md">Watch by...</div>
         <div class="row full-width q-mb-lg">
           <q-date
             v-model="assignment.due"
@@ -74,9 +72,7 @@
           label="Points"
           placeholder="e.g. 20"
         />
-        <div class="row full-width justify-center q-mt-md">
-          Hidden until...
-        </div>
+        <div class="row full-width justify-center q-mt-md">Hidden until...</div>
         <div class="row full-width">
           <q-date
             v-model="assignment.hidden_until"
@@ -109,10 +105,10 @@ import ResourceSelector from "../components/ResourceSelector";
 export default {
   name: "CreateRegistrationSection",
   props: {
-    me: Object
+    me: Object,
   },
   components: {
-    ResourceSelector
+    ResourceSelector,
   },
   data() {
     return {
@@ -126,9 +122,9 @@ export default {
       is_assignment: false,
       assignment: {
         hidden_until: null,
-        due: null
+        due: null,
       },
-      points: null
+      points: null,
     };
   },
   beforeDestroy() {
@@ -151,7 +147,7 @@ export default {
             if (self.vjs) {
               self.vjs.src({
                 type: "video/youtube",
-                src: self.url
+                src: self.url,
               });
               self.vjs.pause();
               self.duration = self.vjs.duration();
@@ -164,11 +160,11 @@ export default {
                   sources: [{ src: self.url, type: "video/youtube" }],
                   autoplay: true,
                   controls: true,
-                  forceSSL: true
+                  forceSSL: true,
                 },
-                function() {
+                function () {
                   self.vjs = this;
-                  self.vjs.one("loadedmetadata", function() {
+                  self.vjs.one("loadedmetadata", function () {
                     self.vjs.pause();
                     self.duration = self.vjs.duration();
                     console.log("START - " + self.duration);
@@ -197,7 +193,7 @@ export default {
         return false;
       }
       if (
-        !this.me.auths.find(a => a.shared_resource._id == this.parent_resource && a.shared_resource_type == "Lecture")
+        !this.me.auths.find((a) => a.shared_resource._id == this.parent_resource && a.shared_resource_type == "Lecture")
       ) {
         return false;
       }
@@ -207,16 +203,19 @@ export default {
       if (!this.url.length || !this.yt_valid) {
         return false;
       }
-      if (!this.duration > 0) {
-        return false;
+      if (this.is_assignment) {
+        if (!this.duration > 0) {
+          return false;
+        }
+        if (!this.assignment.due) {
+          return false;
+        }
       }
-      if (!this.assignment.due) {
-        return false;
-      }
+
       return true;
     },
     toTitleCase(str) {
-      return str.replace(/\w\S*/g, function(txt) {
+      return str.replace(/\w\S*/g, function (txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
       });
     },
@@ -271,26 +270,26 @@ export default {
               hidden_until: this.assignment.hidden_until,
               due: this.assignment.due,
               points: parseFloat(this.points),
-              duration: this.duration
-            }
+              duration: this.duration,
+            },
           })
           .then(({ data: { createYTVideoStream } }) => {
             this.$router.push({ name: "Dashboard" });
           })
-          .catch(e => {
+          .catch((e) => {
             this.$q.notify({
               progress: true,
               message: "Issue creating video, try again " + e,
               icon: "error",
-              color: "negative"
+              color: "negative",
             });
           });
       }
     },
     handleChangeLecture(parent_resource) {
       this.parent_resource = parent_resource;
-    }
-  }
+    },
+  },
 };
 </script>
 
