@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service apollo:schema:generate && vue-cli-service serve --prefix .",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service apollo:schema:generate && vue-cli-service build",
     "lint": "vue-cli-service lint",
     "apollo": "vue-cli-service apollo:schema:generate && node ./apollo-server/server.js",
     "apollo:dev": "vue-cli-service apollo:schema:generate && nodemon ./apollo-server/server.js",
