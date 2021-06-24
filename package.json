@@ -13,7 +13,7 @@
     "db": "sudo killall mongod;mongod",
     "db:clear": "node apollo-server/dbclear.js",
     "db:seed": "node apollo-server/dbseed.js",
-    "start": "node server.js"
+    "start": "node apollo-server/server.js"
   },
   "dependencies": {
     "@quasar/extras": "^1.10.7",
