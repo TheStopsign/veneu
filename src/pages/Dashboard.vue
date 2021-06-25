@@ -1,8 +1,8 @@
 <template>
-  <q-page id="dashboard" class="q-pb-md" style="height: 100%;">
-    <div v-if="events" style="position: absolute; height: 100%; width: 100%; display: flex; flex-direction: column;">
+  <q-page id="dashboard" class="q-pb-md" style="height: 100%">
+    <div v-if="events" style="position: absolute; height: 100%; width: 100%; display: flex; flex-direction: column">
       <q-tabs
-        style="display: flex; flex-direction: row; width: 100%;"
+        style="display: flex; flex-direction: row; width: 100%"
         color="primary"
         v-model="tab"
         align="justify"
@@ -14,13 +14,13 @@
         <q-tab name="timeline" label="" icon="timeline" class="q-mx-sm q-mt-md q-mb-sm" />
         <q-tab name="resource" label="" icon="account_tree" class="q-mr-md q-ml-sm q-mt-md q-mb-sm" />
       </q-tabs>
-      <q-tab-panels v-model="tab" animated style="display: flex; flex-direction: column; height: 100%; width: 100%;">
+      <q-tab-panels v-model="tab" animated style="display: flex; flex-direction: column; height: 100%; width: 100%">
         <q-tab-panel name="calendar" class="q-pt-sm">
-          <div class="row full-width justify-between items-center ">
+          <div class="row full-width justify-between items-center">
             <q-btn flat label="Prev" @click="calendarPrev" />
             <q-btn flat label="Next" @click="calendarNext" />
           </div>
-          <div class="neu-convex q-mt-md" style="display: flex; flex-direction: column; height: 100%; width: 100%;">
+          <div class="neu-convex q-mt-md" style="display: flex; flex-direction: column; height: 100%; width: 100%">
             <q-calendar
               ref="calendar"
               v-model="selectedDate"
@@ -41,7 +41,7 @@
                     <q-badge
                       v-if="!event.time"
                       :key="index"
-                      style="width: 100%; cursor: pointer;"
+                      style="width: 100%; cursor: pointer"
                       :class="badgeClasses(event, 'header')"
                       :style="badgeStyles(event, 'header')"
                     >
@@ -76,7 +76,11 @@
                 </template>
               </template>
 
-              <template #day-container="{ /* timestamp */ }">
+              <template
+                #day-container="{
+                  /* timestamp */
+                }"
+              >
                 <div class="week-view-current-time-indicator" :style="style" />
                 <div class="week-view-current-time-line" :style="style" />
               </template>
@@ -87,12 +91,10 @@
         <q-tab-panel name="timeline" class="q-pt-sm q-px-none">
           <div
             class="q-px-md q-my-none"
-            style="display: flex; flex-direction: column; height: 100%; width: 100%; overflow: auto;"
+            style="display: flex; flex-direction: column; height: 100%; width: 100%; overflow: auto"
           >
             <q-timeline :layout="layout" color="primary" v-if="events">
-              <q-timeline-entry class="text-primary" heading>
-                Timeline
-              </q-timeline-entry>
+              <q-timeline-entry class="text-primary" heading> Timeline </q-timeline-entry>
 
               <q-timeline-entry
                 :title="evt.type + ' - ' + evt.name"
@@ -114,7 +116,7 @@
         <q-tab-panel name="resource" class="q-pt-sm">
           <div
             class="neu-convex full-width q-pa-md"
-            style="display: flex; flex-direction: column; height: 100%; width: 100%; overflow: auto;"
+            style="display: flex; flex-direction: column; height: 100%; width: 100%; overflow: auto"
           >
             <div class="text-h6">Resource View</div>
             Coming soon
@@ -151,7 +153,7 @@ function textToRgb(color) {
     const rgb = {
       r: Math.min(255, parseInt(m[2], 10)),
       g: Math.min(255, parseInt(m[3], 10)),
-      b: Math.min(255, parseInt(m[4], 10))
+      b: Math.min(255, parseInt(m[4], 10)),
     };
     if (m[1]) {
       rgb.a = Math.min(1, parseFloat(m[5]));
@@ -199,7 +201,7 @@ function luminosity(color) {
 export default {
   name: "Dashboard",
   props: {
-    me: Object
+    me: Object,
   },
   data() {
     return {
@@ -207,7 +209,7 @@ export default {
       intervalId: null,
       timeStartPos: 0,
       selectedDate: "",
-      events: []
+      events: [],
     };
   },
   created() {
@@ -224,10 +226,10 @@ export default {
               type
             }
           }
-        `
+        `,
       })
       .then(({ data: { calendarEvents } }) => {
-        calendarEvents.forEach(function(evt) {
+        calendarEvents.forEach(function (evt) {
           self.events.push({
             ...evt,
             title: evt.name,
@@ -235,12 +237,12 @@ export default {
             time: date.formatDate(evt.start, "HH:mm"),
             duration: (new Date(evt.end) - new Date(evt.start)) / 1000 / 60,
             bgcolor: "primary",
-            icon: "class"
+            icon: "class",
           });
         });
         this.setTime();
       })
-      .catch(e => e);
+      .catch((e) => e);
   },
   beforeDestroy() {
     clearInterval(this.intervalId);
@@ -249,17 +251,17 @@ export default {
     // convert the events into a map of lists keyed by date
     eventsMap() {
       const map = {};
-      this.events.forEach(event => (map[event.date] = map[event.date] || []).push(event));
+      this.events.forEach((event) => (map[event.date] = map[event.date] || []).push(event));
       return map;
     },
     style() {
       return {
-        top: this.timeStartPos + "px"
+        top: this.timeStartPos + "px",
       };
     },
     layout() {
       return this.$q.screen.lt.sm ? "dense" : this.$q.screen.lt.md ? "comfortable" : "loose";
-    }
+    },
   },
   methods: {
     onClickInterval({ event }) {
@@ -273,7 +275,7 @@ export default {
       return date.formatDate(d, "MMM Do, YYYY @ h:mma");
     },
     getSorted(vals) {
-      return [...vals].sort(function(a, b) {
+      return [...vals].sort(function (a, b) {
         return new Date(a.start) - new Date(b.start);
       });
     },
@@ -301,7 +303,7 @@ export default {
         [`text-white bg-${event.bgcolor}`]: !cssColor,
         "full-width": !isHeader && (!event.side || event.side === "full"),
         "left-side": !isHeader && event.side === "left",
-        "right-side": !isHeader && event.side === "right"
+        "right-side": !isHeader && event.side === "right",
       };
     },
 
@@ -372,8 +374,8 @@ export default {
       this.currentDate = p.date;
       this.currentTime = p.time;
       this.timeStartPos = this.$refs.calendar.timeStartPos(this.currentTime);
-    }
-  }
+    },
+  },
 };
 </script>
 

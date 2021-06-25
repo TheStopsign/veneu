@@ -11,8 +11,8 @@
                 id="headertoolbar"
                 :class="
                   'q-pa-none q-pr-sm ' +
-                    (data.me ? 'neu-convex ' : '') +
-                    ($q.platform.is.mobile ? 'q-mt-sm' : 'q-mt-md')
+                  (data.me ? 'neu-convex ' : '') +
+                  ($q.platform.is.mobile ? 'q-mt-sm' : 'q-mt-md')
                 "
               >
                 <q-btn
@@ -188,9 +188,7 @@
                           >
                             {{ getFormattedDate(checkin.created_at) }}
                           </q-item>
-                          <q-item v-if="!data.checkins.length" class="row items-center justify-center">
-                            None
-                          </q-item>
+                          <q-item v-if="!data.checkins.length" class="row items-center justify-center"> None </q-item>
                         </q-list>
                       </template>
                     </ApolloQuery>
@@ -258,31 +256,30 @@ import gql from "graphql-tag";
 import VeneuLogo from "./components/VeneuLogo";
 import CourseList from "./components/CourseList";
 import "quasar/icon-set/fontawesome-v5";
-// import "./assets/veneu.css";
 export default {
   name: "app",
   components: {
     VeneuLogo,
-    CourseList
+    CourseList,
   },
   data() {
     return {
       left: false,
       searchString: "",
-      confirmLogout: false
+      confirmLogout: false,
     };
   },
   methods: {
     canCreateSections(auths) {
       return (
-        auths.filter(a => a.shared_resource_type == "Course" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role))
+        auths.filter((a) => a.shared_resource_type == "Course" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role))
           .length > 0
       );
     },
     canCreateGroups(auths) {
       return (
         auths.filter(
-          a =>
+          (a) =>
             ["Course", "RegistrationSection"].includes(a.shared_resource_type) &&
             ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
         ).length > 0
@@ -291,7 +288,7 @@ export default {
     canCreateLectures(auths) {
       return (
         auths.filter(
-          a =>
+          (a) =>
             ["Course", "RegistrationSection", "UserGroup"].includes(a.shared_resource_type) &&
             ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
         ).length > 0
@@ -300,7 +297,7 @@ export default {
     canCreateVideos(auths) {
       return (
         auths.filter(
-          a =>
+          (a) =>
             ["Course", "RegistrationSection", "UserGroup", "Lecture"].includes(a.shared_resource_type) &&
             ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
         ).length > 0
@@ -341,17 +338,17 @@ export default {
                 _id
               }
             }
-          `
+          `,
         })
         .then(({ data }) => {
           this.$router.push({ name: "CheckinShow", params: { _id: data.createCheckin._id } });
         })
-        .catch(e => {
+        .catch((e) => {
           this.$q.notify({
             progress: true,
             message: "Issue creating a checkin, try again " + e,
             icon: "error",
-            color: "negative"
+            color: "negative",
           });
         });
     },
@@ -368,8 +365,8 @@ export default {
     },
     refresh(on) {
       location.reload();
-    }
-  }
+    },
+  },
 };
 </script>
 
