@@ -25,7 +25,7 @@ import VeneuLogo from "../components/VeneuLogo";
 export default {
   name: "Landing",
   components: {
-    VeneuLogo
+    VeneuLogo,
   },
   methods: {
     handleGoLogin() {
@@ -33,8 +33,8 @@ export default {
     },
     handleGoSignup() {
       this.$router.push({ name: "Signup" });
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -13,7 +13,7 @@ mongoose.connect(process.env.DB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
-  useFindAndModify: false
+  useFindAndModify: false,
 });
 
 const typeDefs = require("./schema.graphql");
@@ -26,12 +26,12 @@ const server = new ApolloServer({
     typeDefs,
     resolvers,
     schemaDirectives,
-    inheritResolversFromInterfaces: true
+    inheritResolversFromInterfaces: true,
   }),
   context,
   introspection: process.env.NODE_ENV === "production" ? false : true,
   playground: process.env.NODE_ENV === "production" ? false : true,
-  tracing: process.env.NODE_ENV === "production" ? false : true
+  tracing: process.env.NODE_ENV === "production" ? false : true,
 });
 
 const app = express();
@@ -39,7 +39,7 @@ app.use(cors());
 
 if (process.env.NODE_ENV === "production") {
   app.enable("trust proxy");
-  app.use(function(request, response, next) {
+  app.use(function (request, response, next) {
     if (!request.secure) {
       return response.redirect("https://" + request.headers.host + request.url);
     }
