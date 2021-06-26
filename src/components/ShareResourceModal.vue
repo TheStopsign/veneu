@@ -31,8 +31,8 @@
                 />
                 <ApolloMutation
                   :mutation="
-                    gql => gql`
-                      mutation(
+                    (gql) => gql`
+                      mutation (
                         $emailInput: String!
                         $roleSelection: Role!
                         $resourceId: ID!
@@ -53,14 +53,14 @@
                     emailInput,
                     roleSelection,
                     resourceId: resourceid,
-                    sharedResourceType
+                    sharedResourceType,
                   }"
                 >
                   <template v-slot="{ mutate, loading }">
                     <q-btn
                       v-close-popup
                       color="primary"
-                      class="q-ml-md q-my-sm"
+                      class="q-ml-md q-my-none"
                       @click="mutate()"
                       label="Share"
                       icon-right="send"
@@ -103,7 +103,7 @@ export default {
   props: {
     resourceid: String,
     resourcetype: String,
-    me: Object
+    me: Object,
   },
   data() {
     return {
@@ -118,18 +118,19 @@ export default {
           name: "name",
           label: "Name",
           align: "left",
-          field: row => row.user.name,
-          sortable: true
+          field: (row) => row.user.name,
+          sortable: true,
         },
         { name: "role", label: "Role", field: "role", sortable: true, align: "center" },
-        { name: "email", label: "Email", field: row => row.user.email, sortable: true }
+        { name: "email", label: "Email", field: (row) => row.user.email, sortable: true },
       ],
-      tabledata: []
+      tabledata: [],
     };
   },
   methods: {
     isValidEmail(val) {
-      const emailPattern = /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
+      const emailPattern =
+        /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
       if (emailPattern.test(val)) {
         return true;
       } else {
@@ -145,7 +146,7 @@ export default {
     clearForm() {
       this.emailInput = "";
       this.roleSelection = "None";
-    }
-  }
+    },
+  },
 };
 </script>

@@ -106,7 +106,7 @@ body,
   }
 }
 
-.q-btn,
+.q-btn:not(.bg-primary),
 .q-time__container-child,
 .q-dialog__inner > div,
 .q-menu,
@@ -151,9 +151,6 @@ body,
 .q-field__control,
 .q-dialog__inner > div {
   border-radius: 1rem !important;
-  &.bg-primary {
-    animation: grow-in-button 0.5s forwards !important;
-  }
 }
 
 .q-btn-group {
@@ -205,6 +202,14 @@ body,
   animation: grow-in-input 0.5s forwards !important;
 }
 
+// .bg-primary {
+//   padding: 0.5rem;
+//   border-radius: 0.25;
+// }
+// .bg-primary .q-btn__wrapper {
+//   animation: grow-in-button-blue 0.5s forwards !important;
+// }
+
 .q-focusable:active[disabled] .q-focus-helper,
 .q-hoverable:active[disabled] {
   transition: none !important;
@@ -242,6 +247,20 @@ h1 {
   &.q-btn:hover:not([disabled]),
   &.q-btn:focus:not([disabled]) {
     animation: grow-in-input-red 0.5s forwards !important;
+  }
+}
+
+.bg-primary {
+  background-color: var(--veneu-blue) !important;
+  padding: 0.5rem;
+
+  .q-btn__wrapper {
+    animation: grow-in-button-blue 0.5s forwards !important;
+  }
+
+  &.q-btn:not([disabled]) .q-btn__wrapper:hover,
+  &.q-btn:not([disabled]) .q-btn__wrapper:focus {
+    animation: grow-in-input-blue 0.5s forwards !important;
   }
 }
 
@@ -312,7 +331,7 @@ h1 {
     position: relative !important;
     margin: 8px !important;
   }
-  .q-active-date * {
+  .q-active-date .q-btn__content {
     color: var(--veneu-background) !important;
   }
   .q-calendar-daily__head-day.q-active-date .q-btn__wrapper::before {

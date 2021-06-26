@@ -45,7 +45,8 @@
       .week-view-current-time-line {
         border-color: var(--veneu-red) !important;
       }
-      .q-active-date * {
+      .q-active-date,
+      .q-active-date .q-btn__content {
         color: var(--veneu-light) !important;
       }
     }
@@ -76,6 +77,10 @@
     -0.25rem -0.25rem 0.25rem var(--veneu-red-lowlight);
   --red-field-shadow: inset 0.25rem 0.25rem 0.25rem var(--veneu-red-highlight),
     inset -0.25rem -0.25rem 0.25rem var(--veneu-red-lowlight);
+  --blue-button-shadow: 0.25rem 0.25rem 0.25rem var(--veneu-blue-highlight),
+    -0.25rem -0.25rem 0.25rem var(--veneu-blue-lowlight);
+  --blue-field-shadow: inset 0.25rem 0.25rem 0.25rem var(--veneu-blue-highlight),
+    inset -0.25rem -0.25rem 0.25rem var(--veneu-blue-lowlight);
 
   /* --elevated-shadow: 0.25rem 0.25rem 0.75rem var(--veneu-light-highlight), -0.25rem -0.25rem 0.75rem #ffffff;
   --button-shadow: 0.25rem 0.25rem 0.75rem var(--veneu-light-highlight), -0.25rem -0.25rem 0.75rem #ffffff;
@@ -217,6 +222,17 @@ label {
   }
 }
 
+@keyframes grow-in-button-blue {
+  from {
+    box-shadow: none;
+    -moz-box-shadow: none;
+  }
+  to {
+    box-shadow: var(--blue-button-shadow);
+    -moz-box-shadow: var(--blue-button-shadow);
+  }
+}
+
 @keyframes grow-in-input {
   from {
     box-shadow: none;
@@ -236,6 +252,17 @@ label {
   to {
     box-shadow: var(--red-field-shadow);
     -moz-box-shadow: var(--red-field-shadow);
+  }
+}
+
+@keyframes grow-in-input-blue {
+  from {
+    box-shadow: none;
+    -moz-box-shadow: none;
+  }
+  to {
+    box-shadow: var(--blue-field-shadow);
+    -moz-box-shadow: var(--blue-field-shadow);
   }
 }
 
