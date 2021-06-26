@@ -1,0 +1,10 @@
+query tickets {
+  tickets {
+    _id
+    code
+    checkin {
+      _id
+      created_at
+    }
+  }
+}

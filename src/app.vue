@@ -172,7 +172,7 @@
                     :content-inset-level="0"
                     expand-icon-class="text-primary"
                   >
-                    <ApolloQuery :query="require('./graphql/Checkins.gql')">
+                    <ApolloQuery :query="require('./graphql/HostedCheckins.gql')">
                       <template slot-scope="{ result: { loading, error, data } }">
                         <div v-if="error">Error...</div>
                         <div v-else-if="loading">Loading...</div>
@@ -198,9 +198,22 @@
                     :content-inset-level="0"
                     expand-icon-class="text-primary"
                   >
-                    <q-item class="items-center justify-center">
-                      <em>Coming soon</em>
-                    </q-item>
+                    <ApolloQuery :query="require('./graphql/AttendedCheckins.gql')">
+                      <template slot-scope="{ result: { loading, error, data } }">
+                        <div v-if="error">Error...</div>
+                        <div v-else-if="loading">Loading...</div>
+                        <q-list v-else-if="data">
+                          <q-item
+                            class="row items-center justify-center"
+                            v-for="ticket in data.tickets"
+                            :key="ticket._id"
+                          >
+                            {{ getFormattedDate(ticket.checkin.created_at) }}
+                          </q-item>
+                          <q-item v-if="!data.tickets.length" class="row items-center justify-center"> None </q-item>
+                        </q-list>
+                      </template>
+                    </ApolloQuery>
                   </q-expansion-item>
                 </q-list>
               </q-expansion-item>

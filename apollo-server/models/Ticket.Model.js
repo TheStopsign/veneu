@@ -4,54 +4,54 @@ const Ticket = new mongoose.Schema(
   {
     first_name: {
       type: String,
-      required: true
+      required: true,
     },
     last_name: {
       type: String,
-      required: true
+      required: true,
     },
     user: {
       type: String,
-      required: true
+      required: true,
     },
     code: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
     },
     checkin: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Checkin",
-      required: true
-    }
+      required: true,
+    },
   },
   {
-    timestamps: { createdAt: "created_at", updatedAt: "updated_at" }
+    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
   }
 )
-  .pre("deleteOne", { document: true }, function(next) {
+  .pre("deleteOne", { document: true }, function (next) {
     Promise.all([mongoose.model("Checkin").updateOne({ _id: this.checkin }, { $pull: { tickets: this._id } })]).then(
-      resolved => {
+      (resolved) => {
         next();
       }
     );
   })
-  .pre("save", function(next) {
+  .pre("save", function (next) {
     this.wasNew = this.isNew;
     next();
   })
-  .post("save", function() {
+  .post("save", function () {
     if (this.wasNew) {
       Promise.all([
         mongoose.model("Checkin").updateOne(
           {
-            _id: this.checkin
+            _id: this.checkin,
           },
           {
-            $addToSet: { tickets: this._id }
+            $addToSet: { tickets: this._id },
           }
-        )
-      ]).then(res => {
+        ),
+      ]).then((res) => {
         return;
       });
     }
