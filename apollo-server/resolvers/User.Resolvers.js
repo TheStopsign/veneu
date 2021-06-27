@@ -21,9 +21,9 @@ const eventName = {
 
 module.exports = {
   Query: {
-    user: (parent, { _id }, { requester, models: { User } }, info) => {
+    user: (parent, { _id }, { requester, loaders: { User } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return User.findById({ _id: _id });
+      return User.load(_id);
     },
     users: (parent, args, { requester, models: { User } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
@@ -162,14 +162,8 @@ module.exports = {
     },
   },
   User: {
-    notifications: (parent, args, { models: { Notification } }, info) => {
-      return Notification.find({ _id: { $in: parent.notifications } });
-    },
-    auths: (parent, args, { models: { Auth } }, info) => {
-      return Auth.find({ _id: { $in: parent.auths } });
-    },
-    name: (parent, args, context, info) => {
-      return parent.first_name + " " + parent.last_name;
-    },
+    notifications: (parent, args, { loaders: { Notification } }, info) => Notification.loadMany(parent.notifications),
+    auths: (parent, args, { loaders: { Auth } }, info) => Auth.loadMany(parent.auths),
+    name: (parent, args, context, info) => parent.first_name + " " + parent.last_name,
   },
 };

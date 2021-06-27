@@ -83,11 +83,8 @@ module.exports = {
     },
   },
   VideoStreamPlayback: {
-    submission: (parent, args, { models: { Submission } }, info) => {
-      return Submission.findOne({ submittable: parent._id });
-    },
-    video_stream: (parent, args, { models }, info) => {
-      return models[parent.video_stream_type].findOne({ _id: parent.video_stream });
-    },
+    submission: (parent, args, { loaders: { Submission } }, info) =>
+      parent.submission ? Submission.load(parent.submission) : null,
+    video_stream: (parent, args, { loaders }, info) => loaders[parent.video_stream_type].load(parent.video_stream),
   },
 };

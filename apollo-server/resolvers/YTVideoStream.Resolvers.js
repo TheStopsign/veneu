@@ -73,8 +73,6 @@ module.exports = {
     },
   },
   YTVideoStream: {
-    assignment: (parent, args, { models: { Assignment } }, info) => {
-      return Assignment.findOne({ assignable: parent._id });
-    },
+    assignment: (parent, args, { loaders: { Assignment } }, info) => Assignment.load(parent.assignment),
   },
 };

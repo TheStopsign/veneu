@@ -14,25 +14,25 @@ const oauth2Client = new OAuth2(GMAIL_OAUTH_ID, GMAIL_OAUTH_SECRET, OAUTH_PLAYGR
 const eventName = {
   AUTH_CREATED: "AUTH_CREATED",
   AUTH_UPDATED: "AUTH_UPDATED",
-  AUTH_DELETED: "AUTH_DELETED"
+  AUTH_DELETED: "AUTH_DELETED",
 };
 
 module.exports = {
   Query: {
-    auth: (parent, { _id }, { requester, models: { Auth } }, info) => {
+    auth: (parent, { _id }, { requester, loaders: { Auth } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Auth.findById({ _id: _id });
+      return Auth.load(_id);
     },
     auths: (parent, args, { requester, models: { Auth } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       if (args.shared_resource) {
-        return Auth.find({ shared_resource: args.shared_resource }).then(auths => {
+        return Auth.find({ shared_resource: args.shared_resource }).then((auths) => {
           return auths;
         });
       } else {
         return requester.auths;
       }
-    }
+    },
   },
   Mutation: {
     createAuth: async (
@@ -43,16 +43,16 @@ module.exports = {
     ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
 
-      return User.findOne({ email: user }).then(x => {
+      return User.findOne({ email: user }).then((x) => {
         if (!x) {
-          User.create({ email: user }).then(y => {
+          User.create({ email: user }).then((y) => {
             if (y) {
               mongoose
                 .model(shared_resource_type)
                 .findOne({ _id: shared_resource })
-                .then(z => {
+                .then((z) => {
                   oauth2Client.setCredentials({
-                    refresh_token: GMAIL_OAUTH_REFRESH
+                    refresh_token: GMAIL_OAUTH_REFRESH,
                   });
                   oauth2Client.getAccessToken((err, accessToken) => {
                     var transporter = nodemailer.createTransport({
@@ -63,8 +63,8 @@ module.exports = {
                         clientId: GMAIL_OAUTH_ID,
                         clientSecret: GMAIL_OAUTH_SECRET,
                         refreshToken: GMAIL_OAUTH_REFRESH,
-                        accessToken
-                      }
+                        accessToken,
+                      },
                     });
 
                     if (transporter) {
@@ -75,10 +75,10 @@ module.exports = {
                             extName: ".handlebars",
                             partialsDir: "./apollo-server/email_templates/",
                             layoutsDir: "./apollo-server/email_templates/",
-                            defaultLayout: ""
+                            defaultLayout: "",
                           },
                           viewPath: "./apollo-server/email_templates/",
-                          extName: ".handlebars"
+                          extName: ".handlebars",
                         })
                       );
                       var mailOptions = {
@@ -91,18 +91,18 @@ module.exports = {
                           role: role.toLowerCase(),
                           type: shared_resource_type.toLowerCase(),
                           course: z.name,
-                          instructor: requester.first_name + " " + requester.last_name
+                          instructor: requester.first_name + " " + requester.last_name,
                         },
                         attachments: [
                           {
                             filename: "venue-logo.png",
                             path: "./apollo-server/email_templates/venue-logo.png",
-                            cid: "logo"
-                          }
-                        ]
+                            cid: "logo",
+                          },
+                        ],
                       };
 
-                      transporter.sendMail(mailOptions, function(error, info) {
+                      transporter.sendMail(mailOptions, function (error, info) {
                         if (error || info == null) {
                           console.log(error);
                         }
@@ -112,12 +112,12 @@ module.exports = {
                     }
                   });
 
-                  return Auth.create({ role, user: y._id, shared_resource, shared_resource_type }).then(auth => {
+                  return Auth.create({ role, user: y._id, shared_resource, shared_resource_type }).then((auth) => {
                     return global.pubsub
                       .publish(eventName.AUTH_CREATED, {
-                        authCreated: auth
+                        authCreated: auth,
                       })
-                      .then(done => {
+                      .then((done) => {
                         return auth;
                       });
                   });
@@ -127,12 +127,12 @@ module.exports = {
             }
           });
         } else {
-          return Auth.create({ role, user: x[0]._id, shared_resource, shared_resource_type }).then(auth => {
+          return Auth.create({ role, user: x[0]._id, shared_resource, shared_resource_type }).then((auth) => {
             return global.pubsub
               .publish(eventName.AUTH_CREATED, {
-                authCreated: auth
+                authCreated: auth,
               })
-              .then(done => {
+              .then((done) => {
                 return auth;
               });
           });
@@ -142,13 +142,13 @@ module.exports = {
     updateAuth(parent, { _id, ...patch }, { requester, models: { Auth } }, info) {
       if (!requester) throw new ForbiddenError("Not allowed");
       return Auth.findOneAndUpdate({ _id: _id }, patch, {
-        new: true
-      }).then(auth => {
+        new: true,
+      }).then((auth) => {
         return global.pubsub
           .publish(eventName.AUTH_UPDATED, {
-            authUpdated: auth
+            authUpdated: auth,
           })
-          .then(done => {
+          .then((done) => {
             return auth;
           });
       });
@@ -156,17 +156,17 @@ module.exports = {
     deleteAuth: (parent, { _id }, { requester, models: { Auth } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return Auth.findOne({ _id })
-        .then(auth => auth.deleteOne())
-        .then(auth => {
+        .then((auth) => auth.deleteOne())
+        .then((auth) => {
           return global.pubsub
             .publish(eventName.AUTH_DELETED, {
-              authDeleted: auth
+              authDeleted: auth,
             })
-            .then(done => {
+            .then((done) => {
               return auth;
             });
         });
-    }
+    },
   },
   Subscription: {
     authCreated: {
@@ -176,12 +176,12 @@ module.exports = {
       ),
       resolve: (payload, variables, context, info) => {
         return payload.authCreated;
-      }
-    }
+      },
+    },
   },
   Auth: {
-    user: async (parent, args, { models: { User } }, info) => User.findById({ _id: parent.user }),
-    shared_resource: async (parent, args, { models }, info) =>
-      models["" + parent.shared_resource_type].findById({ _id: parent.shared_resource })
-  }
+    user: async (parent, args, { loaders: { User } }, info) => User.load(parent.user),
+    shared_resource: async (parent, args, { loaders }, info) =>
+      loaders["" + parent.shared_resource_type].load(parent.shared_resource),
+  },
 };

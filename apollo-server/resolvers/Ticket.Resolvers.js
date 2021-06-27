@@ -2,9 +2,9 @@ const { PubSub, ForbiddenError, withFilter } = require("apollo-server-express");
 
 module.exports = {
   Query: {
-    ticket: (parent, { _id }, { requester, models: { Ticket } }, info) => {
+    ticket: (parent, { _id }, { requester, loaders: { Ticket } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Ticket.findById({ _id });
+      return Ticket.load(_id);
     },
     tickets: (parent, args, { requester, models: { Ticket } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
@@ -74,8 +74,6 @@ module.exports = {
     },
   },
   Ticket: {
-    checkin: (parent, args, { models: { Checkin } }, info) => {
-      return Checkin.findOne({ _id: parent.checkin });
-    },
+    checkin: (parent, args, { loaders: { Checkin } }, info) => Checkin.load(parent.checkin),
   },
 };
