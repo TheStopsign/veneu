@@ -89,7 +89,7 @@ export default {
       suffix: null,
       start: "",
       end: "",
-      description: ""
+      description: "",
     };
   },
   methods: {
@@ -108,8 +108,8 @@ export default {
     },
     handleCreateCourse({ data }) {
       this.$router.push({ name: "Course", params: { _id: data.createCourse._id } });
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -25,12 +25,10 @@ module.exports = {
       if (!requester) throw new ForbiddenError("Not allowed");
       return User.load(_id);
     },
-    users: (parent, args, { requester, models: { User } }, info) => {
-      if (!requester) throw new ForbiddenError("Not allowed");
-      return User.find();
-    },
-    me: (parent, args, context, info) =>
-      module.exports.Query.user(parent, { ...args, _id: context.requester._id }, context, info),
+    users: (parent, args, { requester, models: { User } }, info) =>
+      !requester ? new ForbiddenError("Not allowed") : User.find(),
+    me: (parent, args, { requester, models: { User } }, info) =>
+      !requester ? new ForbiddenError("Not allowed") : User.findById({ _id: requester._id }),
   },
   Mutation: {
     createUser: (parent, { email }, { models: { User } }, info) => {

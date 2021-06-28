@@ -14,7 +14,7 @@
           <ResourceSelector
             :me="me"
             label="For Course..."
-            :selectable="me.auths.filter(a => a.shared_resource_type === 'Course').map(a => a._id)"
+            :selectable="me.auths.filter((a) => a.shared_resource_type === 'Course').map((a) => a._id)"
             @change="handleChangeCourse"
             class="q-mt-md"
           />
@@ -35,7 +35,7 @@
               label="Day of the week"
               v-model="weekdayevent.weekday"
               @input="
-                sel => {
+                (sel) => {
                   weekdayevent.event.name = toTitleCase(sel + ' Meeting');
                 }
               "
@@ -77,16 +77,16 @@ import ResourceSelector from "../components/ResourceSelector";
 export default {
   name: "CreateRegistrationSection",
   props: {
-    me: Object
+    me: Object,
   },
   components: {
-    ResourceSelector
+    ResourceSelector,
   },
   data() {
     return {
       name: "",
       course: null,
-      meeting_times: []
+      meeting_times: [],
     };
   },
   methods: {
@@ -103,7 +103,7 @@ export default {
       if (this.meeting_times.length) {
         if (
           this.meeting_times.some(
-            time =>
+            (time) =>
               !(
                 time.weekday &&
                 time.event.start &&
@@ -120,7 +120,7 @@ export default {
       return true;
     },
     toTitleCase(str) {
-      return str.replace(/\w\S*/g, function(txt) {
+      return str.replace(/\w\S*/g, function (txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
       });
     },
@@ -135,14 +135,14 @@ export default {
         event: {
           start: "",
           end: "",
-          name: ""
-        }
+          name: "",
+        },
       });
     },
     handleChangeCourse(course) {
       this.course = course;
-    }
-  }
+    },
+  },
 };
 </script>
 
