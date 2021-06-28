@@ -69,7 +69,8 @@ body,
 .q-table__card,
 .q-tab-panels,
 .q-calendar,
-.q-toggle__inner--falsy .q-toggle__thumb:after {
+.q-toggle__inner--falsy .q-toggle__thumb:after,
+.q-tree__node--selected {
   background-color: var(--veneu-background) !important;
 }
 
@@ -114,7 +115,8 @@ body,
 .q-date,
 .q-tab--inactive,
 .q-timeline__entry,
-.q-notification {
+.q-notification,
+.q-tree__node--selected {
   animation: grow-in-button 0.5s forwards !important;
 }
 
@@ -289,9 +291,6 @@ h1 {
 .video-js * {
   color: var(--veneu-blue);
 }
-.q-tree__node--selected .q-tree__node-header-content {
-  color: var(--veneu-light);
-}
 
 .q-time--landscape .q-time__header {
   padding-left: 0.5rem;
@@ -327,10 +326,6 @@ h1 {
   .q-calendar-daily__scroll-area {
     overflow-y: auto;
   }
-}
-
-.q-tree__node--selected {
-  background-color: var(--veneu-blue) !important;
 }
 
 .q-tab--active .q-tab__indicator {
@@ -430,4 +425,8 @@ h1 {
 }
 .q-notification__progress {
   margin: 0rem 0.5rem;
+}
+
+.q-field__native {
+  font-size: 16px !important;
 }
