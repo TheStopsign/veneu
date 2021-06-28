@@ -139,11 +139,15 @@ module.exports = {
         }
       });
     },
-    updateAuth(parent, { _id, ...patch }, { requester, models: { Auth } }, info) {
+    updateAuth(parent, { _id, role }, { requester, models: { Auth } }, info) {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Auth.findOneAndUpdate({ _id: _id }, patch, {
-        new: true,
-      }).then((auth) => {
+      return Auth.findOneAndUpdate(
+        { _id },
+        { role },
+        {
+          new: true,
+        }
+      ).then((auth) => {
         return global.pubsub
           .publish(eventName.AUTH_UPDATED, {
             authUpdated: auth,

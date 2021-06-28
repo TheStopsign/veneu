@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="q-my-md q-pa-md neu-concave">
     {{ label || "Select a resource" }}
     <q-tree
       class="col-12 text-primary"
@@ -17,20 +17,20 @@ export default {
   props: {
     me: {
       type: Object,
-      required: true
+      required: true,
     },
     selectable: {
       type: Array,
-      required: false
+      required: false,
     },
     selected: {
       type: String,
-      required: false
+      required: false,
     },
     label: {
       type: String,
-      required: false
-    }
+      required: false,
+    },
   },
   data() {
     return {
@@ -38,23 +38,23 @@ export default {
       selected_resource: null,
       ticked: [],
       expanded: [],
-      error: ""
+      error: "",
     };
   },
   watch: {
-    selected_resource: function(val, oldVal) {
+    selected_resource: function (val, oldVal) {
       if (
         this.$route.path.includes("create-video") &&
-        this.me.auths.find(a => a.shared_resource._id == val && a.shared_resource_type != "Lecture")
+        this.me.auths.find((a) => a.shared_resource._id == val && a.shared_resource_type != "Lecture")
       ) {
         this.selected_resource = oldVal;
         this.errorMsg("Not a lecture");
       }
       this.$emit("change", val);
     },
-    ticked: function(val, oldVal) {
+    ticked: function (val, oldVal) {
       this.$emit("change", val);
-    }
+    },
   },
   created() {
     this.selected_resource = this.selected ? this.selected : null;
@@ -66,33 +66,33 @@ export default {
         progress: true,
         message: error,
         icon: "error",
-        color: "negative"
+        color: "negative",
       });
     },
     buildTree() {
       const courseauths = this.me.auths.filter(
-        a => a.shared_resource_type === "Course" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
+        (a) => a.shared_resource_type === "Course" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
       );
       const sectionauths = this.me.auths.filter(
-        a => a.shared_resource_type === "RegistrationSection" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
+        (a) => a.shared_resource_type === "RegistrationSection" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
       );
       const groupauths = this.me.auths.filter(
-        a => a.shared_resource_type === "UserGroup" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
+        (a) => a.shared_resource_type === "UserGroup" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
       );
       const lectureauths = this.me.auths.filter(
-        a => a.shared_resource_type === "Lecture" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
+        (a) => a.shared_resource_type === "Lecture" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
       );
       let self = this;
-      courseauths.forEach(function(courseauth) {
+      courseauths.forEach(function (courseauth) {
         self.simple.push({
           label: courseauth.shared_resource.name,
           ...courseauth.shared_resource,
-          icon: "school"
+          icon: "school",
           // disabled: self.selectable && !self.selectable.includes(courseauth._id) ? true : false
         });
       });
-      sectionauths.forEach(function(sectionauth) {
-        let a = self.simple.find(a => a._id == sectionauth.shared_resource.parent_resource._id);
+      sectionauths.forEach(function (sectionauth) {
+        let a = self.simple.find((a) => a._id == sectionauth.shared_resource.parent_resource._id);
         if (a) {
           if (!a.children) {
             a.children = [];
@@ -101,12 +101,12 @@ export default {
             label: sectionauth.shared_resource.name,
             ...sectionauth.shared_resource,
             icon: "event_seat",
-            disabled: self.selectable && !self.selectable.includes(sectionauth._id) ? true : false
+            disabled: self.selectable && !self.selectable.includes(sectionauth._id) ? true : false,
           });
         }
       });
-      groupauths.forEach(function(groupauth) {
-        let a = self.simple.find(a => a._id == groupauth.shared_resource.parent_resource._id);
+      groupauths.forEach(function (groupauth) {
+        let a = self.simple.find((a) => a._id == groupauth.shared_resource.parent_resource._id);
         if (a) {
           if (!a.children) {
             a.children = [];
@@ -115,12 +115,12 @@ export default {
             label: groupauth.shared_resource.name,
             ...groupauth.shared_resource,
             icon: "groups",
-            disabled: self.selectable && !self.selectable.includes(groupauth._id) ? true : false
+            disabled: self.selectable && !self.selectable.includes(groupauth._id) ? true : false,
           });
         }
       });
-      lectureauths.forEach(function(lectureauth) {
-        let a = self.simple.find(a => a._id == lectureauth.shared_resource.parent_resource._id);
+      lectureauths.forEach(function (lectureauth) {
+        let a = self.simple.find((a) => a._id == lectureauth.shared_resource.parent_resource._id);
         if (a) {
           if (!a.children) {
             a.children = [];
@@ -129,11 +129,11 @@ export default {
             label: lectureauth.shared_resource.name,
             ...lectureauth.shared_resource,
             icon: "book",
-            disabled: self.selectable && !self.selectable.includes(lectureauth._id) ? true : false
+            disabled: self.selectable && !self.selectable.includes(lectureauth._id) ? true : false,
           });
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>

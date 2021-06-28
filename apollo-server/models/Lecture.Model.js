@@ -4,63 +4,63 @@ const Lecture = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     auths: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Auth"
-      }
+        ref: "Auth",
+      },
     ],
     creator: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      ref: "User",
     },
     type: {
       type: String,
-      default: "Lecture"
+      default: "Lecture",
     },
     start: {
       type: Date,
-      required: true
+      required: true,
     },
     end: {
       type: Date,
-      required: true
+      required: true,
     },
     parent_resource: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true
+      required: true,
     },
     parent_resource_type: {
       type: String,
-      required: true
+      required: true,
     },
     recording: {
-      type: mongoose.Schema.Types.ObjectId
+      type: mongoose.Schema.Types.ObjectId,
     },
     recording_type: {
-      type: String
-    }
+      type: String,
+    },
   },
   {
-    timestamps: { createdAt: "created_at", updatedAt: "updated_at" }
+    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
   }
 )
-  .pre("deleteOne", { document: true }, function(next) {
+  .pre("deleteOne", { document: true }, function (next) {
     Promise.all([
       mongoose.model("Auth").deleteMany({ shared_resource: this._id }),
       mongoose.model("YTVideoStream").deleteOne({ parent_resource: this._id }),
       mongoose
         .model(this.parent_resource_type)
-        .updateOne({ _id: this.parent_resource }, { $pull: { lectures: this._id } })
+        .updateOne({ _id: this.parent_resource }, { $pull: { lectures: this._id } }),
     ]).then(next);
   })
-  .pre("deleteMany", function(next) {
-    this.model.find(this.getFilter()).then(lectures => {
+  .pre("deleteMany", function (next) {
+    this.model.find(this.getFilter()).then((lectures) => {
       if (lectures.length) {
-        const lecturesids = lectures.map(a => a._id);
-        const lecturesparents = lectures.map(a => a.parent_resource);
+        const lecturesids = lectures.map((a) => a._id);
+        const lecturesparents = lectures.map((a) => a.parent_resource);
         Promise.all([
           mongoose.model("Auth").deleteMany({ shared_resource: { $in: lecturesids } }),
           mongoose.model("YTVideoStream").deleteMany({ parent_resource: { $in: lecturesids } }),
@@ -72,8 +72,8 @@ const Lecture = new mongoose.Schema(
             .updateMany({ _id: { $in: lecturesparents } }, { $pullAll: { lectures: lecturesids } }),
           mongoose
             .model("UserGroup")
-            .updateMany({ _id: { $in: lecturesparents } }, { $pullAll: { lectures: lecturesids } })
-        ]).then(resolved => {
+            .updateMany({ _id: { $in: lecturesparents } }, { $pullAll: { lectures: lecturesids } }),
+        ]).then((resolved) => {
           next();
         });
       } else {
@@ -81,11 +81,11 @@ const Lecture = new mongoose.Schema(
       }
     });
   })
-  .pre("save", function(next) {
+  .pre("save", function (next) {
     this.wasNew = this.isNew;
     next();
   })
-  .post("save", function() {
+  .post("save", function () {
     if (this.wasNew) {
       mongoose
         .model("Auth")
@@ -93,16 +93,16 @@ const Lecture = new mongoose.Schema(
           shared_resource: this._id,
           shared_resource_type: "Lecture",
           user: this.creator._id,
-          role: "INSTRUCTOR"
+          role: "INSTRUCTOR",
         })
-        .then(done => {
+        .then((done) => {
           return mongoose
             .model(this.parent_resource_type)
             .updateOne({ _id: this.parent_resource }, { $addToSet: { lectures: this._id } });
         })
-        .then(auth => {
+        .then((auth) => {
           return global.pubsub.publish("AUTH_CREATED", {
-            authCreated: auth
+            authCreated: auth,
           });
         });
     }

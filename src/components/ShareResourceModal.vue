@@ -12,7 +12,7 @@
                 <div class="text-h6 text-primary">Share {{ resourcetype }}</div>
               </q-card-section>
 
-              <q-card-section class="scroll row q-ma-none q-pr-md q-pl-none q-py-none">
+              <q-card-section class="scroll row q-ma-none q-pr-md q-pl-none q-py-none items-center">
                 <q-input
                   standout="bg-primary text-white"
                   class="text-primary inline q-pl-md q-pb-md col-12"
@@ -81,9 +81,39 @@
                   flat
                   :data="data.auths"
                   :columns="columns"
-                  row-key="name"
+                  row-key="_id"
                   class="full-width q-px-md text-primary"
-                />
+                >
+                  <template v-slot:body="props">
+                    <q-tr :props="props">
+                      <q-td key="name" :props="props">
+                        {{ props.row.user.name }}
+                      </q-td>
+                      <q-td key="role" :props="props">
+                        {{ props.row.role }} <q-icon name="edit" />
+                        <q-popup-edit
+                          v-model="props.row.role"
+                          title="Update Role"
+                          buttons
+                          @save="handleEditRole"
+                          @before-show="handleStartEditRole(props.row._id)"
+                        >
+                          <q-select
+                            standout="bg-primary text-white"
+                            class="text-primary q-mt-md"
+                            color="primary"
+                            v-model="props.row.role"
+                            :options="roleOptions"
+                            label="Role"
+                          />
+                        </q-popup-edit>
+                      </q-td>
+                      <q-td key="email" :props="props">
+                        {{ props.row.user.email }}
+                      </q-td>
+                    </q-tr>
+                  </template>
+                </q-table>
               </q-card-section>
 
               <q-card-section class="row text-primary q-pt-none">
@@ -99,6 +129,7 @@
 </template>
 
 <script>
+import gql from "graphql-tag";
 export default {
   props: {
     resourceid: String,
@@ -125,6 +156,7 @@ export default {
         { name: "email", label: "Email", field: (row) => row.user.email, sortable: true },
       ],
       tabledata: [],
+      editing_on: -1,
     };
   },
   methods: {
@@ -146,6 +178,50 @@ export default {
     clearForm() {
       this.emailInput = "";
       this.roleSelection = "None";
+    },
+    handleStartEditRole(editing_on) {
+      this.editing_on = editing_on;
+    },
+    handleEditRole(val, oldVal) {
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation updateAuth($_id: ID!, $role: Role!) {
+              updateAuth(_id: $_id, role: $role) {
+                user {
+                  _id
+                  name
+                  email
+                }
+                role
+                shared_resource {
+                  _id
+                }
+                shared_resource_type
+              }
+            }
+          `,
+          variables: {
+            _id: this.editing_on,
+            role: val,
+          },
+        })
+        .then(({ data }) => {
+          this.$q.notify({
+            progress: true,
+            message: "Success",
+            icon: "check_circle",
+            color: "primary",
+          });
+        })
+        .catch((e) => {
+          this.$q.notify({
+            progress: true,
+            message: "Issue changing role, try again " + e,
+            icon: "error",
+            color: "negative",
+          });
+        });
     },
   },
 };

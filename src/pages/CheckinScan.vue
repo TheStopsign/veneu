@@ -25,7 +25,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <div class="text-center" style="display: flex; flex-direction: column; height: 100%;">
+    <div class="text-center" style="display: flex; flex-direction: column; height: 100%">
       <q-btn
         v-if="$q.platform.is.desktop && false === screen_scanning && !camera_scanning"
         @click="handleStartScreenScan()"
@@ -64,15 +64,15 @@
         v-if="true === screen_scanning || camera_scanning"
         size="xl"
         :name="!last ? 'search' : 'qr_code'"
-        style="display: flex; flex-direction: row;"
+        style="display: flex; flex-direction: row"
       />
-      <q-responsive :ratio="16 / 9" style="max-height: 50vh;">
+      <q-responsive :ratio="16 / 9" style="max-height: 50vh">
         <video id="captured-screen" autoplay :style="{ display: 'none' }"></video>
         <video
           v-if="camera_scanning"
           id="camera-video"
           autoplay
-          style="display: flex; flex-direction: row;"
+          style="display: flex; flex-direction: row"
           class="q-pa-md neu-convex"
         ></video>
       </q-responsive>
@@ -80,7 +80,7 @@
     <ApolloSubscribeToMore
       v-if="user"
       :document="
-        gql =>
+        (gql) =>
           gql`
             subscription approvedTicket($user: ID!) {
               approvedTicket(user: $user) {
@@ -104,7 +104,7 @@ QrScanner.WORKER_PATH = "../../qr-scanner-worker.min.js";
 import gql from "graphql-tag";
 export default {
   props: {
-    me: Object
+    me: Object,
   },
   data() {
     return {
@@ -122,7 +122,7 @@ export default {
       video_el: null,
       engine: null,
       canvas: null,
-      previous: []
+      previous: [],
     };
   },
   created() {
@@ -137,7 +137,7 @@ export default {
 
     var self = this;
 
-    QrScanner.hasCamera().then(res => {
+    QrScanner.hasCamera().then((res) => {
       self.has_camera = true;
     });
 
@@ -173,7 +173,7 @@ export default {
               first_name: this.first_name,
               last_name: this.last_name,
               user: this.user,
-              checkin
+              checkin,
             });
             if (this.previous.length > 5) {
               this.previous.splice(0, 1);
@@ -200,8 +200,8 @@ export default {
         var video = document.getElementById("camera-video");
         self.camera_scanner = new QrScanner(
           video,
-          result => this.handleDecodeQR(result),
-          error => this.handleDecodeError()
+          (result) => this.handleDecodeQR(result),
+          (error) => this.handleDecodeError()
         );
         self.camera_scanner.start();
       });
@@ -222,8 +222,8 @@ export default {
       this.screen_scanner = setInterval(() => {
         if (this.screen_stream) {
           QrScanner.scanImage(this.video_el, undefined, this.engine, this.canvas)
-            .then(result => this.handleDecodeQR(result))
-            .catch(error => this.handleDecodeError());
+            .then((result) => this.handleDecodeQR(result))
+            .catch((error) => this.handleDecodeError());
         } else {
           this.handleStopScreenScan();
         }
@@ -235,22 +235,22 @@ export default {
       if (navigator && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
         navigator.mediaDevices
           .getDisplayMedia({ video: true, audio: false, frameRate: 24 })
-          .then(res => {
+          .then((res) => {
             if (res) {
               self.screen_stream = res;
               QrScanner.createQrEngine(QrScanner.WORKER_PATH)
-                .then(engine => {
+                .then((engine) => {
                   self.engine = engine;
                   self.createIntervalScanner();
                 })
-                .catch(err => {
+                .catch((err) => {
                   self.handleStopScreenScan();
                 });
             } else {
               self.handleStopScreenScan();
             }
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err);
           });
       }
@@ -262,7 +262,7 @@ export default {
         this.screen_scanner = null;
       }
       if (this.screen_stream) {
-        this.screen_stream.getTracks().forEach(track => track.stop());
+        this.screen_stream.getTracks().forEach((track) => track.stop());
         this.screen_stream = null;
       }
       this.video_el.srcObject = null;
@@ -290,8 +290,8 @@ export default {
           user: this.user,
           first_name: this.first_name,
           last_name: this.last_name,
-          checkin
-        }
+          checkin,
+        },
       });
     },
     async sendReservation(host, tickets) {
@@ -308,23 +308,23 @@ export default {
         `,
         variables: {
           host,
-          tickets
-        }
+          tickets,
+        },
       });
     },
     onApproved(
       previousResult,
       {
         subscriptionData: {
-          data: { approvedTicket }
-        }
+          data: { approvedTicket },
+        },
       }
     ) {
       this.$q.notify({
         progress: true,
         message: "Your attendance has been recorded",
         icon: "event_seat",
-        color: "primary"
+        color: "primary",
       });
       window.focus();
       if (this.screen_scanning) {
@@ -332,8 +332,8 @@ export default {
       } else if (this.camera_scanning) {
         this.handleStopCamScan();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -17,8 +17,13 @@ aside.q-drawer--mobile {
 .q-field--standout .q-field__control,
 .q-toggle__track {
   background: none;
-  transition: color 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
+  transition: color background-color 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
   animation: grow-in-input 0.5s forwards;
+}
+
+.q-field--standout:focus-within .q-field__control {
+  background: var(--veneu-blue);
+  animation: grow-in-button 0.5s forwards;
 }
 
 .q-toggle__inner--truthy .q-toggle__track,
@@ -35,10 +40,6 @@ aside.q-drawer--mobile {
   margin: 8px !important;
 }
 
-// .q-form {
-//   margin: 16px 0px !important;
-// }
-
 .q-bar,
 .q-footer,
 .q-toolbar,
@@ -49,7 +50,6 @@ aside.q-drawer--mobile {
 .q-stepper__header,
 .q-stepper__nav {
   background: none !important;
-  // background-color: var(--veneu-background) !important;
 }
 
 .q-footer {
@@ -113,15 +113,13 @@ body,
 #me .q-avatar,
 .q-date,
 .q-tab--inactive,
-.q-timeline__entry {
+.q-timeline__entry,
+.q-notification {
   animation: grow-in-button 0.5s forwards !important;
 }
 
 .q-date {
   min-width: unset;
-  // * {
-  //   font-size: 0.65rem;
-  // }
   .q-date__view {
     width: unset;
   }
@@ -202,14 +200,6 @@ body,
   animation: grow-in-input 0.5s forwards !important;
 }
 
-// .bg-primary {
-//   padding: 0.5rem;
-//   border-radius: 0.25;
-// }
-// .bg-primary .q-btn__wrapper {
-//   animation: grow-in-button-blue 0.5s forwards !important;
-// }
-
 .q-focusable:active[disabled] .q-focus-helper,
 .q-hoverable:active[disabled] {
   transition: none !important;
@@ -241,26 +231,44 @@ h1 {
   animation: unset;
 }
 
-.bg-red {
-  background-color: var(--veneu-red) !important;
+.q-btn.bg-primary {
+  background-color: var(--veneu-background) !important;
+  padding: 0.125rem;
+  animation: grow-in-button 0.5s forwards !important;
 
-  &.q-btn:hover:not([disabled]),
-  &.q-btn:focus:not([disabled]) {
-    animation: grow-in-input-red 0.5s forwards !important;
+  .q-btn__wrapper {
+    background-color: var(--veneu-blue) !important;
+    border-radius: 0.875rem;
+    min-height: unset;
+    padding: calc(4px - 0.125rem) calc(16px - 0.125rem);
   }
 }
 
-.bg-primary {
-  background-color: var(--veneu-blue) !important;
-  padding: 0.5rem;
+.q-btn.bg-red {
+  background-color: var(--veneu-background) !important;
+  padding: 0.125rem;
+  animation: grow-in-button 0.5s forwards !important;
 
   .q-btn__wrapper {
-    animation: grow-in-button-blue 0.5s forwards !important;
+    background-color: var(--veneu-red) !important;
+    border-radius: 0.875rem;
+    min-height: unset;
+    padding: calc(4px - 0.125rem) calc(16px - 0.125rem);
   }
+}
 
-  &.q-btn:not([disabled]) .q-btn__wrapper:hover,
-  &.q-btn:not([disabled]) .q-btn__wrapper:focus {
-    animation: grow-in-input-blue 0.5s forwards !important;
+.q-menu.q-popup-edit {
+  padding-bottom: 0;
+}
+
+.q-popup-edit__buttons {
+  margin: 0;
+  justify-content: space-between;
+  .q-btn {
+    margin: 16px 0px 16px 0px;
+  }
+  .q-btn + .q-btn {
+    margin: 16px 0px 16px 16px;
   }
 }
 
@@ -275,27 +283,6 @@ h1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.dangerzone {
-  background-color: var(--veneu-red);
-  box-shadow: 0rem 0rem 1.5rem 2rem var(--veneu-red);
-  padding: 1rem 2rem;
-  margin: 3rem;
-  text-align: center;
-  .q-btn {
-    animation: grow-in-button-red 0.5s forwards !important;
-  }
-  &::before {
-    content: "danger zone";
-    display: block;
-    font-family: "Exo 2";
-    font-weight: 900;
-    font-style: italic;
-    font-size: 1.5rem;
-    color: var(--veneu-light);
-    margin-bottom: 0.5rem;
-  }
 }
 
 .q-tree__node-header-content,
@@ -437,6 +424,10 @@ h1 {
 }
 
 #video_player,
-#video_player *:not(.vjs-loading-spinner) {
+#video_player *:not(.vjs-loading-spinner),
+.q-notification {
   border-radius: 1rem;
+}
+.q-notification__progress {
+  margin: 0rem 0.5rem;
 }
