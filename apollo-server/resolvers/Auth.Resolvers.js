@@ -45,9 +45,9 @@ module.exports = {
 
       return User.findOne({ email: user }).then((x) => {
         if (!x) {
-          User.create({ email: user }).then((y) => {
+          return User.create({ email: user }).then((y) => {
             if (y) {
-              mongoose
+              return mongoose
                 .model(shared_resource_type)
                 .findOne({ _id: shared_resource })
                 .then((z) => {
