@@ -4,13 +4,11 @@
       <div v-if="loading">Loading...</div>
       <div v-if="error">Error...</div>
       <div v-if="data">
-        <q-item-label header class="text-primary q-pb-md row justify-between">
-          Courses
-        </q-item-label>
+        <q-item-label header class="text-primary q-pb-md row justify-between"> Courses </q-item-label>
         <q-item-label header class="text-primary q-pb-md">Instructor for...</q-item-label>
         <q-expansion-item
           v-for="course in data.courses.filter(
-            c => c.auths.filter(a => a.role == 'INSTRUCTOR' && a.user.email == me.email).length
+            (c) => c.auths.filter((a) => a.role == 'INSTRUCTOR' && a.user.email == me.email).length
           )"
           :key="course._id + '_INST'"
           expand-icon-toggle
@@ -33,7 +31,9 @@
 
             <q-item-section :title="course.name">
               <q-item-label>{{ course.name }}</q-item-label>
-              <q-item-label caption> {{ course.auths.filter(a => a.role == "STUDENT").length }} students </q-item-label>
+              <q-item-label caption>
+                {{ course.auths.filter((a) => a.role == "STUDENT").length }} students
+              </q-item-label>
             </q-item-section>
           </q-item>
           <q-list class="rounded-borders">
@@ -61,7 +61,7 @@
                   <q-item-section :title="section.name">
                     <q-item-label>{{ section.name }}</q-item-label>
                     <q-item-label caption>
-                      {{ section.auths.filter(a => a.role == "STUDENT").length }} students
+                      {{ section.auths.filter((a) => a.role == "STUDENT").length }} students
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -81,7 +81,7 @@
                     <q-item-section>
                       <q-item-label>{{ group.name }}</q-item-label>
                       <q-item-label caption>
-                        {{ group.auths.filter(a => a.role == "STUDENT").length }} students
+                        {{ group.auths.filter((a) => a.role == "STUDENT").length }} students
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -103,7 +103,7 @@
                 <q-item-section>
                   <q-item-label>{{ group.name }}</q-item-label>
                   <q-item-label caption>
-                    {{ group.auths.filter(a => a.role == "STUDENT").length }} students
+                    {{ group.auths.filter((a) => a.role == "STUDENT").length }} students
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -113,7 +113,7 @@
         <q-item-label header class="text-primary q-pb-md">Teaching Assistant for...</q-item-label>
         <q-expansion-item
           v-for="course in data.courses.filter(
-            c => c.auths.filter(a => a.role == 'TEACHING_ASSISTANT' && a.user.email == me.email).length
+            (c) => c.auths.filter((a) => a.role == 'TEACHING_ASSISTANT' && a.user.email == me.email).length
           )"
           :key="course._id + '_TA'"
           expand-icon-toggle
@@ -136,7 +136,9 @@
 
             <q-item-section :title="course.name">
               <q-item-label>{{ course.name }}</q-item-label>
-              <q-item-label caption> {{ course.auths.filter(a => a.role == "STUDENT").length }} students </q-item-label>
+              <q-item-label caption>
+                {{ course.auths.filter((a) => a.role == "STUDENT").length }} students
+              </q-item-label>
             </q-item-section>
           </q-item>
           <q-list class="rounded-borders">
@@ -159,7 +161,7 @@
                   <q-item-section :title="section.name">
                     <q-item-label>{{ section.name }}</q-item-label>
                     <q-item-label caption>
-                      {{ section.auths.filter(a => a.role == "STUDENT").length }} students
+                      {{ section.auths.filter((a) => a.role == "STUDENT").length }} students
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -190,7 +192,7 @@
                     <q-item-section>
                       <q-item-label>{{ group.name }}</q-item-label>
                       <q-item-label caption>
-                        {{ group.auths.filter(a => a.role == "STUDENT").length }} students
+                        {{ group.auths.filter((a) => a.role == "STUDENT").length }} students
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -212,7 +214,7 @@
                 <q-item-section>
                   <q-item-label>{{ group.name }}</q-item-label>
                   <q-item-label caption>
-                    {{ group.auths.filter(a => a.role == "STUDENT").length }} students
+                    {{ group.auths.filter((a) => a.role == "STUDENT").length }} students
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -225,7 +227,7 @@
         </q-item-label>
         <q-expansion-item
           v-for="course in data.courses.filter(
-            c => c.auths.filter(a => a.role == 'STUDENT' && a.user.email == me.email).length
+            (c) => c.auths.filter((a) => a.role == 'STUDENT' && a.user.email == me.email).length
           )"
           :key="course._id + '_STUD'"
           expand-icon-toggle
@@ -248,7 +250,9 @@
 
             <q-item-section :title="course.name">
               <q-item-label>{{ course.name }}</q-item-label>
-              <q-item-label caption> {{ course.auths.filter(a => a.role == "STUDENT").length }} students </q-item-label>
+              <q-item-label caption>
+                {{ course.auths.filter((a) => a.role == "STUDENT").length }} students
+              </q-item-label>
             </q-item-section>
           </q-item>
           <q-list class="rounded-borders">
@@ -271,7 +275,7 @@
                   <q-item-section :title="section.name">
                     <q-item-label>{{ section.name }}</q-item-label>
                     <q-item-label caption>
-                      {{ section.auths.filter(a => a.role == "STUDENT").length }} students
+                      {{ section.auths.filter((a) => a.role == "STUDENT").length }} students
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -290,7 +294,7 @@
                     <q-item-section>
                       <q-item-label>{{ group.name }}</q-item-label>
                       <q-item-label caption>
-                        {{ group.auths.filter(a => a.role == "STUDENT").length }} students
+                        {{ group.auths.filter((a) => a.role == "STUDENT").length }} students
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -312,7 +316,7 @@
                 <q-item-section>
                   <q-item-label>{{ group.name }}</q-item-label>
                   <q-item-label caption>
-                    {{ group.auths.filter(a => a.role == "STUDENT").length }} students
+                    {{ group.auths.filter((a) => a.role == "STUDENT").length }} students
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -328,13 +332,13 @@
 export default {
   name: "CourseList",
   props: {
-    me: Object
+    me: Object,
   },
   data() {
     return {
-      editing: false
+      editing: false,
     };
-  }
+  },
 };
 </script>
 

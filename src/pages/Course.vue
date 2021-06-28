@@ -14,9 +14,7 @@
               Description: {{ data.course.description ? data.course.description : "None" }}
             </div>
             <q-timeline :layout="layout" color="primary" v-if="data.course.lectures">
-              <q-timeline-entry class="text-primary" heading>
-                Timeline
-              </q-timeline-entry>
+              <q-timeline-entry class="text-primary" heading> Timeline </q-timeline-entry>
 
               <q-timeline-entry
                 :title="'Lecture - ' + lect.name"
@@ -83,15 +81,15 @@ export default {
   computed: {
     layout() {
       return this.$q.screen.lt.sm ? "dense" : this.$q.screen.lt.md ? "comfortable" : "loose";
-    }
+    },
   },
   components: { ShareResourceModal },
   props: {
-    me: Object
+    me: Object,
   },
   data() {
     return {
-      deleteModal: false
+      deleteModal: false,
     };
   },
   methods: {
@@ -104,23 +102,24 @@ export default {
     canDelete() {
       return (
         this.me &&
-        this.me.auths.some(a => a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR"].includes(a.role))
+        this.me.auths.some((a) => a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR"].includes(a.role))
       );
     },
     canShare() {
       return (
         this.me &&
         this.me.auths.some(
-          a => a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
+          (a) =>
+            a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
         )
       );
     },
     getSorted(vals) {
-      return [...vals].sort(function(a, b) {
+      return [...vals].sort(function (a, b) {
         return new Date(a.start) - new Date(b.start);
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

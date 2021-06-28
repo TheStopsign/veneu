@@ -143,7 +143,7 @@ export default {
       emailInput: "",
       roleSelection: "None",
       roleOptions: ["None", "INSTRUCTOR", "TEACHING_ASSISTANT", "STUDENT"],
-      sharedResourceType: "Course",
+      sharedResourceType: this.resourcetype,
       columns: [
         {
           name: "name",
