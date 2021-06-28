@@ -115,13 +115,13 @@ export default {
     canDelete() {
       return (
         this.me &&
-        this.me.auths.some((a) => a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR"].includes(a.role))
+        this.me.auths.find((a) => a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR"].includes(a.role))
       );
     },
     canShare() {
       return (
         this.me &&
-        this.me.auths.some(
+        this.me.auths.find(
           (a) =>
             a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
         )
