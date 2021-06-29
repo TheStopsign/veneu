@@ -410,6 +410,11 @@ h1 {
   background-color: unset !important;
 }
 
+.text-white,
+.text-white * {
+  color: var(--veneu-light) !important;
+}
+
 #headertoolbar,
 .q-dialog__inner .q-card,
 .video-js .vjs-control-bar,
