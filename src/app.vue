@@ -289,7 +289,6 @@ export default {
     theme: function (val, oldVal) {
       setPalette(document.documentElement, String(val));
       localStorage.setItem("theme", val);
-      this.$forceUpdate();
     },
   },
   data() {

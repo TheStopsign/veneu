@@ -65,7 +65,6 @@ html,
 body,
 #app,
 .q-drawer__content,
-.q-card,
 .q-time,
 .q-time__container-child,
 .q-date,
@@ -146,6 +145,11 @@ body,
   .q-btn {
     padding: 0rem;
   }
+}
+
+.courses div.q-item .q-item__section--side.q-item__section--avatar {
+  padding-right: 1rem !important;
+  min-width: unset !important;
 }
 
 .q-date__content .q-btn,
@@ -407,7 +411,7 @@ h1 {
 }
 
 #headertoolbar,
-.q-dialog__inner > .q-card,
+.q-dialog__inner .q-card,
 .video-js .vjs-control-bar,
 .video-js .vjs-big-play-button {
   -webkit-backdrop-filter: blur(4px) !important;
@@ -424,7 +428,7 @@ h1 {
     background-color: var(--veneu-firefox-glass) !important;
     border: none;
   }
-  .q-dialog__inner > .q-card {
+  .q-dialog__inner .q-card {
     background-color: var(--veneu-background) !important;
   }
 }

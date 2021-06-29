@@ -12,6 +12,7 @@ module.exports = gql`
     name: String!
     url: String!
     duration: Int!
+    checkins: [Checkin!]
   }
 
   extend type Query {
@@ -30,6 +31,7 @@ module.exports = gql`
       due: Date
       points: Float
       duration: Int!
+      checkins: [ID!]
     ): YTVideoStream!
     deleteYTVideoStream(_id: ID!): YTVideoStream!
   }

@@ -37,6 +37,13 @@ const YTVideoStream = new mongoose.Schema(
       type: String,
       required: true,
     },
+    checkins: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Checkin",
+        required: false,
+      },
+    ],
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },

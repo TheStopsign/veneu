@@ -60,7 +60,7 @@
                     <q-btn
                       v-close-popup
                       color="primary"
-                      class="q-ml-md q-my-none"
+                      class="q-ml-md q-my-none q-mb-md"
                       @click="mutate()"
                       label="Share"
                       icon-right="send"

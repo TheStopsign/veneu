@@ -20,7 +20,7 @@ module.exports = {
   Mutation: {
     createYTVideoStream: (
       parent,
-      { url, name, parent_resource, parent_resource_type, duration, assignment, hidden_until, due, points },
+      { url, name, parent_resource, parent_resource_type, duration, assignment, hidden_until, due, points, checkins },
       { requester, models: { YTVideoStream, Assignment } },
       info
     ) => {
@@ -32,6 +32,7 @@ module.exports = {
         parent_resource_type,
         creator: requester._id,
         duration,
+        checkins,
       }).then((ytVideoStream) => {
         if (assignment) {
           return Assignment.create({

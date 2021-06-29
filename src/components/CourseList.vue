@@ -13,7 +13,7 @@
           :key="course._id + '_INST'"
           expand-icon-toggle
           icon="school"
-          class="courses"
+          class="courses q-ml-sm"
           expand-icon-class="text-primary"
           :header-inset-level="0"
           :content-inset-level="0.5"
@@ -120,7 +120,7 @@
           :key="course._id + '_TA'"
           expand-icon-toggle
           icon="school"
-          class="courses"
+          class="courses q-ml-sm"
           expand-icon-class="text-primary"
           :header-inset-level="0"
           :content-inset-level="0.5"
@@ -235,7 +235,7 @@
           :key="course._id + '_STUD'"
           expand-icon-toggle
           icon="school"
-          class="courses"
+          class="courses q-ml-sm"
           expand-icon-class="text-primary"
           :header-inset-level="0"
           :content-inset-level="0.5"

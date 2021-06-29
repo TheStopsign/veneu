@@ -283,16 +283,12 @@ main {
 }
 
 .neu-concave {
-  min-width: 1rem;
-  min-height: 1rem;
   border-radius: 1rem !important;
   background: none;
   animation: grow-in-input 0.5s forwards !important;
 }
 
 .neu-convex {
-  min-width: 1rem;
-  min-height: 1rem;
   border-radius: 1rem !important;
   background: none;
   animation: grow-in 0.5s forwards !important;

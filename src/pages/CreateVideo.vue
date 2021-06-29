@@ -63,6 +63,7 @@
           />
         </div>
         <div class="row full-width justify-center q-mt-xl"><h3>Optional</h3></div>
+        <CheckinSelector :me="me" label="Associated checkins" @change="handleChangeCheckin" />
         <q-input
           type="number"
           standout="bg-primary text-white q-ma-none"
@@ -102,6 +103,7 @@ import videojs from "video.js";
 require("videojs-youtube");
 import gql from "graphql-tag";
 import ResourceSelector from "../components/ResourceSelector";
+import CheckinSelector from "../components/CheckinSelector";
 export default {
   name: "CreateRegistrationSection",
   props: {
@@ -109,6 +111,7 @@ export default {
   },
   components: {
     ResourceSelector,
+    CheckinSelector,
   },
   data() {
     return {
@@ -125,6 +128,7 @@ export default {
         due: null,
       },
       points: null,
+      checkins: [],
     };
   },
   beforeDestroy() {
@@ -234,6 +238,7 @@ export default {
                 $due: Date
                 $points: Float
                 $duration: Int!
+                $checkins: [ID!]
               ) {
                 createYTVideoStream(
                   url: $url
@@ -245,6 +250,7 @@ export default {
                   due: $due
                   points: $points
                   duration: $duration
+                  checkins: $checkins
                 ) {
                   _id
                   url
@@ -271,6 +277,7 @@ export default {
               due: this.assignment.due,
               points: parseFloat(this.points),
               duration: this.duration,
+              checkins: this.checkins,
             },
           })
           .then(({ data: { createYTVideoStream } }) => {
@@ -288,6 +295,9 @@ export default {
     },
     handleChangeLecture(parent_resource) {
       this.parent_resource = parent_resource;
+    },
+    handleChangeCheckin(val, oldVal) {
+      this.checkins = val;
     },
   },
 };
