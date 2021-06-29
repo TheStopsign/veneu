@@ -4,7 +4,7 @@
     <ApolloQuery :query="require('./graphql/Me.gql')">
       <template slot-scope="{ result: { data, error } }">
         <div v-if="error">{{ tryLogout() }}</div>
-        <div v-if="data">
+        <div v-if="data" id="theme" :data-theme="'' + theme">
           <q-header :class="'text-primary ' + ($q.platform.is.mobile ? 'q-mx-sm' : 'q-mx-md')">
             <q-pull-to-refresh @refresh="refresh" color="white" bg-color="primary">
               <q-toolbar
@@ -35,6 +35,17 @@
                 </q-toolbar-title>
 
                 <q-space />
+
+                <q-toggle
+                  toggle-indeterminate
+                  v-model="theme"
+                  unchecked-icon="dark_mode"
+                  indeterminate-icon="palette"
+                  checked-icon="light_mode"
+                  color="primary"
+                  size="xl"
+                  s
+                />
 
                 <q-btn size="sm" round icon="qr_code_2" class="q-mx-sm" title="Checkin" aria-label="Checkin">
                   <q-menu :offset="[0, 16]">
@@ -262,6 +273,7 @@
 </template>
 
 <script>
+import { setPalette } from "./styles/palette";
 import { date } from "quasar";
 import gql from "graphql-tag";
 import VeneuLogo from "./components/VeneuLogo";
@@ -273,12 +285,31 @@ export default {
     VeneuLogo,
     CourseList,
   },
+  watch: {
+    theme: function (val, oldVal) {
+      setPalette(document.documentElement, String(val));
+      localStorage.setItem("theme", val);
+    },
+  },
   data() {
     return {
       left: false,
       searchString: "",
       confirmLogout: false,
+      theme: localStorage.getItem("theme"),
     };
+  },
+  created() {
+    setPalette(document.documentElement, this.theme);
+    if (this.theme === "true") {
+      this.theme = true;
+    }
+    if (this.theme === "false") {
+      this.theme = false;
+    }
+    if (this.theme === "null") {
+      this.theme = null;
+    }
   },
   methods: {
     canCreateSections(auths) {

@@ -32,37 +32,45 @@
   --veneu-background-highlight: var(--veneu-light-highlight);
   --veneu-background-lowlight: var(--veneu-light-lowlight);
   --veneu-firefox-glass: var(--veneu-light-firefox-glass);
-  @media (prefers-color-scheme: dark) {
-    --veneu-background: var(--veneu-dark);
-    --veneu-background-backdrop: var(--veneu-dark-backdrop);
-    --veneu-background-highlight: var(--veneu-dark-highlight);
-    --veneu-background-lowlight: var(--veneu-dark-lowlight);
-    --veneu-firefox-glass: var(--veneu-dark-firefox-glass);
-    .q-calendar {
-      * {
-        border-color: var(--veneu-light) !important;
-      }
-      .week-view-current-time-line {
-        border-color: var(--veneu-red) !important;
-      }
-      .q-active-date,
-      .q-active-date .q-btn__content {
-        color: var(--veneu-light) !important;
-      }
-    }
-    * {
-      color: var(--veneu-light) !important;
-    }
-    .q-checkbox[aria-checked="true"],
-    .q-checkbox[aria-checked="mixed"],
-    .q-checkbox[aria-checked="true"] *,
-    .q-checkbox[aria-checked="mixed"] * {
-      background-color: var(--veneu-blue);
-    }
-    .q-timeline__dot .q-icon {
-      color: var(--veneu-blue) !important;
-    }
+  --veneu-text-primary: var(--veneu-blue);
+  --veneu-text-alternate: var(--veneu-light);
+
+  * {
+    color: var(--veneu-text-primary);
   }
+
+  // color: var(--veneu-text-primary);
+  // @media (prefers-color-scheme: dark) {
+  //   --veneu-background: var(--veneu-dark);
+  //   --veneu-background-backdrop: var(--veneu-dark-backdrop);
+  //   --veneu-background-highlight: var(--veneu-dark-highlight);
+  //   --veneu-background-lowlight: var(--veneu-dark-lowlight);
+  //   --veneu-firefox-glass: var(--veneu-dark-firefox-glass);
+  //   .q-calendar {
+  //     * {
+  //       border-color: var(--veneu-light) !important;
+  //     }
+  //     .week-view-current-time-line {
+  //       border-color: var(--veneu-red) !important;
+  //     }
+  //     .q-active-date,
+  //     .q-active-date .q-btn__content {
+  //       color: var(--veneu-light) !important;
+  //     }
+  //   }
+  //   * {
+  //     color: var(--veneu-light) !important;
+  //   }
+  //   .q-checkbox[aria-checked="true"],
+  //   .q-checkbox[aria-checked="mixed"],
+  //   .q-checkbox[aria-checked="true"] *,
+  //   .q-checkbox[aria-checked="mixed"] * {
+  //     background-color: var(--veneu-blue);
+  //   }
+  //   .q-timeline__dot .q-icon {
+  //     color: var(--veneu-blue) !important;
+  //   }
+  // }
 
   /* Shadows */
   --elevated-shadow: 0.25rem 0.25rem 0.25rem var(--veneu-background-highlight),
@@ -125,7 +133,7 @@ h1 {
   font-family: "Exo 2";
   font-weight: 900;
   font-style: italic;
-  color: var(--veneu-blue);
+  color: var(--veneu-text-primary);
   font-size: 2rem !important;
   line-height: initial !important;
   margin-top: 0rem;
@@ -136,14 +144,14 @@ h2 {
   font-weight: 900;
   font-style: italic;
   font-family: "Exo 2";
-  color: var(--veneu-blue);
+  color: var(--veneu-text-primary);
 }
 h3 {
   font-size: 1.25rem !important;
   font-weight: 900;
   font-style: italic;
   font-family: "Exo 2";
-  color: var(--veneu-blue);
+  color: var(--veneu-text-primary);
 }
 
 .special-font {
@@ -350,4 +358,43 @@ main {
   background: transparent;
   z-index: 12;
   overflow: visible;
+}
+
+#theme[data-theme="false"] {
+  --veneu-background: var(--veneu-dark);
+  --veneu-background-backdrop: var(--veneu-dark-backdrop);
+  --veneu-background-highlight: var(--veneu-dark-highlight);
+  --veneu-background-lowlight: var(--veneu-dark-lowlight);
+  --veneu-firefox-glass: var(--veneu-dark-firefox-glass);
+  .q-calendar {
+    * {
+      border-color: var(--veneu-light) !important;
+    }
+    .week-view-current-time-line {
+      border-color: var(--veneu-red) !important;
+    }
+    .q-active-date,
+    .q-active-date .q-btn__content {
+      color: var(--veneu-light) !important;
+    }
+  }
+  * {
+    color: var(--veneu-light) !important;
+  }
+  .q-checkbox[aria-checked="true"],
+  .q-checkbox[aria-checked="mixed"],
+  .q-checkbox[aria-checked="true"] *,
+  .q-checkbox[aria-checked="mixed"] * {
+    background-color: var(--veneu-text-primary);
+  }
+  .q-timeline__dot .q-icon {
+    color: var(--veneu-text-primary) !important;
+  }
+}
+#theme[data-theme="true"] {
+  --veneu-background: var(--veneu-light) !important;
+  --veneu-background-backdrop: var(--veneu-light-backdrop) !important;
+  --veneu-background-highlight: var(--veneu-light-highlight) !important;
+  --veneu-background-lowlight: var(--veneu-light-lowlight) !important;
+  --veneu-firefox-glass: var(--veneu-light-firefox-glass) !important;
 }

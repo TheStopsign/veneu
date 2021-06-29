@@ -9,6 +9,11 @@ body {
   height: 100% !important;
 }
 
+.text-primary,
+.q-field * {
+  color: var(--veneu-text-primary) !important;
+}
+
 aside.q-drawer--mobile {
   width: 90% !important;
   max-width: 25rem !important;
@@ -120,6 +125,12 @@ body,
   animation: grow-in-button 0.5s forwards !important;
 }
 
+.q-time__header *,
+.q-date__header *,
+.q-toggle__thumb .q-icon {
+  color: var(--veneu-text-alternate) !important;
+}
+
 .q-date {
   min-width: unset;
   .q-date__view {
@@ -210,7 +221,7 @@ body,
 
 .q-timeline__heading-title {
   font-family: "Exo 2" !important;
-  color: var(--veneu-blue);
+  color: var(--veneu-text-primary);
 }
 
 .q-badge[rounded] {
@@ -233,10 +244,17 @@ h1 {
   animation: unset;
 }
 
+.q-btn * {
+  color: var(--veneu-text-alternate);
+}
+
 .q-btn.bg-primary {
   background-color: var(--veneu-background) !important;
   padding: 0.125rem;
   animation: grow-in-button 0.5s forwards !important;
+  * {
+    color: var(--veneu-text-alternate) !important;
+  }
 
   .q-btn__wrapper {
     background-color: var(--veneu-blue) !important;
@@ -250,7 +268,9 @@ h1 {
   background-color: var(--veneu-background) !important;
   padding: 0.125rem;
   animation: grow-in-button 0.5s forwards !important;
-
+  * {
+    color: var(--veneu-text-alternate) !important;
+  }
   .q-btn__wrapper {
     background-color: var(--veneu-red) !important;
     border-radius: 0.875rem;
@@ -276,7 +296,7 @@ h1 {
 
 .q-item__label--caption,
 .q-field__native:not(:focus) .q-field__label {
-  color: var(--veneu-dark) !important;
+  color: var(--veneu-text-primary) !important;
   font-size: 0.65rem !important;
 }
 
@@ -289,7 +309,7 @@ h1 {
 
 .q-tree__node-header-content,
 .video-js * {
-  color: var(--veneu-blue);
+  color: var(--veneu-text-primary);
 }
 
 .q-time--landscape .q-time__header {
@@ -303,8 +323,8 @@ h1 {
 
 .q-calendar {
   * {
-    color: var(--veneu-blue) !important;
-    border-color: var(--veneu-blue) !important;
+    color: var(--veneu-text-primary) !important;
+    border-color: var(--veneu-text-primary) !important;
   }
   .q-badge * {
     color: var(--veneu-light) !important;
@@ -318,13 +338,16 @@ h1 {
     margin: 8px !important;
   }
   .q-active-date .q-btn__content {
-    color: var(--veneu-background) !important;
+    color: var(--veneu-text-alternate) !important;
   }
   .q-calendar-daily__head-day.q-active-date .q-btn__wrapper::before {
     background-color: var(--veneu-blue);
   }
   .q-calendar-daily__scroll-area {
     overflow-y: auto;
+  }
+  .q-calendar-daily__day-interval--section {
+    border: none;
   }
 }
 
@@ -429,4 +452,25 @@ h1 {
 
 .q-field__native {
   font-size: 16px !important;
+}
+
+#theme {
+  .q-toggle__inner--falsy .q-toggle__thumb::after {
+    background-color: var(--veneu-dark);
+  }
+  .q-toggle__inner--truthy .q-toggle__thumb i {
+    color: var(--veneu-light) !important;
+  }
+  .q-toggle__inner--indet .q-toggle__thumb::after {
+    background-color: var(--veneu-blue);
+  }
+  .q-toggle__inner--truthy .q-toggle__thumb i {
+    color: var(--veneu-light) !important;
+  }
+  .q-toggle__inner--truthy .q-toggle__thumb::after {
+    background-color: var(--veneu-light);
+  }
+  .q-toggle__inner--truthy .q-toggle__thumb i {
+    color: var(--veneu-blue) !important;
+  }
 }

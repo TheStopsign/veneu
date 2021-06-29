@@ -3,7 +3,7 @@
     <template slot-scope="{ result: { loading, error, data } }">
       <div v-if="loading">Loading...</div>
       <div v-if="error">Error...</div>
-      <div v-if="data">
+      <div v-if="data" id="courselist">
         <q-item-label header class="text-primary q-pb-md row justify-between"> Courses </q-item-label>
         <q-item-label header class="text-primary q-pb-md">Instructor for...</q-item-label>
         <q-expansion-item
@@ -22,6 +22,7 @@
           <q-item
             slot="header"
             class="col q-pl-md q-py-sm q-mr-sm q-pr-none"
+            :class="$route.name != 'Course' || $route.params._id != course._id ? '' : 'neu-concave'"
             :clickable="$route.name != 'Course' || $route.params._id != course._id"
             @click="$router.push({ name: 'Course', params: { _id: course._id } })"
           >
@@ -51,6 +52,7 @@
                 <q-item
                   slot="header"
                   class="col q-px-md q-py-sm q-mr-sm"
+                  :class="$route.name != 'RegistrationSection' || $route.params._id != section._id ? '' : 'neu-concave'"
                   :clickable="$route.name != 'RegistrationSection' || $route.params._id != section._id"
                   @click="$router.push({ name: 'RegistrationSection', params: { _id: section._id } })"
                 >
@@ -127,6 +129,7 @@
           <q-item
             slot="header"
             class="col q-pl-md q-py-sm q-mr-sm q-pr-none"
+            :class="$route.name != 'Course' || $route.params._id != course._id ? '' : 'neu-concave'"
             clickable
             :to="{ name: 'Course', params: { _id: course._id } }"
           >
