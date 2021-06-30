@@ -45,7 +45,7 @@
 export default {
   data() {
     return {
-      newUser: { first_name: "", last_name: "", email: "", password: "" }
+      newUser: { first_name: "", last_name: "", email: "", password: "" },
     };
   },
 
@@ -59,17 +59,17 @@ export default {
     },
     onUserCreated(previousResult, { subscriptionData }) {
       return {
-        users: [...previousResult.users, subscriptionData.data.userCreated]
+        users: [...previousResult.users, subscriptionData.data.userCreated],
       };
     },
     onUserUpdated(previousResult, { subscriptionData }) {
-      const index = previousResult.users.findIndex(x => x._id == subscriptionData.data.userUpdated._id);
+      const index = previousResult.users.findIndex((x) => x._id == subscriptionData.data.userUpdated._id);
       previousResult.users[index] = subscriptionData.data.userUpdated;
       return {
-        users: previousResult.users
+        users: previousResult.users,
       };
-    }
-  }
+    },
+  },
 };
 </script>
 

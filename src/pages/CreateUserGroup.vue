@@ -17,8 +17,8 @@
             @change="handleChangeResource"
             :selectable="
               me.auths
-                .filter(a => ['Course', 'RegistrationSection', 'UserGroup'].includes(a.shared_resource_type))
-                .map(a => a._id)
+                .filter((a) => ['Course', 'RegistrationSection', 'UserGroup'].includes(a.shared_resource_type))
+                .map((a) => a._id)
             "
           />
           <q-input
@@ -45,16 +45,16 @@ import ResourceSelector from "../components/ResourceSelector";
 export default {
   name: "CreateUserGroup",
   components: {
-    ResourceSelector
+    ResourceSelector,
   },
   props: {
-    me: Object
+    me: Object,
   },
   data() {
     return {
       name: "",
       parent_resource: null,
-      parent_resource_type: null
+      parent_resource_type: null,
     };
   },
   methods: {
@@ -71,12 +71,12 @@ export default {
     },
     handleChangeResource(resource, type) {
       this.parent_resource = resource;
-      let a = this.me.auths.find(a => a.shared_resource._id == resource);
+      let a = this.me.auths.find((a) => a.shared_resource._id == resource);
       if (a) {
         this.parent_resource_type = a.shared_resource_type;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

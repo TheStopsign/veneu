@@ -40,11 +40,11 @@ import VeneuLogo from "../components/VeneuLogo";
 export default {
   name: "Signup",
   components: {
-    VeneuLogo
+    VeneuLogo,
   },
   data() {
     return {
-      email: ""
+      email: "",
     };
   },
   methods: {
@@ -52,7 +52,8 @@ export default {
       return this.isValidEmail(this.email);
     },
     isValidEmail(val) {
-      const emailPattern = /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
+      const emailPattern =
+        /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
       if (emailPattern.test(val)) {
         return true;
       } else {
@@ -64,14 +65,14 @@ export default {
         progress: true,
         message: "Please follow the link sent to: " + this.email,
         icon: "email",
-        color: "primary"
+        color: "primary",
       });
       this.$router.push({ name: "Landing" });
     },
     handleBack() {
       this.$router.push({ name: "Landing" });
-    }
-  }
+    },
+  },
 };
 </script>
 

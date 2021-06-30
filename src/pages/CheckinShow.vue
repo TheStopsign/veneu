@@ -10,7 +10,7 @@
     <div v-if="checkinQuery.error">Error...</div>
     <div v-if="checkinQuery.data && checkinQuery.data.checkin" id="checkinloaded">
       <div class="row full-width justify-center">
-        <q-responsive class="neu-convex" style="width: 50vh;" :ratio="1">
+        <q-responsive class="neu-convex" style="width: 50vh" :ratio="1">
           <vue-qr
             :key="current.code"
             :text="
@@ -77,7 +77,7 @@
       </div>
       <ApolloSubscribeToMore
         :document="
-          gql =>
+          (gql) =>
             gql`
               subscription claimedTicket($code: String!) {
                 claimedTicket(code: $code) {
@@ -94,7 +94,7 @@
       />
       <ApolloSubscribeToMore
         :document="
-          gql =>
+          (gql) =>
             gql`
               subscription reservedTicket($host: ID!) {
                 reservedTicket(host: $host) {
@@ -132,7 +132,7 @@ import VueQr from "vue-qr";
 import gql from "graphql-tag";
 export default {
   props: {
-    me: Object
+    me: Object,
   },
   components: { VueQr },
   data() {
@@ -144,14 +144,14 @@ export default {
       checkinQuery: {
         error: null,
         loading: null,
-        data: null
-      }
+        data: null,
+      },
     };
   },
   watch: {
     $route() {
       this.startNewSession();
-    }
+    },
   },
   created() {
     this.startNewSession();
@@ -165,7 +165,7 @@ export default {
       this.checkinQuery = {
         error: null,
         loading: true,
-        data: null
+        data: null,
       };
       this.$apollo
         .query({
@@ -186,17 +186,17 @@ export default {
               }
             }
           `,
-          variables: { _id: this.$route.params._id }
+          variables: { _id: this.$route.params._id },
         })
-        .then(data => {
+        .then((data) => {
           this.checkinQuery.loading = false;
           this.checkinQuery.data = data.data;
-          this.checkinQuery.data.checkin.tickets.forEach(ticket => {
+          this.checkinQuery.data.checkin.tickets.forEach((ticket) => {
             this.tickets[ticket.code] = ticket;
           });
           this.tickets[this.current.code] = { ...this.current };
         })
-        .catch(e => {
+        .catch((e) => {
           this.checkinQuery.error = e;
         });
     },
@@ -204,7 +204,7 @@ export default {
       const csvContent =
         "data:text/csv;charset=utf-8,First,Last,User ID,Code\n" +
         Object.values(this.tickets)
-          .map(e => e.user && [e.first_name, e.last_name, e.user, e.code].join(","))
+          .map((e) => e.user && [e.first_name, e.last_name, e.user, e.code].join(","))
           .join("\n");
 
       const encodedUri = encodeURI(csvContent);
@@ -223,13 +223,13 @@ export default {
       previousResult,
       {
         subscriptionData: {
-          data: { claimedTicket }
-        }
+          data: { claimedTicket },
+        },
       }
     ) {
       if (
         !Object.values(this.tickets)
-          .map(a => a.user)
+          .map((a) => a.user)
           .includes(claimedTicket.user)
       ) {
         this.current = this.next; // iteration logic
@@ -241,7 +241,7 @@ export default {
           progress: true,
           message: claimedTicket.first_name + " " + claimedTicket.last_name + " checked in",
           icon: "event_seat",
-          color: "primary"
+          color: "primary",
         });
       }
     },
@@ -249,8 +249,8 @@ export default {
       previousResult,
       {
         subscriptionData: {
-          data: { reservedTicket }
-        }
+          data: { reservedTicket },
+        },
       }
     ) {
       const reservation_time = Date.now();
@@ -258,18 +258,18 @@ export default {
         reservedTicket.length == 5 &&
         Object.keys(this.tickets).length >= 5 &&
         reservedTicket.every(
-          ticket =>
+          (ticket) =>
             undefined != this.tickets[ticket.code] && reservation_time - this.tickets[ticket.code].creation_time <= 5000
         ) &&
         !Object.values(this.tickets)
-          .map(a => a.user)
+          .map((a) => a.user)
           .includes(reservedTicket[0].user)
       ) {
         var reservedticket = {
           ...this.generateTicket(),
           user: reservedTicket[0].user,
           first_name: reservedTicket[0].first_name,
-          last_name: reservedTicket[0].last_name
+          last_name: reservedTicket[0].last_name,
         };
         this.tickets[reservedticket.code] = reservedTicket;
         this.sendApprove(reservedticket);
@@ -277,7 +277,7 @@ export default {
           progress: true,
           message: reservedticket.first_name + " " + reservedticket.last_name + " reserved their seat",
           icon: "event_seat",
-          color: "primary"
+          color: "primary",
         });
       }
     },
@@ -291,7 +291,7 @@ export default {
       return {
         code: result,
         creation_time: Date.now(),
-        checkin: this.$route.params._id
+        checkin: this.$route.params._id,
       };
     },
     async sendApprove(ticket) {
@@ -306,7 +306,7 @@ export default {
             }
           }
         `,
-        variables: ticket
+        variables: ticket,
       });
     },
     async handleDelete() {
@@ -320,22 +320,22 @@ export default {
             }
           `,
           variables: {
-            _id: this.$route.params._id
-          }
+            _id: this.$route.params._id,
+          },
         })
         .then(({ data }) => {
           location.href = "/dashboard";
         })
-        .catch(e => {
+        .catch((e) => {
           this.$q.notify({
             progress: true,
             message: "Couldn't delete checkin",
             icon: "error",
-            color: "negative"
+            color: "negative",
           });
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -13,7 +13,8 @@
     "db": "sudo killall mongod;mongod",
     "db:clear": "node ./apollo-server/dbclear.js",
     "db:seed": "node ./apollo-server/dbseed.js",
-    "start": "node ./apollo-server/server.js"
+    "start": "node ./apollo-server/server.js",
+    "pretty": "prettier --write \"./**/*.{js,jsx,json,vue,gql}\""
   },
   "dependencies": {
     "@quasar/extras": "^1.10.7",
@@ -62,7 +63,7 @@
     "mongoose-seed": "^0.6.0",
     "node-sass": "^6.0.0",
     "nodemon": "^2.0.7",
-    "prettier": "^2.3.1",
+    "prettier": "^2.3.2",
     "sass-loader": "^10.2.0",
     "vue-cli-plugin-apollo": "~0.22.2",
     "vue-cli-plugin-quasar": "~3.0.2",

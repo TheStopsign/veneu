@@ -71,7 +71,7 @@ import VeneuLogo from "../components/VeneuLogo";
 export default {
   name: "FirstLogin",
   components: {
-    VeneuLogo
+    VeneuLogo,
   },
   data() {
     return {
@@ -79,7 +79,7 @@ export default {
       first_name: "",
       last_name: "",
       password: "",
-      password2: ""
+      password2: "",
     };
   },
   methods: {
@@ -93,7 +93,7 @@ export default {
     },
     handleBack() {
       this.$router.push({ name: "Landing" });
-    }
-  }
+    },
+  },
 };
 </script>

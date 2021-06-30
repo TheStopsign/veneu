@@ -40,33 +40,34 @@
 import { date } from "quasar";
 export default {
   props: {
-    me: Object
+    me: Object,
   },
   data() {
     return {
-      deleteModal: false
+      deleteModal: false,
     };
   },
   methods: {
-    getWatchPath: recording => (recording ? "/watch?v=" + recording._id : "/watch"),
+    getWatchPath: (recording) => (recording ? "/watch?v=" + recording._id : "/watch"),
     getFormattedDate(d) {
       return date.formatDate(d, "MMM Do, YYYY @ h:mma");
     },
     canDelete() {
       return (
         this.me &&
-        this.me.auths.some(a => a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR"].includes(a.role))
+        this.me.auths.some((a) => a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR"].includes(a.role))
       );
     },
     canShare() {
       return (
         this.me &&
         this.me.auths.some(
-          a => a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
+          (a) =>
+            a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
         )
       );
-    }
-  }
+    },
+  },
 };
 </script>
 

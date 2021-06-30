@@ -2,13 +2,13 @@ module.exports = {
   root: true,
 
   env: {
-    node: true
+    node: true,
   },
 
   extends: ["plugin:vue/essential", "eslint:recommended", "@vue/prettier"],
 
   parserOptions: {
-    parser: "babel-eslint"
+    parser: "babel-eslint",
   },
 
   rules: {
@@ -19,11 +19,11 @@ module.exports = {
       {
         env: "literal",
         projectName: "app",
-        schemaJsonFilepath: "./node_modules/.temp/graphql/schema.json"
-      }
+        schemaJsonFilepath: "./node_modules/.temp/graphql/schema.json",
+      },
     ],
-    "no-unused-vars": "off"
+    "no-unused-vars": "off",
   },
 
-  plugins: ["graphql"]
+  plugins: ["graphql"],
 };

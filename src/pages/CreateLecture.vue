@@ -24,9 +24,7 @@
             subtitle="What day is the lecture on?"
           />
         </div>
-        <div class="row full-width q-px-md items-center justify-center">
-          What are the start and end times?
-        </div>
+        <div class="row full-width q-px-md items-center justify-center">What are the start and end times?</div>
         <div class="row full-width q-px-md q-pb-md">
           <q-time v-model="start" color="primary" mask="HH:mm Z" class="col-12 col-sm q-mr-md neu-convex q-mt-md" />
           <q-time v-model="end" color="primary" mask="HH:mm Z" class="col-12 col-sm neu-convex q-mt-md" />
@@ -52,10 +50,10 @@ import ResourceSelector from "../components/ResourceSelector";
 export default {
   name: "CreateRegistrationSection",
   props: {
-    me: Object
+    me: Object,
   },
   components: {
-    ResourceSelector
+    ResourceSelector,
   },
   data() {
     return {
@@ -64,7 +62,7 @@ export default {
       parent_resource: null,
       parent_resource_type: null,
       start: "",
-      end: ""
+      end: "",
     };
   },
   methods: {
@@ -118,8 +116,8 @@ export default {
             parent_resource: this.parent_resource,
             parent_resource_type: this.parent_resource_type,
             start: this.start,
-            end: this.end
-          }
+            end: this.end,
+          },
         })
         .then(({ data: { createLecture } }) => {
           this.handleCreateLecture();
@@ -145,12 +143,12 @@ export default {
     },
     handleChangeResource(resource, type) {
       this.parent_resource = resource;
-      let a = this.me.auths.find(a => a.shared_resource._id == resource);
+      let a = this.me.auths.find((a) => a.shared_resource._id == resource);
       if (a) {
         this.parent_resource_type = a.shared_resource_type;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -46,12 +46,12 @@ import VeneuLogo from "../components/VeneuLogo";
 export default {
   name: "Login",
   components: {
-    VeneuLogo
+    VeneuLogo,
   },
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
     };
   },
   methods: {
@@ -71,8 +71,8 @@ export default {
     },
     handleBack() {
       this.$router.push({ name: "Landing" });
-    }
-  }
+    },
+  },
 };
 </script>
 

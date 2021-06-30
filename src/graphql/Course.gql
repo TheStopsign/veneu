@@ -1,4 +1,4 @@
-query($_id: ID!) {
+query ($_id: ID!) {
   course(_id: $_id) {
     _id
     name

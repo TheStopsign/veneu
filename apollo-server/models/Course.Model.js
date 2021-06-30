@@ -4,88 +4,88 @@ const Course = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     auths: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Auth"
-      }
+        ref: "Auth",
+      },
     ],
     creator: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      ref: "User",
     },
     type: {
       type: String,
-      default: "Course"
+      default: "Course",
     },
     prefix: {
       type: String,
-      required: true
+      required: true,
     },
     suffix: {
       type: Number,
-      required: true
+      required: true,
     },
     start: {
       type: Date,
-      required: true
+      required: true,
     },
     end: {
       type: Date,
-      required: true
+      required: true,
     },
     description: {
       type: String,
-      required: false
+      required: false,
     },
     user_groups: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "UserGroup"
-      }
+        ref: "UserGroup",
+      },
     ],
     registration_sections: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "RegistrationSection"
-      }
+        ref: "RegistrationSection",
+      },
     ],
     lectures: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Lecture"
-      }
+        ref: "Lecture",
+      },
     ],
     parent_resource: {
       type: mongoose.Schema.Types.ObjectId,
-      required: false
+      required: false,
     },
     parent_resource_type: {
       type: String,
-      required: false
-    }
+      required: false,
+    },
   },
   {
-    timestamps: { createdAt: "created_at", updatedAt: "updated_at" }
+    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
   }
 )
-  .pre("deleteOne", { document: true }, function(next) {
+  .pre("deleteOne", { document: true }, function (next) {
     Promise.all([
       mongoose.model("Auth").deleteMany({ shared_resource: this._id, shared_resource_type: "Course" }),
       mongoose.model("UserGroup").deleteMany({ _id: { $in: this.user_groups } }),
       mongoose.model("RegistrationSection").deleteMany({ _id: { $in: this.registration_sections } }),
-      mongoose.model("Lecture").deleteMany({ _id: { $in: this.lectures } })
-    ]).then(resolved => {
+      mongoose.model("Lecture").deleteMany({ _id: { $in: this.lectures } }),
+    ]).then((resolved) => {
       next();
     });
   })
-  .pre("save", function(next) {
+  .pre("save", function (next) {
     this.wasNew = this.isNew;
     next();
   })
-  .post("save", function() {
+  .post("save", function () {
     if (this.wasNew) {
       mongoose
         .model("Auth")
@@ -93,11 +93,11 @@ const Course = new mongoose.Schema(
           shared_resource: this._id,
           shared_resource_type: "Course",
           user: this.creator._id,
-          role: "INSTRUCTOR"
+          role: "INSTRUCTOR",
         })
-        .then(auth => {
+        .then((auth) => {
           global.pubsub.publish("AUTH_CREATED", {
-            authCreated: auth
+            authCreated: auth,
           });
         });
     }
