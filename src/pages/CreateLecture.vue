@@ -5,7 +5,13 @@
         <div>
           <i><h1>Create a New Lecture</h1></i>
         </div>
-        <ResourceSelector :me="me" label="For Resource..." @change="handleChangeResource" class="q-mt-md" />
+        <ResourceSelector
+          :me="me"
+          label="For Resource..."
+          @change="handleChangeResource"
+          :selectable="me.auths.filter((a) => a.shared_resource_type != 'Lecture').map((a) => a._id)"
+          class="q-mt-md"
+        />
         <q-input
           standout="bg-primary text-white q-ma-none"
           color="primary"
