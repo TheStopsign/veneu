@@ -105,7 +105,7 @@ import gql from "graphql-tag";
 import ResourceSelector from "../components/ResourceSelector";
 import CheckinSelector from "../components/CheckinSelector";
 export default {
-  name: "CreateRegistrationSection",
+  name: "CreateVideo",
   props: {
     me: Object,
   },

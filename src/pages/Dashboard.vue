@@ -20,7 +20,10 @@
             <q-btn flat label="Prev" @click="calendarPrev" />
             <q-btn flat label="Next" @click="calendarNext" />
           </div>
-          <div class="neu-convex q-mt-md" style="display: flex; flex-direction: column; height: 100%; width: 100%">
+          <div
+            class="neu-convex q-mt-md"
+            style="display: flex; flex-direction: column; height: 100%; width: 100%; overflow-x: auto"
+          >
             <q-calendar
               ref="calendar"
               v-model="selectedDate"
@@ -30,7 +33,7 @@
               short-interval-label
               transition-prev="slide-right"
               transition-next="slide-left"
-              class="neu-convex q-pa-xs"
+              class="rounded-borders q-pa-none"
               :interval-minutes="30"
               :interval-count="48"
               @click:time2="onClickInterval"

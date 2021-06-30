@@ -40,6 +40,7 @@ export default {
       },
       bigbrotherinstance: null,
       seconds_watched: 0,
+      relevantTickets: [],
     };
   },
   beforeDestroy() {
@@ -65,6 +66,17 @@ export default {
                 due
               }
               duration
+              checkins {
+                _id
+              }
+            }
+            tickets {
+              _id
+              code
+              checkin {
+                _id
+                created_at
+              }
             }
           }
         `,
@@ -72,7 +84,8 @@ export default {
       })
       .then((data) => {
         this.YTVideoStream = data.data.YTVideoStream;
-        if (this.YTVideoStream.assignment) {
+        this.relevantTickets = this.findRelevantTickets(data.data.tickets, this.YTVideoStream.checkins);
+        if (this.YTVideoStream.assignment || this.relevantTickets.length < this.YTVideoStream.checkins.length) {
           this.$apollo
             .query({
               query: gql`
@@ -103,7 +116,6 @@ export default {
                 this.loading = false;
                 this.setupVjs();
               } else {
-                console.log(this.YTVideoStream);
                 this.$apollo
                   .mutate({
                     mutation: gql`
@@ -142,6 +154,11 @@ export default {
   },
   mounted() {},
   methods: {
+    findRelevantTickets(tickets, checkins) {
+      return checkins
+        ? tickets.filter((ticket) => checkins.map((checkin) => checkin._id).includes(ticket.checkin._id))
+        : [];
+    },
     setupVjs() {
       let self = this;
       self.lecture.video_type = "video/youtube";
@@ -210,7 +227,11 @@ export default {
                 self.videoPlayback.updated_at = Date.now();
               }
             };
-            if (self.YTVideoStream.assignment && self.YTVideoStream.duration - self.videoPlayback.seconds_watched > 5) {
+            if (
+              self.YTVideoStream.assignment &&
+              self.YTVideoStream.duration - self.videoPlayback.seconds_watched > 5 &&
+              self.relevantTickets.length < self.YTVideoStream.checkins.length
+            ) {
               self.vjs.on("play", function () {
                 self.videoPlayback.updated_at = Date.now();
               });

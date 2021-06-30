@@ -95,7 +95,8 @@ body,
 .q-date,
 .q-time,
 .q-select,
-.q-timeline__entry {
+.q-timeline__entry,
+.rounded-borders {
   border-radius: 1rem !important;
 }
 
@@ -325,21 +326,24 @@ h1 {
   font-size: 1.5rem !important;
 }
 
+.q-badge {
+  color: var(--veneu-text-alternate) !important;
+}
+
 .q-calendar {
+  min-width: 60rem !important;
   * {
     color: var(--veneu-text-primary) !important;
     border-color: var(--veneu-text-primary) !important;
+  }
+  .q-btn {
+    margin: 0px 0px 8px 8px !important;
   }
   .q-badge * {
     color: var(--veneu-light) !important;
   }
   .week-view-current-time-line {
     border-color: var(--veneu-red) !important;
-  }
-  .q-calendar-daily__head-day-label {
-    display: inline-block !important;
-    position: relative !important;
-    margin: 8px !important;
   }
   .q-active-date .q-btn__content {
     color: var(--veneu-text-alternate) !important;
@@ -352,6 +356,9 @@ h1 {
   }
   .q-calendar-daily__day-interval--section {
     border: none;
+  }
+  .q-past-day {
+    opacity: 0.25;
   }
 }
 
