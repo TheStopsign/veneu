@@ -68,9 +68,6 @@ body,
 .q-time,
 .q-time__container-child,
 .q-date,
-.q-select__dialog,
-.q-menu,
-.q-table__card,
 .q-tab-panels,
 .q-calendar,
 .q-toggle__inner--falsy .q-toggle__thumb:after,
@@ -269,18 +266,21 @@ h1 {
   }
 }
 
-.q-btn.bg-red {
-  background-color: var(--veneu-background) !important;
-  padding: 0.125rem;
-  animation: grow-in-button 0.5s forwards !important;
-  * {
-    color: var(--veneu-text-alternate) !important;
-  }
-  .q-btn__wrapper {
-    background-color: var(--veneu-red) !important;
-    border-radius: 0.875rem;
-    min-height: unset;
-    padding: calc(4px - 0.125rem) calc(16px - 0.125rem);
+.bg-red {
+  background-color: var(--veneu-red) !important;
+  &.q-btn {
+    background-color: var(--veneu-background) !important;
+    padding: 0.125rem;
+    animation: grow-in-button 0.5s forwards !important;
+    * {
+      color: var(--veneu-text-alternate) !important;
+    }
+    .q-btn__wrapper {
+      background-color: var(--veneu-red) !important;
+      border-radius: 0.875rem;
+      min-height: unset;
+      padding: calc(4px - 0.125rem) calc(16px - 0.125rem);
+    }
   }
 }
 
@@ -425,7 +425,10 @@ h1 {
 #headertoolbar,
 .q-dialog__inner .q-card,
 .video-js .vjs-control-bar,
-.video-js .vjs-big-play-button {
+.video-js .vjs-big-play-button,
+.q-select__dialog,
+.q-menu,
+.q-table__card {
   -webkit-backdrop-filter: blur(4px) !important;
   backdrop-filter: blur(4px) !important;
   background: none !important;
@@ -436,7 +439,10 @@ h1 {
 @-moz-document url-prefix() {
   #headertoolbar,
   .video-js .vjs-control-bar,
-  .video-js .vjs-big-play-button {
+  .video-js .vjs-big-play-button,
+  .q-select__dialog,
+  .q-menu,
+  .q-table__card {
     background-color: var(--veneu-firefox-glass) !important;
     border: none;
   }
@@ -489,4 +495,7 @@ h1 {
   .q-toggle__inner--truthy .q-toggle__thumb i {
     color: var(--veneu-blue) !important;
   }
+}
+.q-timeline__dot::before {
+  background-color: var(--veneu-blue);
 }
