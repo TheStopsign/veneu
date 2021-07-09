@@ -26,11 +26,6 @@ aside.q-drawer--mobile {
   animation: grow-in-input 0.5s forwards;
 }
 
-.q-field--standout:focus-within .q-field__control {
-  background: var(--veneu-blue);
-  animation: grow-in-button 0.5s forwards;
-}
-
 .q-toggle__inner--truthy .q-toggle__track,
 .q-toggle__inner--falsy .q-toggle__track {
   opacity: 1;
@@ -161,6 +156,7 @@ body,
 }
 
 .q-btn--rectangle,
+.q-field__inner,
 .q-field__control,
 .q-dialog__inner > div {
   border-radius: 1rem !important;
@@ -498,4 +494,22 @@ h1 {
 }
 .q-timeline__dot::before {
   background-color: var(--veneu-blue);
+}
+
+.q-field--standout:focus-within {
+  .q-field__inner {
+    animation: grow-in-button 0.5s forwards;
+    padding: 0.125rem;
+  }
+  .q-field__control {
+    min-height: calc(56px - 0.25rem);
+    background: var(--veneu-blue);
+    border-radius: 0.875rem !important;
+    animation: none !important;
+    box-shadow: none !important;
+  }
+  &.q-input .q-field__control,
+  &.q-select .q-field__control {
+    height: calc(56px - 0.25rem) !important;
+  }
 }
