@@ -4,7 +4,7 @@
       <div v-if="loading">Loading...</div>
       <div v-if="error">Error...</div>
       <div v-if="data" id="courselist">
-        <q-item-label header class="text-primary q-pb-md row justify-between"> Courses </q-item-label>
+        <q-item-label header class="text-primary q-pb-none row justify-between"> Resources </q-item-label>
         <q-item-label header class="text-primary q-pb-md">Instructor for...</q-item-label>
         <q-expansion-item
           v-for="course in data.courses.filter(

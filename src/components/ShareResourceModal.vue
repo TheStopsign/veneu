@@ -8,14 +8,14 @@
           <div v-if="error">Error...</div>
           <div v-if="data && data.auths">
             <q-card>
-              <q-card-section class="row">
+              <q-card-section class="row q-pb-none">
                 <div class="text-h6 text-primary">Share {{ resourcetype }}</div>
               </q-card-section>
 
               <q-card-section class="scroll row q-ma-none q-pr-md q-pl-none q-py-none items-center">
                 <q-input
                   standout="bg-primary text-white"
-                  class="text-primary inline q-pl-md q-pb-md col-12"
+                  class="text-primary inline q-pl-md q-pb-md col-12 q-mt-sm"
                   v-model="emailInput"
                   color="primary"
                   label="Email"

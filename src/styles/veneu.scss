@@ -26,6 +26,8 @@
 
   --calendar-border-current: var(--veneu-red) 2px solid !important;
 
+  --q-transition-easing: cubic-bezier(0.03, 1.55, 0.52, 1) !important;
+
   /* Default (Light) Scheme */
   --veneu-background: var(--veneu-light);
   --veneu-background-backdrop: var(--veneu-light-backdrop);

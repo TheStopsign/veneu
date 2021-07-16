@@ -10,7 +10,9 @@ module.exports = {
   Query: {
     course: (parent, { _id }, { requester, loaders: { Course } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Course.load(_id);
+      return requester.auths.find((a) => a.shared_resource == _id && a.shared_resource_type == "Course")
+        ? Course.load(_id)
+        : null;
     },
     courses: (parent, args, { requester, models: { Course, Auth } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");

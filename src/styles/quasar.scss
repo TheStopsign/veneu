@@ -104,7 +104,8 @@ body,
   }
 }
 
-.q-btn:not(.bg-primary),
+.q-btn,
+.q-toggle__thumb::after,
 .q-time__container-child,
 .q-dialog__inner > div,
 .q-menu,
@@ -204,8 +205,8 @@ body,
   padding: 0px 16px 0px 0px !important;
 }
 
-.q-btn:focus:not(.bg-primary):not(.bg-red):not([disabled]),
-.q-btn:hover:not(.bg-primary):not(.bg-red):not([disabled]),
+.q-btn:focus:not([disabled]),
+.q-btn:hover:not([disabled]),
 .q-focusable:active:not([disabled]) .q-focus-helper,
 .q-hoverable:active:not([disabled]) {
   animation: grow-in-input 0.5s forwards !important;
@@ -248,7 +249,7 @@ h1 {
 
 .q-btn.bg-primary {
   background-color: var(--veneu-background) !important;
-  padding: 0.125rem;
+  padding: 0.25rem;
   animation: grow-in-button 0.5s forwards !important;
   * {
     color: var(--veneu-text-alternate) !important;
@@ -258,7 +259,7 @@ h1 {
     background-color: var(--veneu-blue) !important;
     border-radius: 0.875rem;
     min-height: unset;
-    padding: calc(4px - 0.125rem) calc(16px - 0.125rem);
+    padding: calc(4px - 0.25rem) calc(16px - 0.25rem);
   }
 }
 
@@ -266,7 +267,7 @@ h1 {
   background-color: var(--veneu-red) !important;
   &.q-btn {
     background-color: var(--veneu-background) !important;
-    padding: 0.125rem;
+    padding: 0.25rem;
     animation: grow-in-button 0.5s forwards !important;
     * {
       color: var(--veneu-text-alternate) !important;
@@ -275,7 +276,7 @@ h1 {
       background-color: var(--veneu-red) !important;
       border-radius: 0.875rem;
       min-height: unset;
-      padding: calc(4px - 0.125rem) calc(16px - 0.125rem);
+      padding: calc(4px - 0.25rem) calc(16px - 0.25rem);
     }
   }
 }
@@ -424,7 +425,8 @@ h1 {
 .video-js .vjs-big-play-button,
 .q-select__dialog,
 .q-menu,
-.q-table__card {
+.q-table__card,
+.q-pull-to-refresh {
   -webkit-backdrop-filter: blur(4px) !important;
   backdrop-filter: blur(4px) !important;
   background: none !important;
@@ -499,17 +501,18 @@ h1 {
 .q-field--standout:focus-within {
   .q-field__inner {
     animation: grow-in-button 0.5s forwards;
-    padding: 0.125rem;
+    padding: 0.25rem;
   }
   .q-field__control {
-    min-height: calc(56px - 0.25rem);
+    min-height: calc(56px - 0.5rem);
     background: var(--veneu-blue);
     border-radius: 0.875rem !important;
     animation: none !important;
     box-shadow: none !important;
+    padding: 0rem 0.5rem;
   }
   &.q-input .q-field__control,
   &.q-select .q-field__control {
-    height: calc(56px - 0.25rem) !important;
+    height: calc(56px - 0.5rem) !important;
   }
 }

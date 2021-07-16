@@ -37,8 +37,7 @@
                 icon="class"
               >
                 <div>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-                  et dolore magna aliqua.
+                  {{ lect.description || "" }}
                 </div>
               </q-timeline-entry>
             </q-timeline>

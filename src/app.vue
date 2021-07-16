@@ -6,68 +6,64 @@
         <div v-if="error">{{ tryLogout() }}</div>
         <div v-if="data" id="theme" :data-theme="'' + theme">
           <q-header :class="'text-primary ' + ($q.platform.is.mobile ? 'q-mx-sm' : 'q-mx-md')">
-            <q-pull-to-refresh @refresh="refresh" color="white" bg-color="primary">
-              <q-toolbar
-                id="headertoolbar"
-                :class="
-                  'q-pa-none q-pr-sm ' +
-                  (data.me ? 'neu-convex ' : '') +
-                  ($q.platform.is.mobile ? 'q-mt-sm' : 'q-mt-md')
-                "
+            <q-toolbar
+              id="headertoolbar"
+              :class="
+                'q-pa-none q-pr-sm ' + (data.me ? 'neu-convex ' : '') + ($q.platform.is.mobile ? 'q-mt-sm' : 'q-mt-md')
+              "
+            >
+              <q-btn
+                v-if="data.me"
+                round
+                size="sm"
+                icon="menu"
+                class="q-ma-md"
+                title="Menu"
+                aria-label="Menu"
+                @click="left = !left"
+              />
+              <q-toolbar-title
+                class="q-px-none"
+                v-if="!['Landing', 'Login', 'Signup', 'FirstTimeLogin'].includes($route.name)"
               >
-                <q-btn
-                  v-if="data.me"
-                  round
-                  size="sm"
-                  icon="menu"
-                  class="q-ma-md"
-                  title="Menu"
-                  aria-label="Menu"
-                  @click="left = !left"
-                />
-                <q-toolbar-title
-                  class="q-px-none"
-                  v-if="!['Landing', 'Login', 'Signup', 'FirstTimeLogin'].includes($route.name)"
-                >
-                  <q-avatar @click="$router.push({ name: 'Dashboard' })">
-                    <VeneuLogo id="nav-logo" />
-                  </q-avatar>
-                </q-toolbar-title>
+                <q-avatar @click="$router.push({ name: 'Dashboard' })">
+                  <VeneuLogo id="nav-logo" />
+                </q-avatar>
+              </q-toolbar-title>
 
-                <q-space />
+              <q-space />
 
-                <q-toggle
-                  toggle-indeterminate
-                  v-model="theme"
-                  unchecked-icon="dark_mode"
-                  indeterminate-icon="palette"
-                  checked-icon="light_mode"
-                  color="primary"
-                  size="xl"
-                  s
-                />
+              <q-toggle
+                toggle-indeterminate
+                v-model="theme"
+                unchecked-icon="dark_mode"
+                indeterminate-icon="palette"
+                checked-icon="light_mode"
+                color="primary"
+                size="xl"
+                s
+              />
 
-                <q-btn size="sm" round icon="qr_code_2" class="q-mx-sm" title="Checkin" aria-label="Checkin">
-                  <q-menu :offset="[0, 16]">
-                    <div class="q-pa-xs">
-                      <q-item clickable class="row full-width items-center q-ma-none" @click="handleScan"
-                        ><q-icon color="primary" size="sm" name="qr_code_scanner" class="q-mr-sm" />Attend</q-item
-                      >
-                      <q-item v-if="data.me" clickable class="row full-width items-center q-ma-none" @click="handleHost"
-                        ><q-icon color="primary" size="sm" name="present_to_all" class="q-mr-sm" />Host</q-item
-                      >
-                    </div>
-                  </q-menu>
-                </q-btn>
-                <q-btn v-if="data.me" size="sm" round icon="notifications" class="q-mx-sm" title="API" aria-label="API">
-                  <q-badge rounded color="red" floating label="1+" />
-                </q-btn>
-              </q-toolbar>
-            </q-pull-to-refresh>
+              <q-btn size="sm" round icon="qr_code_2" class="q-mx-sm" title="Checkin" aria-label="Checkin">
+                <q-menu :offset="[0, 16]">
+                  <div class="q-pa-xs">
+                    <q-item clickable class="row full-width items-center q-ma-none" @click="handleScan"
+                      ><q-icon color="primary" size="sm" name="qr_code_scanner" class="q-mr-sm" />Attend</q-item
+                    >
+                    <q-item v-if="data.me" clickable class="row full-width items-center q-ma-none" @click="handleHost"
+                      ><q-icon color="primary" size="sm" name="present_to_all" class="q-mr-sm" />Host</q-item
+                    >
+                  </div>
+                </q-menu>
+              </q-btn>
+              <q-btn v-if="data.me" size="sm" round icon="notifications" class="q-mx-sm" title="API" aria-label="API">
+                <q-badge rounded color="red" floating label="1+" />
+              </q-btn>
+            </q-toolbar>
           </q-header>
 
           <q-drawer v-if="data.me" show-if-above v-model="left" side="left">
-            <q-input borderless v-model="searchString" label="Search..." class="q-ml-md q-mr-md">
+            <q-input borderless v-model="searchString" label="Search..." class="q-ma-md q-px-md q-py-xs neu-convex">
               <template v-slot:prepend>
                 <q-icon name="search" />
               </template>
@@ -75,7 +71,7 @@
                 <q-icon name="close" @click="searchString = ''" class="cursor-pointer" />
               </template>
             </q-input>
-            <q-item clickable class="rounded-borders q-mx-md neu-concave" id="me">
+            <q-item clickable class="rounded-borders q-mx-md neu-convex" id="me">
               <q-item-section avatar class="q-my-xs">
                 <q-avatar class="spinner">
                   <img src="https://i1.sndcdn.com/avatars-000574262967-22er0z-t500x500.jpg" />
@@ -264,7 +260,9 @@
           </q-drawer>
 
           <q-page-container class="text-primary">
-            <router-view :me="data.me" />
+            <q-pull-to-refresh @refresh="refresh" color="white" bg-color="primary">
+              <router-view :me="data.me" />
+            </q-pull-to-refresh>
           </q-page-container>
         </div>
       </template>
