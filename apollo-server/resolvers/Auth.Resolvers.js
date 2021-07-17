@@ -26,9 +26,7 @@ module.exports = {
     auths: (parent, args, { requester, models: { Auth } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       if (args.shared_resource) {
-        return Auth.find({ shared_resource: args.shared_resource }).then((auths) => {
-          return auths;
-        });
+        return Auth.find({ shared_resource: args.shared_resource });
       } else {
         return requester.auths;
       }

@@ -227,7 +227,6 @@ export default {
                 self.videoPlayback.updated_at = Date.now();
               }
             };
-            console.log(self.relevantTickets.length < self.YTVideoStream.checkins.length);
             if (
               self.YTVideoStream.assignment &&
               self.YTVideoStream.duration - self.videoPlayback.seconds_watched > 5 &&

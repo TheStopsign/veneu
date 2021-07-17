@@ -160,9 +160,22 @@
                 </q-menu>
               </q-btn>
             </div>
-            <q-list class="text-primary neu-convex q-ma-md q-pa-xs">
+            <ResourceSelector
+              class="q-mx-md"
+              :me="data.me"
+              label="Navigation"
+              :selectable="
+                data.me.auths
+                  .filter((a) =>
+                    ['Course', 'RegistrationSection', 'UserGroup', 'Lecture'].includes(a.shared_resource_type)
+                  )
+                  .map((a) => a._id)
+              "
+              :nav="true"
+            />
+            <!-- <q-list class="text-primary neu-convex q-ma-md q-pa-xs">
               <course-list :me="data.me" />
-            </q-list>
+            </q-list> -->
             <q-list class="text-primary neu-convex q-ma-md q-pa-xs">
               <q-expansion-item
                 icon="qr_code_2"
@@ -275,13 +288,15 @@ import { setPalette } from "./styles/palette";
 import { date } from "quasar";
 import gql from "graphql-tag";
 import VeneuLogo from "./components/VeneuLogo";
-import CourseList from "./components/CourseList";
+// import CourseList from "./components/CourseList";
+import ResourceSelector from "./components/ResourceSelector";
 import "quasar/icon-set/fontawesome-v5";
 export default {
   name: "app",
   components: {
     VeneuLogo,
-    CourseList,
+    // CourseList,
+    ResourceSelector,
   },
   watch: {
     theme: function (val, oldVal) {

@@ -1,8 +1,8 @@
 const models = require("./models");
+const modelNames = Object.keys(models);
 const DataLoader = require("dataloader");
 
 const jwt = require("jsonwebtoken");
-const { model } = require("mongoose");
 const getUser = async (token) =>
   jwt.verify(token, process.env.JWTAUTH_KEY, function (err, decoded) {
     return err || !decoded
@@ -13,27 +13,18 @@ const getUser = async (token) =>
           });
         });
   });
+const findForModel = (keys, modelName) => models[modelName].find({ _id: { $in: keys } });
 const cacheKeyFn = (key) => key.toString();
 const getLoaders = () => {
-  return {
-    Assignment: new DataLoader((keys) => models.Assignment.find({ _id: { $in: keys } }), { cacheKeyFn }),
-    Auth: new DataLoader((keys) => models.Auth.find({ _id: { $in: keys } }), { cacheKeyFn }),
-    Checkin: new DataLoader((keys) => models.Checkin.find({ _id: { $in: keys } }), { cacheKeyFn }),
-    Course: new DataLoader((keys) => models.Course.find({ _id: { $in: keys } }), { cacheKeyFn }),
-    Lecture: new DataLoader((keys) => models.Lecture.find({ _id: { $in: keys } }), { cacheKeyFn }),
-    Notification: new DataLoader((keys) => models.Notification.find({ _id: { $in: keys } }), { cacheKeyFn }),
-    RegistrationSection: new DataLoader((keys) => models.RegistrationSection.find({ _id: { $in: keys } }), {
-      cacheKeyFn,
-    }),
-    Submission: new DataLoader((keys) => models.Submission.find({ _id: { $in: keys } }), { cacheKeyFn }),
-    Ticket: new DataLoader((keys) => models.Ticket.find({ _id: { $in: keys } }), { cacheKeyFn }),
-    User: new DataLoader((keys) => models.User.find({ _id: { $in: keys } }), { cacheKeyFn }),
-    UserGroup: new DataLoader((keys) => models.UserGroup.find({ _id: { $in: keys } }), { cacheKeyFn }),
-    VideoStreamPlayback: new DataLoader((keys) => models.VideoStreamPlayback.find({ _id: { $in: keys } }), {
-      cacheKeyFn,
-    }),
-    YTVideoStream: new DataLoader((keys) => models.YTVideoStream.find({ _id: { $in: keys } }), { cacheKeyFn }),
-  };
+  var i = 0,
+    len = modelNames.length,
+    loaders = {};
+  while (i < len) {
+    let modelName = modelNames[i];
+    loaders[modelName] = new DataLoader((keys) => findForModel(keys, modelName), { cacheKeyFn });
+    i++;
+  }
+  return loaders;
 };
 
 module.exports = async ({ req, connection }) => {
