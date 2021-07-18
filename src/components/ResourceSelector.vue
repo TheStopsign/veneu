@@ -110,9 +110,13 @@ export default {
     },
   },
   created() {
-    this.selected_resource = this.selected ? this.selected : null;
     this.buildTree();
-    this.selected_resource = this.nav ? this.$route.params._id : this.selected_resource;
+    this.selected_resource = this.selected
+      ? this.selected
+      : this.nav && this.$route.params._id
+      ? this.$route.params._id
+      : null;
+    console.log(this.selectable, this.selected_resource);
   },
   methods: {
     errorMsg(error) {
