@@ -4,8 +4,8 @@
     <div style="max-width: 100%" v-else-if="loading">
       <q-skeleton height="75vh" square />
     </div>
-    <div v-if="YTVideoStream" id="videostreamloaded">
-      <div class="q-pa-xs neu-convex">
+    <div v-else-if="YTVideoStream" id="videostreamloaded">
+      <div class="q-pa-xs neu-convex q-mb-md">
         <q-responsive :ratio="16 / 9">
           <video id="video_player" class="video-js vjs-big-play-centered" playsinline></video>
         </q-responsive>
@@ -44,6 +44,9 @@ export default {
     };
   },
   beforeDestroy() {
+    if (this.YTVideoStream) {
+      this.YTVideoStream = null;
+    }
     if (this.vjs) {
       this.vjs.dispose();
     }
@@ -80,7 +83,7 @@ export default {
             }
           }
         `,
-        variables: { _id: this.$route.query.v },
+        variables: { _id: this.$route.params._id },
       })
       .then((data) => {
         this.YTVideoStream = data.data.YTVideoStream;
@@ -108,7 +111,7 @@ export default {
                   }
                 }
               `,
-              variables: { video_stream: this.$route.query.v },
+              variables: { video_stream: this.$route.params._id },
             })
             .then((data2) => {
               if (data2.data.videoStreamPlayback) {

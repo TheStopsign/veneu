@@ -74,6 +74,7 @@ module.exports = {
     },
   },
   YTVideoStream: {
-    assignment: (parent, args, { loaders: { Assignment } }, info) => Assignment.load(parent.assignment),
+    assignment: (parent, args, { loaders: { Assignment } }, info) =>
+      parent.assignment ? Assignment.load(parent.assignment) : null,
   },
 };

@@ -48,7 +48,7 @@ export default {
     };
   },
   methods: {
-    getWatchPath: (recording) => (recording ? "/watch?v=" + recording._id : "/watch"),
+    getWatchPath: (recording) => (recording ? "/watch/" + recording._id : "/watch"),
     getFormattedDate(d) {
       return date.formatDate(d, "MMM Do, YYYY @ h:mma");
     },

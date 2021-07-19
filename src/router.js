@@ -4,6 +4,7 @@ import VueRouter from "vue-router";
 import AdminOverview from "./components/AdminOverview";
 import AdminUsers from "./components/AdminUsers";
 import Landing from "./pages/Landing";
+import NotFound from "./pages/NotFound";
 import Signup from "./pages/Signup";
 import FirstTimeLogin from "./pages/FirstTimeLogin.vue";
 import Login from "./pages/Login";
@@ -159,7 +160,7 @@ const router = new VueRouter({
       },
     },
     {
-      path: "/watch",
+      path: "/watch/:_id",
       name: "Watch",
       component: Watch,
     },
@@ -167,6 +168,15 @@ const router = new VueRouter({
       path: "/create-video",
       name: "CreateVideo",
       component: CreateVideo,
+    },
+    {
+      path: "/404",
+      name: "404",
+      component: NotFound,
+    },
+    {
+      path: "/*",
+      redirect: "/404",
     },
   ],
   mode: "history",

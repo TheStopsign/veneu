@@ -1,8 +1,9 @@
 <template>
-  <div class="q-my-md q-pa-md neu-concave" :class="nav ? 'neu-convex' : ''">
-    {{ label || "Select a resource" }}
+  <div class="q-my-md neu-concave" :class="nav ? 'neu-convex' : ''" style="overflow-x: auto">
+    <div class="q-mx-md q-mt-md q-mb-xs">{{ label || "Select a resource" }}</div>
     <q-tree
-      class="col-12 text-primary"
+      class="col-12 text-primary q-px-md q-pb-md q-py-xs"
+      style="max-height: 30rem; min-height: 20rem; overflow-y: auto"
       default-expand-all
       :nodes="simple"
       node-key="_id"
@@ -61,10 +62,7 @@ export default {
       let route_auth = this.me.auths.find((a) => a.shared_resource._id == this.$route.params._id);
       if (this.nav) {
         if (val && !old_auth && !route_auth) {
-          this.$router.push({
-            name: selected_auth.shared_resource_type,
-            params: { _id: selected_auth.shared_resource._id },
-          });
+          this.handleNav(selected_auth);
           return;
         }
         if (!val) {
@@ -84,10 +82,7 @@ export default {
           }
         }
         if ((selected_auth && this.selectable.includes(selected_auth._id) && oldVal != null) || old_auth != null) {
-          this.$router.push({
-            name: selected_auth.shared_resource_type,
-            params: { _id: selected_auth.shared_resource._id },
-          });
+          this.handleNav(selected_auth);
           return;
         }
       } else {
@@ -116,9 +111,22 @@ export default {
       : this.nav && this.$route.params._id
       ? this.$route.params._id
       : null;
-    console.log(this.selectable, this.selected_resource);
   },
   methods: {
+    handleNav(selected_auth) {
+      if (selected_auth.shared_resource_type == "YTVideoStream") {
+        location.href = "/watch/" + selected_auth.shared_resource._id;
+        // this.$router.push({
+        //   name: "Watch",
+        //   params: { _id: selected_auth.shared_resource._id },
+        // });
+      } else {
+        this.$router.push({
+          name: selected_auth.shared_resource_type,
+          params: { _id: selected_auth.shared_resource._id },
+        });
+      }
+    },
     errorMsg(error) {
       this.$q.notify({
         progress: true,
@@ -152,7 +160,7 @@ export default {
                 ? "groups"
                 : auth.shared_resource_type == "Lecture"
                 ? "book"
-                : "error",
+                : "smart_display",
           });
           added = true;
         }
@@ -162,22 +170,12 @@ export default {
       }
     },
     buildTree() {
-      const courseauths = this.me.auths.filter(
-        (a) => a.shared_resource_type === "Course" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
-      );
-      const sectionauths = this.me.auths.filter(
-        (a) => a.shared_resource_type === "RegistrationSection" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
-      );
-      const groupauths = this.me.auths.filter(
-        (a) => a.shared_resource_type === "UserGroup" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
-      );
-      const lectureauths = this.me.auths.filter(
-        (a) => a.shared_resource_type === "Lecture" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
-      );
-      let self = this;
-
       for (let i = 0; i < this.me.auths.length; i++) {
-        if (["Course", "RegistrationSection", "UserGroup", "Lecture"].includes(this.me.auths[i].shared_resource_type)) {
+        if (
+          ["Course", "RegistrationSection", "UserGroup", "Lecture", "YTVideoStream"].includes(
+            this.me.auths[i].shared_resource_type
+          )
+        ) {
           this.addAuthToTree(this.simple, this.me.auths[i], 0);
         }
       }

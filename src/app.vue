@@ -63,15 +63,7 @@
           </q-header>
 
           <q-drawer v-if="data.me" show-if-above v-model="left" side="left">
-            <q-input borderless v-model="searchString" label="Search..." class="q-ma-md q-px-md q-py-xs neu-convex">
-              <template v-slot:prepend>
-                <q-icon name="search" />
-              </template>
-              <template v-slot:append v-if="searchString">
-                <q-icon name="close" @click="searchString = ''" class="cursor-pointer" />
-              </template>
-            </q-input>
-            <q-item clickable class="rounded-borders q-mx-md neu-convex" id="me">
+            <q-item clickable class="rounded-borders q-ma-md neu-convex" id="me">
               <q-item-section avatar class="q-my-xs">
                 <q-avatar class="spinner">
                   <img src="https://i1.sndcdn.com/avatars-000574262967-22er0z-t500x500.jpg" />
@@ -116,7 +108,7 @@
               </q-item-section>
             </q-item>
             <div class="row full-width q-px-md q-mt-md">
-              <q-btn size="md" label="New" icon="add" class="full-width">
+              <q-btn size="1.35rem" label="New" icon="add" class="full-width">
                 <q-menu anchor="bottom middle" self="top middle" :offset="[0, 8]">
                   <q-list class="q-pa-xs text-primary">
                     <q-item class="items-center" title="Checkin" clickable @click="handleHost">
@@ -160,6 +152,14 @@
                 </q-menu>
               </q-btn>
             </div>
+            <q-input borderless v-model="searchString" label="Search..." class="q-ma-md q-px-md q-py-none neu-convex">
+              <template v-slot:prepend>
+                <q-icon name="search" />
+              </template>
+              <template v-slot:append v-if="searchString">
+                <q-icon name="close" @click="searchString = ''" class="cursor-pointer" />
+              </template>
+            </q-input>
             <ResourceSelector
               class="q-mx-md"
               :me="data.me"
@@ -167,7 +167,9 @@
               :selectable="
                 data.me.auths
                   .filter((a) =>
-                    ['Course', 'RegistrationSection', 'UserGroup', 'Lecture'].includes(a.shared_resource_type)
+                    ['Course', 'RegistrationSection', 'UserGroup', 'Lecture', 'YTVideoStream'].includes(
+                      a.shared_resource_type
+                    )
                   )
                   .map((a) => a._id)
               "
