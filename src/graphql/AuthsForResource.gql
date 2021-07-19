@@ -2,6 +2,7 @@ query auths($shared_resource: ID!) {
   auths(shared_resource: $shared_resource) {
     _id
     user {
+      _id
       first_name
       last_name
       name

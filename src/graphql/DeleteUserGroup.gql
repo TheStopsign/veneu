@@ -1,0 +1,7 @@
+#import "./UserGroupFrag.gql"
+
+mutation ($_id: ID!) {
+  deleteUserGroup(_id: $_id) {
+    ...UserGroup
+  }
+}

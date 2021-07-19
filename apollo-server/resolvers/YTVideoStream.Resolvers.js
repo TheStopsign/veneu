@@ -76,5 +76,7 @@ module.exports = {
   YTVideoStream: {
     assignment: (parent, args, { loaders: { Assignment } }, info) =>
       parent.assignment ? Assignment.load(parent.assignment) : null,
+    checkins: (parent, args, { loaders: { Checkin } }, info) =>
+      parent.checkins ? Checkin.loadMany(parent.checkins) : [],
   },
 };

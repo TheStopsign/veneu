@@ -1,0 +1,7 @@
+#import "./UserGroupFrag.gql"
+
+query ($_id: ID!) {
+  userGroup(_id: $_id) {
+    ...UserGroup
+  }
+}

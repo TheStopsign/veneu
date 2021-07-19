@@ -1,45 +1,25 @@
 <template>
   <q-page class="q-pa-md">
-    <ApolloQuery :query="require('../graphql/Course.gql')" :variables="{ _id: $route.params._id }">
+    <ApolloQuery :query="require('../graphql/UserGroup.gql')" :variables="{ _id: $route.params._id }">
       <template slot-scope="{ result: { loading, error, data } }">
         <div v-if="loading">Loading...</div>
         <div v-if="error">Error...</div>
-        <div v-if="data && data.course" id="courseloaded">
+        <div v-if="data && data.userGroup" id="registrationsectionloaded">
           <div>
-            <h1 class="q-pa-sm">{{ data.course.name }}</h1>
-            <div class="row full-width q-mt-sm q-mb-md">
+            <h1 class="q-pa-sm">{{ data.userGroup.name }}</h1>
+            <div class="row full-width q-my-sm">
               <ShareResourceModal
-                :resourceid="data.course._id"
-                resourcetype="Course"
+                :resourceid="data.userGroup._id"
+                resourcetype="UserGroup"
                 :me="me"
                 v-if="hasPermissions()"
               />
             </div>
-            <div class="row full-width">
-              Description: {{ data.course.description ? data.course.description : "None" }}
-            </div>
-            <q-timeline :layout="layout" color="primary" v-if="data.course.lectures">
-              <q-timeline-entry class="text-primary" heading> Timeline </q-timeline-entry>
-
-              <q-timeline-entry
-                :title="'Lecture - ' + lect.name"
-                :subtitle="getFormattedDate(lect.start)"
-                side="left"
-                v-for="lect in getSorted(data.course.lectures)"
-                :key="lect._id"
-                icon="class"
-              >
-                <div>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-                  et dolore magna aliqua.
-                </div>
-              </q-timeline-entry>
-            </q-timeline>
             <div class="row full-width justify-center" v-if="canDelete()">
               <div class="dangerzone">
                 <ApolloMutation
-                  :mutation="require('../graphql/DeleteCourse.gql')"
-                  :variables="{ _id: data.course._id }"
+                  :mutation="require('../graphql/DeleteUserGroup.gql')"
+                  :variables="{ _id: data.userGroup._id }"
                   @done="onDelete"
                   class="flex inline"
                 >
@@ -97,6 +77,7 @@ export default {
       deleteModal: false,
     };
   },
+
   methods: {
     getFormattedDate(d) {
       return date.formatDate(d, "MMM Do, YYYY @ h:mma");

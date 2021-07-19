@@ -12,7 +12,7 @@
                 :resourceid="data.registrationSection._id"
                 resourcetype="RegistrationSection"
                 :me="me"
-                v-if="canShare()"
+                v-if="hasPermissions()"
               />
             </div>
             <h3 class="q-my-none">Scheduled for...</h3>
@@ -117,7 +117,7 @@ export default {
         this.me.auths.find((a) => a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR"].includes(a.role))
       );
     },
-    canShare() {
+    hasPermissions() {
       return (
         this.me &&
         this.me.auths.find(
