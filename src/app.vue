@@ -5,6 +5,50 @@
       <template slot-scope="{ result: { data, error } }">
         <div v-if="error">{{ tryLogout() }}</div>
         <div v-if="data" id="theme" :data-theme="'' + theme">
+          <ApolloSubscribeToMore
+            v-if="data.me"
+            :document="
+              (gql) => gql`
+                subscription authCreated($user: ID!) {
+                  authCreated(user: $user) {
+                    _id
+                    role
+                    shared_resource {
+                      _id
+                      name
+                      type
+                      parent_resource {
+                        ... on Course {
+                          _id
+                          name
+                          type
+                        }
+                        ... on UserGroup {
+                          _id
+                          name
+                          type
+                        }
+                        ... on RegistrationSection {
+                          _id
+                          name
+                          type
+                        }
+                        ... on Lecture {
+                          _id
+                          name
+                          type
+                        }
+                      }
+                      parent_resource_type
+                    }
+                    shared_resource_type
+                  }
+                }
+              `
+            "
+            :variables="{ user: data.me._id }"
+            :updateQuery="onAuthAdded"
+          />
           <q-header :class="'text-primary ' + ($q.platform.is.mobile ? 'q-mx-sm' : 'q-mx-md')">
             <q-toolbar
               id="headertoolbar"
@@ -56,7 +100,15 @@
                   </div>
                 </q-menu>
               </q-btn>
-              <q-btn v-if="data.me" size="sm" round icon="notifications" class="q-mx-sm" title="API" aria-label="API">
+              <q-btn
+                v-if="data.me"
+                size="sm"
+                round
+                icon="notifications"
+                class="q-mx-sm"
+                title="Notifications"
+                aria-label="API"
+              >
                 <q-badge rounded color="red" floating label="1+" />
               </q-btn>
             </q-toolbar>
@@ -161,6 +213,7 @@
               </template>
             </q-input>
             <ResourceSelector
+              ref="nav"
               class="q-mx-md"
               :me="data.me"
               label="Navigation"
@@ -332,6 +385,29 @@ export default {
         auths.filter((a) => a.shared_resource_type == "Course" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role))
           .length > 0
       );
+    },
+    onAuthAdded(
+      previousResult,
+      {
+        subscriptionData: {
+          data: { authCreated },
+        },
+      }
+    ) {
+      const newResult = {
+        me: {
+          ...previousResult.me,
+          auths: [...previousResult.me.auths, authCreated],
+        },
+      };
+      this.$refs.nav.initAddAuthToTree(authCreated);
+      this.$q.notify({
+        progress: true,
+        message: "New " + authCreated.shared_resource_type + " added: " + authCreated.shared_resource.name,
+        icon: "notifications",
+        color: "primary",
+      });
+      return newResult;
     },
     canCreateGroups(auths) {
       return (

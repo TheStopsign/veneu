@@ -43,7 +43,7 @@
               :to="{ path: getWatchPath(data.lecture.recording) }"
             />
           </div>
-          <attendance-table :me="me" />
+          <attendance-table :me="me" v-if="hasPermissions" />
           <div class="row full-width justify-center" v-if="canDelete()">
             <div class="dangerzone">
               <ApolloMutation

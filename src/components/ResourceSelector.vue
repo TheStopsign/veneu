@@ -2,6 +2,7 @@
   <div class="q-my-md neu-concave" :class="nav ? 'neu-convex' : ''" style="overflow-x: auto">
     <div class="q-mx-md q-mt-md q-mb-xs">{{ label || "Select a resource" }}</div>
     <q-tree
+      v-if="rendering"
       class="col-12 text-primary q-px-md q-pb-md q-py-xs"
       style="max-height: 30rem; min-height: 20rem; overflow-y: auto"
       default-expand-all
@@ -45,6 +46,7 @@ export default {
       ticked: [],
       expanded: [],
       error: "",
+      rendering: true,
     };
   },
   watch: {
@@ -163,11 +165,20 @@ export default {
                 : "smart_display",
           });
           added = true;
+          this.$forceUpdate();
         }
         if (!added) {
           this.addAuthToTree(node[i].children, auth, depth + 1);
         }
       }
+    },
+    initAddAuthToTree(auth) {
+      this.rendering = false;
+      this.addAuthToTree(this.simple, auth, 0);
+      let self = this;
+      this.$nextTick(function () {
+        self.rendering = true;
+      });
     },
     buildTree() {
       for (let i = 0; i < this.me.auths.length; i++) {

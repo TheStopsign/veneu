@@ -67,7 +67,7 @@ const YTVideoStream = new mongoose.Schema(
           mongoose.model("Auth").deleteMany({ shared_resource: { $in: ytvsids } }),
           mongoose.model("Assignment").deleteMany({ assignable: { $in: ytvsids } }),
           mongoose
-            .model(this.parent_resource_type)
+            .model("Lecture")
             .updateMany({ _id: { $in: ytvsparents } }, { recording: null, recording_type: null }),
         ]).then((resolved) => {
           next();
