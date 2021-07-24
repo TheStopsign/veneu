@@ -11,6 +11,8 @@ query ($_id: ID!) {
       _id
       role
       user {
+        _id
+        name
         first_name
         last_name
         email
@@ -22,6 +24,13 @@ query ($_id: ID!) {
       auths {
         _id
         role
+        user {
+          _id
+          name
+          first_name
+          last_name
+          email
+        }
       }
     }
     registration_sections {
@@ -37,6 +46,13 @@ query ($_id: ID!) {
         auths {
           _id
           role
+          user {
+            _id
+            name
+            first_name
+            last_name
+            email
+          }
         }
       }
     }
@@ -45,6 +61,17 @@ query ($_id: ID!) {
       name
       start
       end
+      auths {
+        _id
+        role
+        user {
+          _id
+          name
+          first_name
+          last_name
+          email
+        }
+      }
       parent_resource {
         ... on SharedResource {
           _id
