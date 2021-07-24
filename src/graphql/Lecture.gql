@@ -27,8 +27,30 @@ query lecture($_id: ID!) {
         _id
         url
         type
+        checkins {
+          _id
+          type
+          tickets {
+            _id
+            first_name
+            last_name
+            code
+            user
+          }
+        }
       }
     }
     recording_type
+    checkins {
+      _id
+      type
+      tickets {
+        _id
+        first_name
+        last_name
+        code
+        user
+      }
+    }
   }
 }

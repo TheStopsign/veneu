@@ -198,7 +198,6 @@ export default {
       var i = 0,
         len = buildOrder.length;
       for (; i < len; i++) {
-        console.log(resourcemap[buildOrder[i]]);
         if (resourcemap[buildOrder[i]]) {
           this.addFromUnbuilt(resourcemap[buildOrder[i]]);
         }

@@ -55,6 +55,7 @@ const linkSchema = gql`
     assignment: Assignment
     url: String!
     duration: Int!
+    checkins: [Checkin!]
     creator: User!
     auths: [Auth!]!
     name: String!

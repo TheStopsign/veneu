@@ -69,8 +69,11 @@ module.exports = {
     },
   },
   Lecture: {
-    recording: (parent, args, { loaders }, info) => {
-      return parent.recording ? loaders[parent.recording_type].load(parent.recording) : null;
-    },
+    recording: (parent, args, { loaders }, info) =>
+      parent.recording ? loaders[parent.recording_type].load(parent.recording) : null,
+    parent_resource: (parent, args, { loaders }, info) =>
+      loaders[parent.parent_resource_type].load(parent.parent_resource),
+    checkins: (parent, args, { loaders: { Checkin } }, info) =>
+      parent.checkins ? Checkin.loadMany(parent.checkins) : [],
   },
 };

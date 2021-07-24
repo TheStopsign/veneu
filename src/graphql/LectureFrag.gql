@@ -22,6 +22,32 @@ fragment Lecture on Lecture {
   }
   parent_resource_type
   recording {
+    ... on VideoStream {
+      _id
+      url
+      type
+      checkins {
+        _id
+        type
+        tickets {
+          _id
+          first_name
+          last_name
+          code
+          user
+        }
+      }
+    }
+  }
+  checkins {
     _id
+    type
+    tickets {
+      _id
+      first_name
+      last_name
+      code
+      user
+    }
   }
 }

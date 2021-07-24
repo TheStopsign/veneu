@@ -27,76 +27,73 @@
 </template>
 
 <script>
-const columns = [
-  {
-    name: "name",
-    label: "Name",
-    align: "left",
-    sortable: true,
-  },
-  { name: "email", align: "center", label: "Email", sortable: true },
-  {
-    name: "checkin",
-    align: "center",
-    label: "Checkins",
-    sortable: true,
-  },
-  {
-    name: "recording",
-    label: "Recordings",
-    sortable: true,
-  },
-  {
-    name: "attendance",
-    label: "Overall",
-    sortable: true,
-  },
-];
-
-const rows = [
-  {
-    name: "Testname",
-    email: "testname@gmail.com",
-    checkin: 1,
-    recording: 0,
-  },
-  {
-    name: "Testname2",
-    email: "testname2@gmail.com",
-    checkin: 0.5,
-    recording: 1,
-  },
-  {
-    name: "Testname3",
-    email: "testname3@gmail.com",
-    checkin: 0.5,
-    recording: 0.6,
-  },
-  {
-    name: "Testname4",
-    email: "testname4@gmail.com",
-    checkin: 0.5,
-    recording: 0.1,
-  },
-  {
-    name: "Testname5",
-    email: "testname5@gmail.com",
-    checkin: 0.5,
-    recording: 1,
-  },
-  {
-    name: "Testname6",
-    email: "testname6@gmail.com",
-    checkin: 1,
-    recording: 0,
-  },
-];
 export default {
   name: "AttendanceTable",
   data() {
     return {
-      rows,
-      columns,
+      rows: [
+        {
+          name: "Testname",
+          email: "testname@gmail.com",
+          checkin: 1,
+          recording: 0,
+        },
+        {
+          name: "Testname2",
+          email: "testname2@gmail.com",
+          checkin: 0.5,
+          recording: 1,
+        },
+        {
+          name: "Testname3",
+          email: "testname3@gmail.com",
+          checkin: 0.5,
+          recording: 0.6,
+        },
+        {
+          name: "Testname4",
+          email: "testname4@gmail.com",
+          checkin: 0.5,
+          recording: 0.1,
+        },
+        {
+          name: "Testname5",
+          email: "testname5@gmail.com",
+          checkin: 0.5,
+          recording: 1,
+        },
+        {
+          name: "Testname6",
+          email: "testname6@gmail.com",
+          checkin: 1,
+          recording: 0,
+        },
+      ],
+      columns: [
+        {
+          name: "name",
+          label: "Name",
+          align: "left",
+          sortable: true,
+        },
+        { name: "email", align: "center", label: "Email", sortable: true },
+        {
+          name: "checkin",
+          align: "center",
+          label: "Checkins",
+          sortable: true,
+        },
+        {
+          name: "recording",
+          label: "Recordings",
+          sortable: true,
+        },
+        {
+          name: "attendance",
+          label: "Overall",
+          sortable: true,
+        },
+      ],
     };
   },
 };
