@@ -3,7 +3,7 @@
     <q-table
       title="Attendance - coming soon"
       flat
-      v-if="rows.length && columns.length"
+      v-if="calculated"
       :data="rows"
       :columns="columns"
       row-key="email"
@@ -29,46 +29,20 @@
 <script>
 export default {
   name: "AttendanceTable",
+  props: {
+    recording: {
+      type: Object,
+    },
+    checkins: {
+      type: Array,
+    },
+    for: {
+      type: Array,
+    },
+  },
   data() {
     return {
-      rows: [
-        {
-          name: "Testname",
-          email: "testname@gmail.com",
-          checkin: 1,
-          recording: 0,
-        },
-        {
-          name: "Testname2",
-          email: "testname2@gmail.com",
-          checkin: 0.5,
-          recording: 1,
-        },
-        {
-          name: "Testname3",
-          email: "testname3@gmail.com",
-          checkin: 0.5,
-          recording: 0.6,
-        },
-        {
-          name: "Testname4",
-          email: "testname4@gmail.com",
-          checkin: 0.5,
-          recording: 0.1,
-        },
-        {
-          name: "Testname5",
-          email: "testname5@gmail.com",
-          checkin: 0.5,
-          recording: 1,
-        },
-        {
-          name: "Testname6",
-          email: "testname6@gmail.com",
-          checkin: 1,
-          recording: 0,
-        },
-      ],
+      rows: [],
       columns: [
         {
           name: "name",
@@ -94,7 +68,29 @@ export default {
           sortable: true,
         },
       ],
+      calculated: false,
     };
+  },
+  created() {
+    this.calculateAttendance();
+  },
+  methods: {
+    calculateAttendance() {
+      var i = 0,
+        len = this.for.length;
+      for (; i < len; i++) {
+        this.rows = [
+          ...this.rows,
+          {
+            name: this.for[i].user.name,
+            email: this.for[i].user.email,
+            checkin: 0,
+            recording: 0,
+          },
+        ];
+      }
+      this.calculated = true;
+    },
   },
 };
 </script>

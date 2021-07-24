@@ -46,6 +46,7 @@
           <attendance-table
             :me="me"
             v-if="hasPermissions && (data.lecture.recording || data.lecture.checkins.length)"
+            :for="data.lecture.auths.filter((a) => ['STUDENT'].includes(a.role))"
             :recording="data.lecture.recording"
             :checkins="data.lecture.checkins"
           />

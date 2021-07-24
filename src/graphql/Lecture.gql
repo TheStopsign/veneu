@@ -10,6 +10,7 @@ query lecture($_id: ID!) {
       role
       user {
         _id
+        name
         first_name
         last_name
       }

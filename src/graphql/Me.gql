@@ -7,6 +7,11 @@ query me {
     auths {
       _id
       role
+      user {
+        _id
+        name
+        email
+      }
       shared_resource {
         _id
         name
