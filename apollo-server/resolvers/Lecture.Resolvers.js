@@ -46,6 +46,20 @@ module.exports = {
         });
       });
     },
+    setLectureCheckins(parent, { lecture: _id, checkins: newcheckins }, { requester, models: { Lecture } }, info) {
+      if (
+        !requester ||
+        (requester && !requester.auths.find((a) => ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)))
+      )
+        throw new ForbiddenError("Not allowed");
+      return Lecture.findOneAndUpdate({ _id }, { $addToSet: { checkins: { $each: newcheckins } } }, { new: true }).then(
+        (lecture) => {
+          return global.pubsub.publish(eventName.LECTURE_UPDATED, { lectureUpdated: lecture }).then((done) => {
+            return lecture;
+          });
+        }
+      );
+    },
     deleteLecture: (parent, { _id }, { requester, models: { Lecture } }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return Lecture.findOne({ _id })

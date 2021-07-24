@@ -79,15 +79,16 @@ export default {
       var i = 0,
         len = this.for.length;
       for (; i < len; i++) {
-        this.rows = [
-          ...this.rows,
-          {
-            name: this.for[i].user.name,
-            email: this.for[i].user.email,
-            checkin: 0,
-            recording: 0,
-          },
-        ];
+        let obj = {
+          name: this.for[i].user.name,
+          email: this.for[i].user.email,
+          checkin: 0,
+          recording: 0,
+        };
+
+        let studcheckins = this.checkins.find((a) => a.tickets.includes((b) => b.user == this.for[i].user._id));
+        obj.checkin = studcheckins ? studcheckins.length / this.checkins.length : obj.checkin;
+        this.rows = [...this.rows, obj];
       }
       this.calculated = true;
     },

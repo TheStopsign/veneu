@@ -31,6 +31,7 @@ module.exports = gql`
     ): Lecture!
     updateLecture(_id: ID!, name: String, start: Date, end: Date): Lecture!
     deleteLecture(_id: ID!): Lecture!
+    setLectureCheckins(lecture: ID!, checkins: [ID]!): Lecture
   }
 
   extend type Subscription {

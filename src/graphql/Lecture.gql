@@ -11,6 +11,7 @@ query lecture($_id: ID!) {
       user {
         _id
         name
+        email
         first_name
         last_name
       }

@@ -1,99 +1,101 @@
 <template>
   <q-page id="create-course" class="q-pa-md">
-    <q-form @submit.prevent="handleCreateVideo" class="q-gutter-md q-ma-md q-py-md q-pt-lg neu-convex">
-      <div>
-        <i><h1>Create a New Video</h1></i>
-      </div>
-      <q-input
-        standout="bg-primary text-white q-ma-none"
-        color="primary"
-        class="text-primary q-mt-md"
-        v-model="name"
-        label="Video Name"
-        placeholder="e.g. Syllabus Day Recording"
-      />
-      <ResourceSelector
-        :me="me"
-        label="For Lecture..."
-        :selected="parent_resource"
-        :selectable="me.auths.filter((a) => a.shared_resource_type === 'Lecture').map((a) => a._id)"
-        @change="handleChangeLecture"
-        class="q-mt-lg q-mb-lg"
-      />
-      <q-input
-        standout="bg-primary text-white q-ma-none"
-        color="primary"
-        class="text-primary q-mt-md"
-        v-model="url"
-        label="YT Link"
-        placeholder="e.g. https://www.youtube.com/watch?v=tz56ac6BaJQ"
-        @change="handleYTUrlChange()"
-      />
-      <div class="q-pa-xs neu-convex" v-if="yt_valid">
-        <q-responsive :ratio="16 / 9">
-          <video id="video_player" class="video-js vjs-big-play-centered" playsinline></video>
-        </q-responsive>
-      </div>
-
-      <div class="q-ma-md q-px-md row full-width justify-center">
-        <q-toggle
-          v-model="is_assignment"
-          checked-icon="check"
-          color="primary"
-          unchecked-icon="clear"
-          label="Is this an assignment?"
-          size="xl"
-        />
-      </div>
-
-      <div class="q-mb-md q-px-md full-width" v-if="is_assignment">
-        <div class="row full-width justify-center q-mt-md">Watch by...</div>
-        <div class="row full-width q-mb-lg">
-          <q-date
-            v-model="assignment.due"
-            mask="YYYY-MM-DD HH:mm"
-            color="primary"
-            class="col-12 col-sm q-mr-md q-mt-md neu-convex"
-          />
-          <q-time
-            v-model="assignment.due"
-            mask="YYYY-MM-DD HH:mm"
-            color="primary"
-            class="col-12 col-sm q-mt-md neu-convex"
-          />
+    <q-form @submit.prevent="handleCreateVideo">
+      <div class="q-gutter-md q-ma-md q-py-md q-pt-lg neu-convex">
+        <div>
+          <i><h1>Create a New Video</h1></i>
         </div>
-        <div class="row full-width justify-center q-mt-xl"><h3>Optional</h3></div>
-        <CheckinSelector :me="me" label="Associated checkins" @change="handleChangeCheckin" />
         <q-input
-          type="number"
           standout="bg-primary text-white q-ma-none"
           color="primary"
           class="text-primary q-mt-md"
-          v-model="points"
-          label="Points"
-          placeholder="e.g. 20"
+          v-model="name"
+          label="Video Name"
+          placeholder="e.g. Syllabus Day Recording"
         />
-        <div class="row full-width justify-center q-mt-md">Hidden until...</div>
-        <div class="row full-width">
-          <q-date
-            v-model="assignment.hidden_until"
-            mask="YYYY-MM-DD HH:mm"
+        <ResourceSelector
+          :me="me"
+          label="For Lecture..."
+          :selected="parent_resource"
+          :selectable="me.auths.filter((a) => a.shared_resource_type === 'Lecture').map((a) => a._id)"
+          @change="handleChangeLecture"
+          class="q-mt-lg q-mb-lg"
+        />
+        <q-input
+          standout="bg-primary text-white q-ma-none"
+          color="primary"
+          class="text-primary q-mt-md"
+          v-model="url"
+          label="YT Link"
+          placeholder="e.g. https://www.youtube.com/watch?v=tz56ac6BaJQ"
+          @change="handleYTUrlChange()"
+        />
+        <div class="q-pa-xs neu-convex" v-if="yt_valid">
+          <q-responsive :ratio="16 / 9">
+            <video id="video_player" class="video-js vjs-big-play-centered" playsinline></video>
+          </q-responsive>
+        </div>
+
+        <div class="q-ma-md q-px-md row full-width justify-center">
+          <q-toggle
+            v-model="is_assignment"
+            checked-icon="check"
             color="primary"
-            class="col-12 col-sm q-mr-md q-mt-md neu-convex"
-          />
-          <q-time
-            v-model="assignment.hidden_until"
-            mask="YYYY-MM-DD HH:mm"
-            color="primary"
-            class="col-12 col-sm q-mt-md neu-convex"
+            unchecked-icon="clear"
+            label="Is this an assignment?"
+            size="xl"
           />
         </div>
-      </div>
 
-      <q-bar class="q-pa-none q-gutter-x-md q-mt-md">
-        <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
-        <q-btn type="submit" color="primary" label="Continue" class="q-ml-sm full-width" :disabled="!formValid()" />
-      </q-bar>
+        <div class="q-mb-md q-px-md full-width" v-if="is_assignment">
+          <div class="row full-width justify-center q-mt-md">Watch by...</div>
+          <div class="row full-width q-mb-lg">
+            <q-date
+              v-model="assignment.due"
+              mask="YYYY-MM-DD HH:mm"
+              color="primary"
+              class="col-12 col-sm q-mr-md q-mt-md neu-convex"
+            />
+            <q-time
+              v-model="assignment.due"
+              mask="YYYY-MM-DD HH:mm"
+              color="primary"
+              class="col-12 col-sm q-mt-md neu-convex"
+            />
+          </div>
+          <div class="row full-width justify-center q-mt-xl"><h3>Optional</h3></div>
+          <CheckinSelector :me="me" label="Associated checkins" @change="handleChangeCheckin" />
+          <q-input
+            type="number"
+            standout="bg-primary text-white q-ma-none"
+            color="primary"
+            class="text-primary q-mt-md"
+            v-model="points"
+            label="Points"
+            placeholder="e.g. 20"
+          />
+          <div class="row full-width justify-center q-mt-md">Hidden until...</div>
+          <div class="row full-width">
+            <q-date
+              v-model="assignment.hidden_until"
+              mask="YYYY-MM-DD HH:mm"
+              color="primary"
+              class="col-12 col-sm q-mr-md q-mt-md neu-convex"
+            />
+            <q-time
+              v-model="assignment.hidden_until"
+              mask="YYYY-MM-DD HH:mm"
+              color="primary"
+              class="col-12 col-sm q-mt-md neu-convex"
+            />
+          </div>
+        </div>
+
+        <q-bar class="q-pa-none q-gutter-x-md q-mt-md">
+          <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
+          <q-btn type="submit" color="primary" label="Continue" class="q-ml-sm full-width" :disabled="!formValid()" />
+        </q-bar>
+      </div>
     </q-form>
   </q-page>
 </template>
