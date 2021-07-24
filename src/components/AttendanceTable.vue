@@ -1,5 +1,5 @@
 <template>
-  <div class="q-my-md neu-convex rounded-borders">
+  <div class="q-my-md rounded-borders">
     <q-table
       title="Attendance - coming soon"
       flat
