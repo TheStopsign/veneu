@@ -45,12 +45,12 @@
           </div>
           <attendance-table
             :me="me"
-            v-if="hasPermissions && (data.lecture.recording || data.lecture.checkins)"
+            v-if="hasPermissions && (data.lecture.recording || data.lecture.checkins.length)"
             :recording="data.lecture.recording"
             :checkins="data.lecture.checkins"
           />
           <div class="row full-width justify-center" v-if="canDelete()">
-            <div class="dangerzone">
+            <div class="dangerzone q-ma-md">
               <ApolloMutation
                 :mutation="require('../graphql/DeleteLecture.gql')"
                 :variables="{ _id: data.lecture._id }"
