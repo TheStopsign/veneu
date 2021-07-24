@@ -314,6 +314,12 @@ h1 {
   color: var(--veneu-text-primary);
 }
 
+.q-tree__node-header-content div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .q-time--landscape .q-time__header {
   padding-left: 0.5rem;
   padding-right: 0.5rem;

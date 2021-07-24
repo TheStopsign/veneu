@@ -99,17 +99,16 @@ const RegistrationSection = new mongoose.Schema(
             user: this.creator._id,
             role: "INSTRUCTOR",
           })
-          .then((auth) => {
-            console.log(auth);
-            return global.pubsub.publish("AUTH_CREATED", {
+          .then((auth) =>
+            global.pubsub.publish("AUTH_CREATED", {
               authCreated: auth,
-            });
-          }),
+            })
+          ),
         this.model("Course").findByIdAndUpdate(
           { _id: this.course },
           { $addToSet: { registration_sections: this._id } }
         ),
-      ]).then((a) => a);
+      ]);
     }
   });
 
