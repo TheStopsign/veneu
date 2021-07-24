@@ -6,7 +6,7 @@
       class="col-12 text-primary q-px-md q-pb-md q-py-xs"
       style="max-height: 30rem; min-height: 20rem; overflow-y: auto"
       default-expand-all
-      :nodes="simple"
+      :nodes="tree"
       node-key="_id"
       :selected.sync="selected_resource"
       :expanded.sync="expanded"
@@ -41,12 +41,13 @@ export default {
   },
   data() {
     return {
-      simple: [],
+      tree: [],
       selected_resource: null,
       ticked: [],
       expanded: [],
       error: "",
       rendering: true,
+      unbuilt: [],
     };
   },
   watch: {
@@ -162,10 +163,11 @@ export default {
                 ? "groups"
                 : auth.shared_resource_type == "Lecture"
                 ? "book"
-                : "smart_display",
+                : auth.shared_resource_type == "YTVideoStream"
+                ? "smart_display"
+                : "error",
           });
           added = true;
-          this.$forceUpdate();
         }
         if (!added) {
           this.addAuthToTree(node[i].children, auth, depth + 1);
@@ -174,22 +176,43 @@ export default {
     },
     initAddAuthToTree(auth) {
       this.rendering = false;
-      this.addAuthToTree(this.simple, auth, 0);
+      this.addAuthToTree(this.tree, auth, 0);
       let self = this;
       this.$nextTick(function () {
         self.rendering = true;
       });
     },
-    buildTree() {
-      for (let i = 0; i < this.me.auths.length; i++) {
-        if (
-          ["Course", "RegistrationSection", "UserGroup", "Lecture", "YTVideoStream"].includes(
-            this.me.auths[i].shared_resource_type
-          )
-        ) {
-          this.addAuthToTree(this.simple, this.me.auths[i], 0);
+    addFromUnbuilt(unbuilt) {
+      while (unbuilt.length) {
+        var i = unbuilt.length - 1,
+          stop = 0;
+        while (i >= stop) {
+          this.addAuthToTree(this.tree, unbuilt[i], 0);
+          unbuilt.splice(i--, 1);
         }
       }
+    },
+    buildTree() {
+      var resourcemap = this.me.auths.groupByProperty("shared_resource_type");
+      var buildOrder = ["Course", "RegistrationSection", "UserGroup", "Lecture", "YTVideoStream"];
+      var i = 0,
+        len = buildOrder.length;
+      for (; i < len; i++) {
+        console.log(resourcemap[buildOrder[i]]);
+        if (resourcemap[buildOrder[i]]) {
+          this.addFromUnbuilt(resourcemap[buildOrder[i]]);
+        }
+      }
+
+      // for (let i = 0; i < this.me.auths.length; i++) {
+      //   if (
+      //     ["Course", "RegistrationSection", "UserGroup", "Lecture", "YTVideoStream"].includes(
+      //       this.me.auths[i].shared_resource_type
+      //     )
+      //   ) {
+      //     this.addAuthToTree(this.tree, this.me.auths[i], 0);
+      //   }
+      // }
     },
   },
 };

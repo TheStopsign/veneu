@@ -13,6 +13,16 @@ import { Quasar, Notify } from "quasar";
 import Plugin from "@quasar/quasar-ui-qcalendar";
 import "@quasar/quasar-ui-qcalendar/dist/index.css";
 
+Array.prototype.groupByProperty = function (prop) {
+  var i = 0,
+    len = this.length,
+    result = {};
+  for (; i < len; i++) {
+    result[this[i][prop]] = !result[this[i][prop]] ? [this[i]] : [...result[this[i][prop]], this[i]];
+  }
+  return result;
+};
+
 Vue.use(Plugin);
 
 Vue.use(Quasar, {

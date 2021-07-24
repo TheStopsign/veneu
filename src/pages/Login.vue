@@ -65,9 +65,9 @@ export default {
     handleLogin(res) {
       if (res && res.data && res.data.login) {
         window.localStorage.setItem("token", res.data.login);
+        location.href = this.$router.history.current.query.redirect || "/dashboard";
       }
       (this.email = ""), (this.password = "");
-      location.href = this.$router.history.current.query.redirect || "/dashboard";
     },
     handleBack() {
       this.$router.push({ name: "Landing" });

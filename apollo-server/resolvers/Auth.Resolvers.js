@@ -174,7 +174,9 @@ module.exports = {
     authCreated: {
       subscribe: withFilter(
         () => global.pubsub.asyncIterator([eventName.AUTH_CREATED]),
-        (payload, variables) => payload.authCreated.user == variables.user
+        (payload, variables) => {
+          return payload.authCreated.user == variables.user;
+        }
       ),
       resolve: (payload, variables, context, info) => {
         return payload.authCreated;

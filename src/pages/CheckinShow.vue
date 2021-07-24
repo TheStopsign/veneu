@@ -324,12 +324,12 @@ export default {
           },
         })
         .then(({ data }) => {
-          location.href = "/dashboard";
+          this.$router.push({ name: "Dashboard" });
         })
         .catch((e) => {
           this.$q.notify({
             progress: true,
-            message: "Couldn't delete checkin",
+            message: "We encountered an issue when deleting this checkin",
             icon: "error",
             color: "negative",
           });

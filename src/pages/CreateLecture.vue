@@ -145,7 +145,7 @@ export default {
       return true;
     },
     handleCreateLecture() {
-      location.href = "/dashboard";
+      this.$router.push({ name: "Dashboard" });
     },
     handleChangeResource(resource, type) {
       this.parent_resource = resource;

@@ -1,12 +1,14 @@
 import Vue from "vue";
 import VueApollo from "vue-apollo";
 import { createApolloClient, restartWebsockets } from "vue-cli-plugin-apollo/graphql-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
 // Install the vue plugin
 Vue.use(VueApollo);
 
 // Name of the localStorage item
-const AUTH_TOKEN = "token";
+const AUTH_TOKEN = "token",
+  cache = new InMemoryCache();
 
 // Http endpoint
 const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || "http://localhost:4000/graphql";

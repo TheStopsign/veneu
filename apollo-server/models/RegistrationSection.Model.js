@@ -100,7 +100,8 @@ const RegistrationSection = new mongoose.Schema(
             role: "INSTRUCTOR",
           })
           .then((auth) => {
-            global.pubsub.publish("AUTH_CREATED", {
+            console.log(auth);
+            return global.pubsub.publish("AUTH_CREATED", {
               authCreated: auth,
             });
           }),
@@ -108,7 +109,7 @@ const RegistrationSection = new mongoose.Schema(
           { _id: this.course },
           { $addToSet: { registration_sections: this._id } }
         ),
-      ]);
+      ]).then((a) => a);
     }
   });
 
