@@ -29,6 +29,7 @@ query lecture($_id: ID!) {
         _id
         url
         type
+        duration
         checkins {
           _id
           type
@@ -38,6 +39,24 @@ query lecture($_id: ID!) {
             last_name
             code
             user
+          }
+        }
+        assignment {
+          _id
+          submissions {
+            _id
+            submittable {
+              ... on VideoStreamPlayback {
+                _id
+                seconds_watched
+                creator {
+                  _id
+                  name
+                  email
+                }
+              }
+            }
+            submittable_type
           }
         }
       }

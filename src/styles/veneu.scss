@@ -75,22 +75,22 @@
   // }
 
   /* Shadows */
-  --elevated-shadow: 0.25rem 0.25rem 0.25rem var(--veneu-background-highlight),
-    -0.25rem -0.25rem 0.25rem var(--veneu-background-lowlight);
+  --elevated-shadow: 0.125rem 0.25rem 0.25rem var(--veneu-background-highlight),
+    -0.125rem -0.25rem 0.25rem var(--veneu-background-lowlight);
   /* --elevated-shadow: 0.5rem 0.5rem 0.5rem var(--veneu-background-highlight),
     -0.5rem -0.5rem 0.5rem var(--veneu-background-lowlight); */
-  --button-shadow: 0.25rem 0.25rem 0.25rem var(--veneu-background-highlight),
-    -0.25rem -0.25rem 0.25rem var(--veneu-background-lowlight);
-  --field-shadow: inset 0.25rem 0.25rem 0.25rem var(--veneu-background-highlight),
-    inset -0.25rem -0.25rem 0.25rem var(--veneu-background-lowlight);
-  --red-button-shadow: 0.25rem 0.25rem 0.25rem var(--veneu-red-highlight),
-    -0.25rem -0.25rem 0.25rem var(--veneu-red-lowlight);
-  --red-field-shadow: inset 0.25rem 0.25rem 0.25rem var(--veneu-red-highlight),
-    inset -0.25rem -0.25rem 0.25rem var(--veneu-red-lowlight);
-  --blue-button-shadow: 0.25rem 0.25rem 0.25rem var(--veneu-blue-highlight),
-    -0.25rem -0.25rem 0.25rem var(--veneu-blue-lowlight);
-  --blue-field-shadow: inset 0.25rem 0.25rem 0.25rem var(--veneu-blue-highlight),
-    inset -0.25rem -0.25rem 0.25rem var(--veneu-blue-lowlight);
+  --button-shadow: 0.125rem 0.25rem 0.25rem var(--veneu-background-highlight),
+    -0.125rem -0.25rem 0.25rem var(--veneu-background-lowlight);
+  --field-shadow: inset 0.125rem 0.25rem 0.25rem var(--veneu-background-highlight),
+    inset -0.125rem -0.25rem 0.25rem var(--veneu-background-lowlight);
+  --red-button-shadow: 0.125rem 0.25rem 0.25rem var(--veneu-red-highlight),
+    -0.125rem -0.25rem 0.25rem var(--veneu-red-lowlight);
+  --red-field-shadow: inset 0.125rem 0.25rem 0.25rem var(--veneu-red-highlight),
+    inset -0.125rem -0.25rem 0.25rem var(--veneu-red-lowlight);
+  --blue-button-shadow: 0.125rem 0.25rem 0.25rem var(--veneu-blue-highlight),
+    -0.125rem -0.25rem 0.25rem var(--veneu-blue-lowlight);
+  --blue-field-shadow: inset 0.125rem 0.25rem 0.25rem var(--veneu-blue-highlight),
+    inset -0.125rem -0.25rem 0.25rem var(--veneu-blue-lowlight);
 
   /* --elevated-shadow: 0.25rem 0.25rem 0.75rem var(--veneu-light-highlight), -0.25rem -0.25rem 0.75rem #ffffff;
   --button-shadow: 0.25rem 0.25rem 0.75rem var(--veneu-light-highlight), -0.25rem -0.25rem 0.75rem #ffffff;

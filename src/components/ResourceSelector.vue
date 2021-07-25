@@ -4,7 +4,7 @@
     <q-tree
       v-if="rendering"
       class="col-12 text-primary q-px-md q-pb-md q-py-xs"
-      style="max-height: 30rem; min-height: 20rem; overflow-y: auto"
+      style="max-height: 20rem; overflow-y: auto"
       default-expand-all
       :nodes="tree"
       node-key="_id"

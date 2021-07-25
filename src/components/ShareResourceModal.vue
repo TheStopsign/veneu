@@ -28,6 +28,7 @@
                   v-model="roleSelection"
                   :options="roleOptions"
                   label="Role"
+                  :menu-offset="[0, 15]"
                 />
                 <ApolloMutation
                   :mutation="

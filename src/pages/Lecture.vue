@@ -7,19 +7,19 @@
         <div v-if="data && data.lecture" id="lectureloaded">
           <div class="q-my-md">
             <h1 class="q-mb-md q-mx-md">{{ data.lecture.name }}</h1>
-            <div class="row full-width q-mt-sm q-mb-md">
-              <q-btn label="Attendance method" icon="add">
+            <div class="row full-width q-mb-md">
+              <q-btn label="Attendance method" icon="add" class="q-mt-md q-mr-md">
                 <q-menu class="row q-pa-md" :offset="[0, 10]">
                   <q-btn
-                    class="q-ml-md q-my-md"
+                    class="q-mx-md q-my-md"
                     title="Pick Checkins"
                     icon="qr_code_2"
                     @click="checkinModal = !checkinModal"
                   />
                   <q-btn
                     v-if="!data.lecture.recording"
-                    class="q-ml-md q-my-md q-mr-md"
-                    title="Create Recording"
+                    class="q-mx-md q-my-md q-mr-md"
+                    title="Add a recording"
                     icon="smart_display"
                     :to="{ name: 'CreateVideo', query: { from: data.lecture._id } }"
                   />
@@ -30,7 +30,7 @@
                 resourcetype="Lecture"
                 :me="me"
                 v-if="hasPermissions()"
-                class="q-ml-md"
+                class="q-mt-md"
               />
               <q-dialog v-model="checkinModal" persistent>
                 <q-card>

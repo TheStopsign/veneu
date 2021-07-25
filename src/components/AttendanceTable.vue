@@ -88,6 +88,15 @@ export default {
 
         let studcheckins = this.checkins.find((a) => a.tickets.includes((b) => b.user == this.for[i].user._id));
         obj.checkin = studcheckins ? studcheckins.length / this.checkins.length : obj.checkin;
+
+        if (this.recording && this.recording.assignment && this.assignment.submissions) {
+          let studsubmission = this.assignment.submissions.find(
+            (a) => a.submittable.creator._id == this.for[i].user._id
+          );
+          obj.recording = studsubmission
+            ? studsubmission.submittable.seconds_watched / this.recording.duration
+            : obj.recording;
+        }
         this.rows = [...this.rows, obj];
       }
       this.calculated = true;
