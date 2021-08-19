@@ -32,8 +32,56 @@
         </div>
         <div class="row full-width q-px-md items-center justify-center">What are the start and end times?</div>
         <div class="row full-width q-px-md q-pb-md">
-          <q-time v-model="start" color="primary" mask="HH:mm Z" class="col-12 col-sm q-mr-md neu-convex q-mt-md" />
-          <q-time v-model="end" color="primary" mask="HH:mm Z" class="col-12 col-sm neu-convex q-mt-md" />
+          <div class="col-12 col-sm q-mr-md q-mt-sm">
+            <div class="row full-width q-px-none">
+              <q-input
+                standout="primary"
+                v-model="start"
+                :rules="['HH:mm Z']"
+                label="Start Time"
+                disable
+                class="col-9 q-pb-none"
+              />
+              <div class="col-3 q-pl-md q-mt-sm">
+                <div class="row full-width full-height items-center">
+                  <q-btn class="row full-width q-mb-lg" type="button" icon="access_time">
+                    <q-popup-proxy transition-show="scale" transition-hide="scale">
+                      <q-time v-model="start" mask="HH:mm Z" color="primary">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Close" color="primary" />
+                        </div>
+                      </q-time>
+                    </q-popup-proxy>
+                  </q-btn>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm q-mr-md q-mt-sm">
+            <div class="row full-width q-px-none">
+              <q-input
+                standout="primary"
+                v-model="end"
+                :rules="['HH:mm Z']"
+                label="End Time"
+                disable
+                class="col-9 q-pb-none"
+              />
+              <div class="col-3 q-pl-md q-mt-sm">
+                <div class="row full-width full-height items-center">
+                  <q-btn class="row full-width q-mb-lg" type="button" icon="access_time">
+                    <q-popup-proxy transition-show="scale" transition-hide="scale">
+                      <q-time v-model="end" mask="HH:mm Z" color="primary">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Close" color="primary" />
+                        </div>
+                      </q-time>
+                    </q-popup-proxy>
+                  </q-btn>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <q-bar class="q-pa-none q-gutter-x-md">
           <q-btn label="Back" class="q-ml-sm" @click="handleBack" />

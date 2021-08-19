@@ -27,10 +27,15 @@
             placeholder="e.g. S-2021 01"
           >
           </q-input>
-          <div class="row full-width q-px-md q-pb-md" v-for="(weekdayevent, i) in meeting_times" :key="i">
+          <div
+            class="row full-width q-px-md q-pb-md"
+            :class="i == 0 ? 'q-pt-md' : ''"
+            v-for="(weekdayevent, i) in meeting_times"
+            :key="i"
+          >
             <q-select
               standout="bg-primary text-white q-ma-none"
-              class="col-10 q-mb-md q-mt-sm"
+              class="col-9 q-mb-md q-mt-sm"
               :options="['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']"
               label="Day of the week"
               v-model="weekdayevent.weekday"
@@ -40,24 +45,65 @@
                 }
               "
             />
-            <div class="col-2 q-pl-md q-mt-sm">
+            <div class="col-3 q-pl-md q-mt-sm">
               <div class="row full-width full-height items-center">
                 <q-btn
-                  label=""
                   icon="delete"
                   class="row full-width q-mb-md bg-red text-white"
                   @click="meeting_times.splice(i, 1)"
                 />
               </div>
             </div>
-
-            <q-time
-              v-model="weekdayevent.event.start"
-              color="primary"
-              class="col-12 col-sm q-mr-md q-mt-md neu-convex"
-              label="Start"
-            />
-            <q-time v-model="weekdayevent.event.end" color="primary" class="col-12 col-sm neu-convex q-mt-md" />
+            <div class="col-12 col-sm q-mr-md q-mt-sm">
+              <div class="row full-width q-px-none">
+                <q-input
+                  standout="primary"
+                  v-model="weekdayevent.event.start"
+                  :rules="['HH:mm Z']"
+                  label="Start Time"
+                  disable
+                  class="col-9 q-pb-none"
+                />
+                <div class="col-3 q-pl-md q-mt-sm">
+                  <div class="row full-width full-height items-center">
+                    <q-btn class="row full-width q-mb-lg" type="button" icon="access_time">
+                      <q-popup-proxy transition-show="scale" transition-hide="scale">
+                        <q-time v-model="weekdayevent.event.start" mask="HH:mm Z" color="primary">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Close" color="primary" />
+                          </div>
+                        </q-time>
+                      </q-popup-proxy>
+                    </q-btn>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-sm q-mr-md q-mt-sm">
+              <div class="row full-width q-px-none">
+                <q-input
+                  standout="primary"
+                  v-model="weekdayevent.event.end"
+                  :rules="['HH:mm Z']"
+                  label="End Time"
+                  disable
+                  class="col-9 q-pb-none"
+                />
+                <div class="col-3 q-pl-md q-mt-sm">
+                  <div class="row full-width full-height items-center">
+                    <q-btn class="row full-width q-mb-lg" type="button" icon="access_time">
+                      <q-popup-proxy transition-show="scale" transition-hide="scale">
+                        <q-time v-model="weekdayevent.event.end" mask="HH:mm Z" color="primary">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Close" color="primary" />
+                          </div>
+                        </q-time>
+                      </q-popup-proxy>
+                    </q-btn>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="row full-width q-px-md">
             <q-btn label="Add a weekly meeting time" class="row full-width" @click="handleAddMeeting" />
