@@ -6,7 +6,7 @@ const path = require("path");
 const cors = require("cors");
 
 const { ApolloServer, PubSub, makeExecutableSchema } = require("apollo-server-express");
-global.pubsub = new PubSub();
+const pubsub = new PubSub();
 
 const mongoose = require("mongoose");
 mongoose.connect(process.env.DB_URL, {
@@ -28,7 +28,7 @@ const server = new ApolloServer({
     schemaDirectives,
     inheritResolversFromInterfaces: true,
   }),
-  context,
+  context: context(pubsub),
   introspection: process.env.NODE_ENV === "production" ? false : true,
   playground: process.env.NODE_ENV === "production" ? false : true,
   tracing: process.env.NODE_ENV === "production" ? false : true,

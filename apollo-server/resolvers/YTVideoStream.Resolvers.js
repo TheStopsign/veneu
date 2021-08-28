@@ -1,4 +1,5 @@
 const { AuthenticationError, ForbiddenError } = require("apollo-server-express");
+const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
 
 const eventName = {
   YTVIDEOSTREAM_CREATED: "YTVIDEOSTREAM_CREATED",
@@ -8,58 +9,59 @@ const eventName = {
 
 module.exports = {
   Query: {
-    YTVideoStream: (parent, { _id }, { requester, models: { YTVideoStream } }, info) => {
+    YTVideoStream: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return YTVideoStream.findById({ _id: _id });
+      return readOne({ _id, type: "YTVideoStream" }, { requester, models, loaders, pubsub });
     },
-    YTVideoStreams: (parent, args, { requester, models: { YTVideoStream } }, info) => {
+    YTVideoStreams: (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return YTVideoStream.find();
+      return readMany(
+        { auths: { $in: requester.auths.map((a) => a._id) }, type: "YTVideoStream" },
+        { requester, models, loaders, pubsub }
+      );
     },
   },
   Mutation: {
     createYTVideoStream: (
       parent,
       { url, name, parent_resource, parent_resource_type, duration, assignment, hidden_until, due, points, checkins },
-      { requester, models: { YTVideoStream, Assignment } },
+      { requester, models, loaders, pubsub },
       info
     ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return YTVideoStream.create({
-        url,
-        name,
-        parent_resource,
-        parent_resource_type,
-        creator: requester._id,
-        duration,
-        checkins,
-      }).then((ytVideoStream) => {
+      return createOne(
+        {
+          url,
+          name,
+          parent_resource,
+          parent_resource_type,
+          creator: requester._id,
+          duration,
+          checkins,
+          type: "YTVideoStream",
+        },
+        { requester, models, loaders, pubsub }
+      ).then((ytVideoStream) => {
         if (assignment) {
-          return Assignment.create({
-            assignable: ytVideoStream._id,
-            assignable_type: "YTVideoStream",
-            hidden_until,
-            due,
-            points,
-          }).then((assignment) => {
-            return ytVideoStream;
-          });
+          return createOne(
+            {
+              assignable: ytVideoStream._id,
+              assignable_type: "YTVideoStream",
+              hidden_until,
+              due,
+              points,
+              type: "Assignment",
+            },
+            { requester, models, loaders, pubsub }
+          ).then((assignment) => ytVideoStream);
         } else {
           return ytVideoStream;
         }
       });
     },
-    deleteYTVideoStream: (parent, { _id }, { requester, models: { YTVideoStream } }, info) => {
+    deleteYTVideoStream: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return YTVideoStream.findOne({ _id })
-        .then((ytVideoStream) => ytVideoStream.deleteOne())
-        .then((ytVideoStream) => {
-          return global.pubsub
-            .publish(eventName.YTVIDEOSTREAM_DELETED, { ytVideoStreamDeleted: ytVideoStream })
-            .then((done) => {
-              return ytVideoStream;
-            });
-        });
+      return deleteOne({ _id, type: "YTVideoStream" }, { requester, models, loaders, pubsub });
     },
   },
   Subscription: {

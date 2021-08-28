@@ -1,6 +1,5 @@
-const { PubSub, ForbiddenError, withFilter } = require("apollo-server-express");
-
-const { Types } = require("mongoose");
+const { ForbiddenError, withFilter } = require("apollo-server-express");
+const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
 
 const eventName = {
   CHECKIN_CREATED: "CHECKIN_CREATED",
@@ -10,37 +9,23 @@ const eventName = {
 
 module.exports = {
   Query: {
-    checkin: (parent, { _id }, { requester, loaders: { Checkin } }, info) => {
+    checkin: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Checkin.load(_id);
+      return readOne({ _id, type: "Checkin" }, { requester, models, loaders, pubsub });
     },
-    checkins: (parent, args, { requester, models: { Checkin } }, info) => {
+    checkins: (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Checkin.find({ creator: requester._id });
+      return readMany({ creator: requester._id, type: "Checkin" }), { requester, models, loaders, pubsub };
     },
   },
   Mutation: {
-    createCheckin: (parent, args, { requester, models: { Checkin } }, info) => {
+    createCheckin: (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Checkin.create({ creator: requester._id }).then((checkin) => {
-        return global.pubsub.publish(eventName.CHECKIN_CREATED, { checkinCreated: checkin }).then((done) => {
-          return checkin;
-        });
-      });
+      return createOne({ creator: requester._id, type: "Checkin" }, { requester, models, loaders, pubsub });
     },
-    deleteCheckin: (parent, { _id }, { requester, models: { Checkin } }, info) => {
+    deleteCheckin: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Checkin.findOne({ _id })
-        .then((checkin) => checkin.deleteOne())
-        .then((checkin) => {
-          return global.pubsub
-            .publish(eventName.CHECKIN_DELETED, {
-              checkinDeleted: checkin,
-            })
-            .then((done) => {
-              return checkin;
-            });
-        });
+      return deleteOne({ _id, type: "Checkin" }, { requester, models, loaders, pubsub });
     },
   },
   Subscription: {

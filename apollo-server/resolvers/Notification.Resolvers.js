@@ -1,4 +1,5 @@
 const { AuthenticationError, ForbiddenError } = require("apollo-server-express");
+const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
 
 const eventName = {
   NOTIFICATION_CREATED: "NOTIFICATION_CREATED",
@@ -8,51 +9,35 @@ const eventName = {
 
 module.exports = {
   Query: {
-    notification: (parent, { _id }, { requester, loaders: { Notification } }, info) => {
+    notification: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Notification.load(_id);
+      return readOne({ _id, type: "Notification" }, { requester, models, loaders, pubsub });
     },
-    notifications: (parent, args, { requester, models: { Notification } }, info) => {
+    notifications: (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Notification.find();
+      return readMany({ type: "Notification" }, { requester, models, loaders, pubsub });
     },
   },
   Mutation: {
-    createNotification: (parent, { text, redirect, user }, { requester, models: { Notification } }, info) => {
+    createNotification: (parent, { text, redirect, user }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Notification.create({
-        text,
-        redirect,
-        user,
-      }).then((notification) => {
-        return global.pubsub
-          .publish(eventName.NOTIFICATION_CREATED, { notificationCreated: notification })
-          .then((done) => {
-            return notification;
-          });
-      });
+      return createOne(
+        {
+          text,
+          redirect,
+          user,
+          type: "Notification",
+        },
+        { requester, models, loaders, pubsub }
+      );
     },
-    updateNotification(parent, { _id, ...patch }, { requester, models: { Notification } }, info) {
+    updateNotification(parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) {
       if (!requester || requester._id != _id) throw new ForbiddenError("Not allowed");
-      return Notification.findOneAndUpdate({ _id: _id }, patch, { new: true }).then((notification) => {
-        return global.pubsub
-          .publish(eventName.NOTIFICATION_UPDATED, { notificationUpdated: notification })
-          .then((done) => {
-            return notification;
-          });
-      });
+      return updateOne({ _id, type: "Notification" }, patch, { requester, models, loaders, pubsub });
     },
-    deleteNotification: (parent, { _id }, { requester, models: { Notification } }, info) => {
+    deleteNotification: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester || requester._id != _id) throw new ForbiddenError("Not allowed");
-      return Notification.findOne({ _id })
-        .then((notification) => notification.deleteOne())
-        .then((notification) => {
-          return global.pubsub
-            .publish(eventName.NOTIFICATION_DELETED, { notificationDeleted: notification })
-            .then((done) => {
-              return notification;
-            });
-        });
+      return deleteOne({ _id, type: "Notification" }, { requester, models, loaders, pubsub });
     },
   },
   Subscription: {
@@ -67,8 +52,6 @@ module.exports = {
     },
   },
   Notification: {
-    user: (parent, args, { loaders: { User } }, info) => {
-      return User.load(parent.user);
-    },
+    user: (parent, args, { loaders: { User } }, info) => User.load(parent.user),
   },
 };

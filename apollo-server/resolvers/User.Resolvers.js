@@ -1,4 +1,5 @@
 const { AuthenticationError, ForbiddenError } = require("apollo-server-express");
+const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
 
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -21,105 +22,115 @@ const eventName = {
 
 module.exports = {
   Query: {
-    user: (parent, { _id }, { requester, loaders: { User } }, info) => {
-      if (!requester) throw new ForbiddenError("Not allowed");
-      return User.load(_id);
-    },
-    users: (parent, args, { requester, models: { User } }, info) =>
-      !requester ? new ForbiddenError("Not allowed") : User.find(),
-    me: (parent, args, { requester, loaders: { User } }, info) =>
-      !requester ? new ForbiddenError("Not allowed") : User.load(requester._id),
+    user: (parent, { _id }, { requester, models, loaders, pubsub }, info) =>
+      !requester
+        ? new ForbiddenError("Not allowed")
+        : readOne({ _id, type: "User" }, { requester, models, loaders, pubsub }),
+    users: (parent, args, { requester, models, loaders, pubsub }, info) =>
+      !requester
+        ? new ForbiddenError("Not allowed")
+        : readMany({ type: "User" }, { requester, models, loaders, pubsub }),
+    me: (parent, args, { requester, models, loaders, pubsub }, info) =>
+      !requester
+        ? new ForbiddenError("Not allowed")
+        : readOne({ _id: requester._id, type: "User" }, { requester, models, loaders, pubsub }),
   },
   Mutation: {
-    createUser: (parent, { email }, { models: { User } }, info) => {
-      return User.create({
-        email,
-      }).then((user) => {
+    createUser: (parent, { email }, { requester, models, loaders, pubsub }, info) => {
+      return createOne(
+        {
+          email,
+          type: "User",
+        },
+        { requester, models, loaders, pubsub }
+      ).then((user) => {
         if (user) {
           oauth2Client.setCredentials({
             refresh_token: GMAIL_OAUTH_REFRESH,
           });
-          oauth2Client.getAccessToken((err, accessToken) => {
-            var transporter = nodemailer.createTransport({
-              service: "gmail",
-              auth: {
-                type: "OAuth2",
-                user: GMAIL,
-                clientId: GMAIL_OAUTH_ID,
-                clientSecret: GMAIL_OAUTH_SECRET,
-                refreshToken: GMAIL_OAUTH_REFRESH,
-                accessToken,
-              },
-            });
-
-            if (transporter) {
-              transporter.use(
-                "compile",
-                hbs({
-                  viewEngine: {
-                    extName: ".handlebars",
-                    partialsDir: "./apollo-server/email_templates/",
-                    layoutsDir: "./apollo-server/email_templates/",
-                    defaultLayout: "",
+          let finishedEmail = new Promise((resolve, reject) => {
+            oauth2Client.getAccessToken((err, accessToken) => {
+              if (err) {
+                console.log("OATH2CLIENT GETACCESSTOKEN ERROR:", err);
+                deleteOne({ email, type: "User" }, { requester, models, loaders, pubsub });
+                reject(null);
+              } else {
+                var transporter = nodemailer.createTransport({
+                  service: "gmail",
+                  auth: {
+                    type: "OAuth2",
+                    user: GMAIL,
+                    clientId: GMAIL_OAUTH_ID,
+                    clientSecret: GMAIL_OAUTH_SECRET,
+                    refreshToken: GMAIL_OAUTH_REFRESH,
+                    accessToken,
                   },
-                  viewPath: "./apollo-server/email_templates/",
-                  extName: ".handlebars",
-                })
-              );
-              var mailOptions = {
-                from: GMAIL,
-                to: email,
-                subject: "Veneu Account Creation",
-                template: "newUser",
-                context: {
-                  url: process.env.BASE_URL + "firstlogin/" + user.access_code,
-                },
-                attachments: [
-                  {
-                    filename: "venue-logo.png",
-                    path: "./apollo-server/email_templates/venue-logo.png",
-                    cid: "logo",
-                  },
-                ],
-              };
+                });
 
-              transporter.sendMail(mailOptions, function (error, info) {
-                if (error || info == null) {
-                  console.log(error);
+                if (transporter) {
+                  transporter.use(
+                    "compile",
+                    hbs({
+                      viewEngine: {
+                        extName: ".handlebars",
+                        partialsDir: "./apollo-server/email_templates/",
+                        layoutsDir: "./apollo-server/email_templates/",
+                        defaultLayout: "",
+                      },
+                      viewPath: "./apollo-server/email_templates/",
+                      extName: ".handlebars",
+                    })
+                  );
+                  var mailOptions = {
+                    from: GMAIL,
+                    to: email,
+                    subject: "Veneu - Account Creation",
+                    template: "newUser",
+                    context: {
+                      url: process.env.BASE_URL + "firstlogin/" + user.access_code,
+                    },
+                    attachments: [
+                      {
+                        filename: "venue-logo.png",
+                        path: "./apollo-server/email_templates/venue-logo.png",
+                        cid: "logo",
+                      },
+                    ],
+                  };
+
+                  transporter.sendMail(mailOptions, function (error, info) {
+                    if (error || info == null) {
+                      console.log(error);
+                      deleteOne({ email, type: "User" }, { requester, models, loaders, pubsub });
+                      reject(null);
+                    } else {
+                      resolve(user);
+                    }
+                  });
+                } else {
+                  console.log("MAILER FAILED");
+                  deleteOne({ email, type: "User" }, { requester, models, loaders, pubsub });
+                  reject(null);
                 }
-              });
-            } else {
-              console.log("MAILER FAILED");
-            }
+              }
+            });
           });
-          return global.pubsub.publish(eventName.USER_CREATED, { userCreated: user }).then((done) => {
-            return user;
-          });
+          return finishedEmail.then((userInfo) => userInfo).catch((e) => null);
         } else {
           return null;
         }
       });
     },
-    updateUser(parent, { _id, ...patch }, { requester, models: { User } }, info) {
+    updateUser(parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) {
       if (!requester || requester._id != _id) throw new ForbiddenError("Not allowed");
-      return User.findOneAndUpdate({ _id }, patch, { new: true }).then((user) => {
-        return global.pubsub.publish(eventName.USER_UPDATED, { userUpdated: user }).then((done) => {
-          return user;
-        });
-      });
+      return updateOne({ _id, type: "User" }, patch, { requester, models, loaders, pubsub });
     },
-    deleteUser: (parent, { _id }, { requester, models: { User } }, info) => {
+    deleteUser: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester || requester._id != _id) throw new ForbiddenError("Not allowed");
-      return User.findOne({ _id })
-        .then((user) => user.deleteOne())
-        .then((user) => {
-          return global.pubsub.publish(eventName.USER_DELETED, { userDeleted: user }).then((done) => {
-            return user;
-          });
-        });
+      return deleteOne({ _id, type: "User" }, { requester, models, loaders, pubsub });
     },
-    login(parent, { email, password }, { models: { User } }, info) {
-      return User.findOne({ email }).then((user) => {
+    login(parent, { email, password }, { requester, models, loaders, pubsub }, info) {
+      return readOne({ email, type: "User" }, { requester, models, loaders, pubsub }).then((user) => {
         if (!user) throw new AuthenticationError("Bad credentials");
         return bcrypt.compare(password, user.password).then((hash) => {
           if (!hash) throw new AuthenticationError("Bad credentials");
@@ -127,10 +138,10 @@ module.exports = {
         });
       });
     },
-    firstLogin(parent, { access_code, password, first_name, last_name }, { models: { User } }, info) {
+    firstLogin(parent, { access_code, password, first_name, last_name }, { requester, models, loaders, pubsub }, info) {
       return bcrypt.hash(password, saltRounds).then((hash) => {
-        return User.updateOne(
-          { access_code },
+        return updateOne(
+          { access_code, type: "User" },
           {
             first_name: first_name,
             last_name: last_name,
@@ -138,7 +149,7 @@ module.exports = {
             access_code: null,
             active: true,
           },
-          { new: true }
+          { requester, models, loaders, pubsub }
         ).then((user) => {
           if (user) {
             return true;

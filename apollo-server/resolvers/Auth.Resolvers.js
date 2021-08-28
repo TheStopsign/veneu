@@ -1,8 +1,7 @@
-const { PubSub, ForbiddenError, withFilter } = require("apollo-server-express");
+const { ForbiddenError, withFilter } = require("apollo-server-express");
+const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
 
-const fs = require("fs");
 const hbs = require("nodemailer-express-handlebars");
-const mongoose = require("mongoose");
 
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
@@ -19,168 +18,139 @@ const eventName = {
 
 module.exports = {
   Query: {
-    auth: (parent, { _id }, { requester, loaders: { Auth } }, info) => {
+    auth: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Auth.load(_id);
+      return readOne({ _id, type: "Auth" }, { requester, models, loaders, pubsub });
     },
-    auths: (parent, args, { requester, models: { Auth } }, info) => {
+    auths: (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      if (args.shared_resource) {
-        return Auth.find({ shared_resource: args.shared_resource });
-      } else {
-        return requester.auths;
-      }
+      return args.shared_resource
+        ? readMany({ shared_resource: args.shared_resource, type: "Auth" }, { requester, models, loaders, pubsub })
+        : requester.auths;
     },
   },
   Mutation: {
-    createAuth: async (
+    createAuth(
       parent,
       { role, user, shared_resource, shared_resource_type },
-      { requester, models: { Auth, User } },
+      { requester, models, loaders, pubsub },
       info
-    ) => {
+    ) {
       if (!requester) throw new ForbiddenError("Not allowed");
-
-      return User.findOne({ email: user }).then((x) => {
-        if (!x) {
-          return User.create({ email: user }).then((y) => {
+      return readOne({ email: user, type: "User" }, { requester, models, loaders, pubsub }).then((x) => {
+        if (x) {
+          return createOne(
+            { role, user: x[0]._id, shared_resource, shared_resource_type, type: "Auth" },
+            { requester, models, loaders, pubsub }
+          );
+        } else {
+          return createOne({ email: user, type: "User" }, { requester, models, loaders, pubsub }).then((y) => {
             if (y) {
-              return mongoose
-                .model(shared_resource_type)
-                .findOne({ _id: shared_resource })
-                .then((z) => {
-                  oauth2Client.setCredentials({
-                    refresh_token: GMAIL_OAUTH_REFRESH,
-                  });
+              return readOne(
+                { _id: shared_resource, type: shared_resource_type },
+                { requester, models, loaders, pubsub }
+              ).then((z) => {
+                oauth2Client.setCredentials({
+                  refresh_token: GMAIL_OAUTH_REFRESH,
+                });
+                let finishedEmail = new Promise((resolve, reject) => {
                   oauth2Client.getAccessToken((err, accessToken) => {
-                    var transporter = nodemailer.createTransport({
-                      service: "gmail",
-                      auth: {
-                        type: "OAuth2",
-                        user: GMAIL,
-                        clientId: GMAIL_OAUTH_ID,
-                        clientSecret: GMAIL_OAUTH_SECRET,
-                        refreshToken: GMAIL_OAUTH_REFRESH,
-                        accessToken,
-                      },
-                    });
-
-                    if (transporter) {
-                      transporter.use(
-                        "compile",
-                        hbs({
-                          viewEngine: {
-                            extName: ".handlebars",
-                            partialsDir: "./apollo-server/email_templates/",
-                            layoutsDir: "./apollo-server/email_templates/",
-                            defaultLayout: "",
-                          },
-                          viewPath: "./apollo-server/email_templates/",
-                          extName: ".handlebars",
-                        })
-                      );
-                      var mailOptions = {
-                        from: GMAIL,
-                        to: user,
-                        subject: "You have been added to a Veneu course",
-                        template: "newAuth",
-                        context: {
-                          url: process.env.BASE_URL + "firstlogin/" + y.access_code,
-                          role: role.toLowerCase(),
-                          type: shared_resource_type.toLowerCase(),
-                          course: z.name,
-                          instructor: requester.first_name + " " + requester.last_name,
-                        },
-                        attachments: [
-                          {
-                            filename: "venue-logo.png",
-                            path: "./apollo-server/email_templates/venue-logo.png",
-                            cid: "logo",
-                          },
-                        ],
-                      };
-
-                      transporter.sendMail(mailOptions, function (error, info) {
-                        if (error || info == null) {
-                          console.log(error);
-                        }
-                      });
+                    if (err) {
+                      console.log("OATH2CLIENT GETACCESSTOKEN ERROR:", err);
+                      deleteOne({ email: user, type: "User" }, { requester, models, loaders, pubsub });
+                      reject(null);
                     } else {
-                      console.log("MAILER FAILED");
+                      var transporter = nodemailer.createTransport({
+                        service: "gmail",
+                        auth: {
+                          type: "OAuth2",
+                          user: GMAIL,
+                          clientId: GMAIL_OAUTH_ID,
+                          clientSecret: GMAIL_OAUTH_SECRET,
+                          refreshToken: GMAIL_OAUTH_REFRESH,
+                          accessToken,
+                        },
+                      });
+
+                      if (transporter) {
+                        transporter.use(
+                          "compile",
+                          hbs({
+                            viewEngine: {
+                              extName: ".handlebars",
+                              partialsDir: "./apollo-server/email_templates/",
+                              layoutsDir: "./apollo-server/email_templates/",
+                              defaultLayout: "",
+                            },
+                            viewPath: "./apollo-server/email_templates/",
+                            extName: ".handlebars",
+                          })
+                        );
+                        var mailOptions = {
+                          from: GMAIL,
+                          to: user,
+                          subject: "You have been added to a Veneu course",
+                          template: "newAuth",
+                          context: {
+                            url: process.env.BASE_URL + "firstlogin/" + y.access_code,
+                            role: role.toLowerCase(),
+                            type: shared_resource_type.toLowerCase(),
+                            course: z.name,
+                            instructor: requester.first_name + " " + requester.last_name,
+                          },
+                          attachments: [
+                            {
+                              filename: "venue-logo.png",
+                              path: "./apollo-server/email_templates/venue-logo.png",
+                              cid: "logo",
+                            },
+                          ],
+                        };
+
+                        transporter.sendMail(mailOptions, function (error, info) {
+                          if (error || info == null) {
+                            console.log(error);
+                            deleteOne({ email: user, type: "User" }, { requester, models, loaders, pubsub });
+                            reject(null);
+                          } else {
+                            resolve({ role, user: y._id, shared_resource, shared_resource_type, type: "Auth" });
+                          }
+                        });
+                      } else {
+                        console.log("MAILER FAILED");
+                        deleteOne({ email: user, type: "User" }, { requester, models, loaders, pubsub });
+                        reject(null);
+                      }
                     }
                   });
-
-                  return Auth.create({ role, user: y._id, shared_resource, shared_resource_type }).then((auth) => {
-                    return global.pubsub
-                      .publish(eventName.AUTH_CREATED, {
-                        authCreated: auth,
-                      })
-                      .then((done) => {
-                        return auth;
-                      });
-                  });
                 });
+                return finishedEmail
+                  .then((authInfo) => createOne(authInfo, { requester, models, loaders, pubsub }))
+                  .catch((e) => null);
+              });
             } else {
               return null;
             }
           });
-        } else {
-          return Auth.create({ role, user: x[0]._id, shared_resource, shared_resource_type }).then((auth) => {
-            return global.pubsub
-              .publish(eventName.AUTH_CREATED, {
-                authCreated: auth,
-              })
-              .then((done) => {
-                return auth;
-              });
-          });
         }
       });
     },
-    updateAuth(parent, { _id, role }, { requester, models: { Auth } }, info) {
+    updateAuth(parent, { _id, role }, { requester, models, loaders, pubsub }, info) {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Auth.findOneAndUpdate(
-        { _id },
-        { role },
-        {
-          new: true,
-        }
-      ).then((auth) => {
-        return global.pubsub
-          .publish(eventName.AUTH_UPDATED, {
-            authUpdated: auth,
-          })
-          .then((done) => {
-            return auth;
-          });
-      });
+      return updateOne({ _id, type: "Auth" }, { role });
     },
-    deleteAuth: (parent, { _id }, { requester, models: { Auth } }, info) => {
+    deleteAuth: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Auth.findOne({ _id })
-        .then((auth) => auth.deleteOne())
-        .then((auth) => {
-          return global.pubsub
-            .publish(eventName.AUTH_DELETED, {
-              authDeleted: auth,
-            })
-            .then((done) => {
-              return auth;
-            });
-        });
+      return deleteOne({ _id, type: "Auth" });
     },
   },
   Subscription: {
     authCreated: {
       subscribe: withFilter(
         () => global.pubsub.asyncIterator([eventName.AUTH_CREATED]),
-        (payload, variables) => {
-          return payload.authCreated.user == variables.user;
-        }
+        (payload, variables) => payload.authCreated.user == variables.user
       ),
-      resolve: (payload, variables, context, info) => {
-        return payload.authCreated;
-      },
+      resolve: (payload, variables, context, info) => payload.authCreated,
     },
   },
   Auth: {

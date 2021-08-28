@@ -1,4 +1,5 @@
 const { AuthenticationError, ForbiddenError } = require("apollo-server-express");
+const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
 
 const eventName = {
   REGISTRATIONSECTION_CREATED: "REGISTRATIONSECTION_CREATED",
@@ -8,61 +9,41 @@ const eventName = {
 
 module.exports = {
   Query: {
-    registrationSection: (parent, { _id }, { requester, loaders: { RegistrationSection } }, info) => {
+    registrationSection: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return RegistrationSection.load(_id);
+      return readOne({ _id, type: "RegistrationSection" }, { requester, models, loaders, pubsub });
     },
-    registrationSections: (parent, args, { requester, models: { RegistrationSection, Auth } }, info) => {
+    registrationSections: (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Auth.find({ user: requester._id }).then((auths) => {
-        return RegistrationSection.find({ auths: { $in: auths } });
-      });
+      return readMany(
+        { auths: { $in: requester.auths.map((a) => a._id) }, type: "RegistrationSection" },
+        { requester, models, loaders, pubsub }
+      );
     },
   },
   Mutation: {
-    createRegistrationSection: (
-      parent,
-      { name, course, ...args },
-      { requester, models: { RegistrationSection } },
-      info
-    ) => {
+    createRegistrationSection: (parent, { name, course, ...args }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return RegistrationSection.create({
-        name,
-        creator: requester._id,
-        course,
-        parent_resource: course,
-        parent_resource_type: "Course",
-        ...args,
-      }).then((registrationSection) => {
-        return global.pubsub
-          .publish(eventName.COURSE_CREATED, { registrationSectionCreated: registrationSection })
-          .then((done) => {
-            return registrationSection;
-          });
-      });
+      return createOne(
+        {
+          name,
+          creator: requester._id,
+          course,
+          parent_resource: course,
+          parent_resource_type: "Course",
+          ...args,
+          type: "RegistrationSection",
+        },
+        { requester, models, loaders, pubsub }
+      );
     },
-    updateRegistrationSection(parent, { _id, ...patch }, { requester, models: { RegistrationSection } }, info) {
+    updateRegistrationSection(parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return RegistrationSection.findOneAndUpdate({ _id: _id }, patch, { new: true }).then((registrationSection) => {
-        return global.pubsub
-          .publish(eventName.REGISTRATIONSECTION_UPDATED, { registrationSectionUpdated: registrationSection })
-          .then((done) => {
-            return registrationSection;
-          });
-      });
+      return updateOne({ _id, type: "RegistrationSection" }, patch, { requester, models, loaders, pubsub });
     },
-    deleteRegistrationSection: (parent, { _id }, { requester, models: { RegistrationSection } }, info) => {
+    deleteRegistrationSection: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return RegistrationSection.findOne({ _id })
-        .then((registrationSection) => registrationSection.deleteOne())
-        .then((registrationSection) => {
-          return global.pubsub
-            .publish(eventName.REGISTRATIONSECTION_DELETED, { registrationSectionDeleted: registrationSection })
-            .then((done) => {
-              return registrationSection;
-            });
-        });
+      return deleteOne({ _id, type: "RegistrationSection" }, { requester, models, loaders, pubsub });
     },
   },
   Subscription: {

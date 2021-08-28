@@ -1,4 +1,5 @@
 const { ForbiddenError } = require("apollo-server-express");
+const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
 
 const eventName = {
   COURSE_CREATED: "COURSE_CREATED",
@@ -8,57 +9,41 @@ const eventName = {
 
 module.exports = {
   Query: {
-    course: (parent, { _id }, { requester, loaders: { Course } }, info) => {
+    course: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return requester.auths.find((a) => a.shared_resource == _id && a.shared_resource_type == "Course")
-        ? Course.load(_id)
+        ? readOne({ _id, type: "Course" }, { requester, models, loaders, pubsub })
         : null;
     },
-    courses: (parent, args, { requester, models: { Course, Auth } }, info) => {
+    courses: (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Auth.find({ user: requester._id }).then((auths) => {
-        return Course.find({ auths: { $in: auths } });
-      });
+      return readMany(
+        { auths: { $in: requester.auths.map((a) => a._id) }, type: "Course" },
+        { requester, models, loaders, pubsub }
+      );
     },
   },
   Mutation: {
-    createCourse: (parent, args, { requester, models: { Course } }, info) => {
+    createCourse: (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Course.create({ creator: requester._id, parent_resource: null, parent_resource_type: null, ...args }).then(
-        (course) => {
-          return global.pubsub.publish(eventName.COURSE_CREATED, { courseCreated: course }).then((done) => {
-            return course;
-          });
-        }
+      return createOne(
+        {
+          creator: requester._id,
+          parent_resource: null,
+          parent_resource_type: null,
+          ...args,
+          type: "Course",
+        },
+        { requester, models, loaders, pubsub }
       );
     },
-    updateCourse(parent, { _id, ...patch }, { requester, models: { Course } }, info) {
+    updateCourse(parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Course.findOneAndUpdate({ _id: _id }, patch, {
-        new: true,
-      }).then((course) => {
-        return global.pubsub
-          .publish(eventName.COURSE_UPDATED, {
-            courseUpdated: course,
-          })
-          .then((done) => {
-            return course;
-          });
-      });
+      return updateOne({ _id, type: "Course" }, patch, { requester, models, loaders, pubsub });
     },
-    deleteCourse: (parent, { _id }, { requester, models: { Course } }, info) => {
+    deleteCourse: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Course.findOne({ _id })
-        .then((course) => course.deleteOne())
-        .then((course) => {
-          return global.pubsub
-            .publish(eventName.COURSE_DELETED, {
-              courseDeleted: course,
-            })
-            .then((done) => {
-              return course;
-            });
-        });
+      return deleteOne({ _id, type: "Course" }, { requester, models, loaders, pubsub });
     },
   },
   Subscription: {

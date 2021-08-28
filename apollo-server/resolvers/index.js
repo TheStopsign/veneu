@@ -1,4 +1,5 @@
 const { ForbiddenError, withFilter } = require("apollo-server-express");
+const { readOne } = require("../crudHandlers");
 
 const ParentResourceResolvers = {
   ParentResource: {
@@ -9,22 +10,32 @@ const ParentResourceResolvers = {
 const SharedResourceResolvers = {
   SharedResource: {
     __resolveType: (sharedResource) => sharedResource.type,
-    parent_resource: (parent, args, { models }, info) => {
+    parent_resource: (parent, args, { requester, models, loaders, pubsub }, info) => {
       return parent.parent_resource
-        ? models[parent.parent_resource_type].findOne({ _id: parent.parent_resource })
+        ? readOne(
+            { _id: parent.parent_resource, type: parent.parent_resource_type },
+            { requester, models, loaders, pubsub }
+          )
         : null;
     },
-    auths: (parent, args, { models: { Auth } }, info) => Auth.find({ _id: { $in: parent.auths } }),
+    auths: (parent, args, { requester, models, loaders, pubsub }, info) =>
+      readOne({ _id: { $in: parent.auths }, type: "Auth" }, { requester, models, loaders, pubsub }),
   },
 };
 
 const CalendarizableEventResolvers = {
   Query: {
-    calendarEvents: (parent, args, { requester, models: { Lecture } }, info) => {
+    calendarEvents: (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Lecture.find({
-        _id: { $in: requester.auths.filter((a) => a.shared_resource_type == "Lecture").map((a) => a.shared_resource) },
-      });
+      return readOne(
+        {
+          _id: {
+            $in: requester.auths.filter((a) => a.shared_resource_type == "Lecture").map((a) => a.shared_resource),
+          },
+          type: "Lecture",
+        },
+        { requester, models, loaders, pubsub }
+      );
     },
   },
   CalendarizableEvent: {
@@ -56,7 +67,7 @@ const VideoStreamResolvers = {
   },
 };
 
-module.exports = [
+const resolvers = [
   ParentResourceResolvers,
   SharedResourceResolvers,
   CalendarizableEventResolvers,
@@ -76,3 +87,5 @@ module.exports = [
   require("./VideoStreamPlayback.Resolvers"),
   require("./YTVideoStream.Resolvers"),
 ];
+
+module.exports = resolvers;

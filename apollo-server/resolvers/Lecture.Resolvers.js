@@ -1,4 +1,5 @@
 const { AuthenticationError, ForbiddenError } = require("apollo-server-express");
+const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
 
 const eventName = {
   LECTURE_CREATED: "LECTURE_CREATED",
@@ -8,67 +9,58 @@ const eventName = {
 
 module.exports = {
   Query: {
-    lecture: (parent, { _id }, { requester, loaders: { Lecture } }, info) => {
+    lecture: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Lecture.load(_id);
+      return readOne({ _id, type: "Lecture" }, { requester, models, loaders, pubsub });
     },
-    lectures: (parent, args, { requester, models: { Lecture } }, info) => {
+    lectures: (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Lecture.find();
+      return readMany(
+        { auths: { $in: requester.auths.map((a) => a._id) }, type: "Lecture" },
+        { requester, models, loaders, pubsub }
+      );
     },
   },
   Mutation: {
     createLecture: (
       parent,
       { name, start, end, parent_resource, parent_resource_type },
-      { requester, models: { Lecture } },
+      { requester, models, loaders, pubsub },
       info
     ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Lecture.create({
-        name,
-        start,
-        end,
-        parent_resource,
-        parent_resource_type,
-        creator: requester._id,
-      }).then((lecture) => {
-        return global.pubsub.publish(eventName.LECTURE_CREATED, { lectureCreated: lecture }).then((done) => {
-          return lecture;
-        });
-      });
+      return createOne(
+        {
+          name,
+          start,
+          end,
+          parent_resource,
+          parent_resource_type,
+          creator: requester._id,
+          type: "Lecture",
+        },
+        { requester, models, loaders, pubsub }
+      );
     },
-    updateLecture(parent, { _id, ...patch }, { requester, models: { Lecture } }, info) {
+    updateLecture(parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Lecture.findOneAndUpdate({ _id }, patch, { new: true }).then((lecture) => {
-        return global.pubsub.publish(eventName.LECTURE_UPDATED, { lectureUpdated: lecture }).then((done) => {
-          return lecture;
-        });
-      });
+      return updateOne({ _id, type: "Lecture" }, patch, { requester, models, loaders, pubsub });
     },
-    setLectureCheckins(parent, { lecture: _id, checkins: newcheckins }, { requester, models: { Lecture } }, info) {
+    setLectureCheckins(parent, { lecture: _id, checkins: newcheckins }, { requester, models, loaders, pubsub }, info) {
       if (
         !requester ||
         (requester && !requester.auths.find((a) => ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)))
       )
         throw new ForbiddenError("Not allowed");
-      return Lecture.findOneAndUpdate({ _id }, { $addToSet: { checkins: { $each: newcheckins } } }, { new: true }).then(
-        (lecture) => {
-          return global.pubsub.publish(eventName.LECTURE_UPDATED, { lectureUpdated: lecture }).then((done) => {
-            return lecture;
-          });
-        }
+      return updateOne(
+        { _id, type: "Lecture" },
+        { $addToSet: { checkins: { $each: newcheckins } } },
+        { requester, models, loaders, pubsub }
       );
     },
-    deleteLecture: (parent, { _id }, { requester, models: { Lecture } }, info) => {
+    deleteLecture: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Lecture.findOne({ _id })
-        .then((lecture) => lecture.deleteOne())
-        .then((lecture) => {
-          return global.pubsub.publish(eventName.LECTURE_DELETED, { lectureDeleted: lecture }).then((done) => {
-            return lecture;
-          });
-        });
+      return deleteOne({ _id, type: "Lecture" }, { requester, models, loaders, pubsub });
     },
   },
   Subscription: {

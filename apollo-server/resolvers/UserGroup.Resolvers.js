@@ -1,4 +1,5 @@
 const { AuthenticationError, ForbiddenError } = require("apollo-server-express");
+const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
 const mongoose = require("mongoose");
 
 const eventName = {
@@ -9,64 +10,57 @@ const eventName = {
 
 module.exports = {
   Query: {
-    userGroup: (parent, { _id }, { requester, loaders: { UserGroup } }, info) => {
+    userGroup: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return UserGroup.load(_id);
+      return readOne({ _id, type: "UserGroup" }, { requester, models, loaders, pubsub });
     },
-    userGroups: (parent, args, { requester, models: { UserGroup, Auth } }, info) => {
+    userGroups: (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return Auth.find({ user: requester._id }).then((auths) => {
-        return UserGroup.find({ auths: { $in: auths } });
-      });
+      return readMany(
+        { auths: { $in: requester.auths.map((a) => a._id) }, type: "UserGroup" },
+        { requester, models, loaders, pubsub }
+      );
     },
   },
   Mutation: {
-    createUserGroup: (parent, { name, parent_resource, parent_resource_type }, { requester, models }, info) => {
+    createUserGroup: (
+      parent,
+      { name, parent_resource, parent_resource_type },
+      { requester, models, loaders, pubsub },
+      info
+    ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       if (parent_resource_type == "User" && parent_resource == requester._id) {
-        return models.UserGroup.create({ name, creator: requester._id, parent_resource, parent_resource_type }).then(
-          (userGroup) => {
-            return global.pubsub.publish(eventName.COURSE_CREATED, { userGroupCreated: userGroup }).then((done) => {
-              return userGroup;
-            });
-          }
+        return createOne(
+          { name, creator: requester._id, parent_resource, parent_resource_type, type: "UserGroup" },
+          { requester, models, loaders, pubsub }
         );
       } else if (
         requester.auths.find(
           (a) => a.shared_resource == parent_resource && ["ADMIN", "INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
         )
       ) {
-        return models.UserGroup.create({
-          name,
-          creator: requester._id,
-          parent_resource,
-          parent_resource_type,
-        }).then((userGroup) => {
-          return global.pubsub.publish(eventName.COURSE_CREATED, { userGroupCreated: userGroup }).then((done) => {
-            return userGroup;
-          });
-        });
+        return createOne(
+          {
+            name,
+            creator: requester._id,
+            parent_resource,
+            parent_resource_type,
+            type: "UserGroup",
+          },
+          { requester, models, loaders, pubsub }
+        );
       } else {
         throw new Error("Resource does not exist for your scope");
       }
     },
-    updateUserGroup(parent, { _id, ...patch }, { requester, models: { UserGroup } }, info) {
+    updateUserGroup(parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) {
       if (!requester || requester._id != _id) throw new ForbiddenError("Not allowed");
-      return UserGroup.findOneAndUpdate({ _id }, patch, { new: true }).then((userGroup) => {
-        return global.pubsub.publish(eventName.USERGROUP_UPDATED, { userGroupUpdated: userGroup }).then((done) => {
-          return userGroup;
-        });
-      });
+      return updateOne({ _id, type: "UserGroup" }, patch, { requester, models, loaders, pubsub });
     },
-    deleteUserGroup: (parent, { _id }, { requester, models: { UserGroup } }, info) => {
+    deleteUserGroup: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester || requester._id != _id) throw new ForbiddenError("Not allowed");
-      return UserGroup.findOne({ _id })
-        .then((userGroup) => userGroup.deleteOne())
-        .then((userGroup) => {
-          return global.pubsub.publish(eventName.USERGROUP_DELETED, { userGroupDeleted: userGroup }).then((done) => {
-            return userGroup;
-          });
-        });
+      return deleteOne({ _id, type: "UserGroup" }, { requester, models, loaders, pubsub });
     },
   },
   Subscription: {

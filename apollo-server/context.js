@@ -27,28 +27,33 @@ const getLoaders = () => {
   return loaders;
 };
 
-module.exports = async ({ req, connection }) => {
-  if (connection) {
-    return {
-      ...connection.context,
-      models,
-      loaders: getLoaders(),
-    };
-  } else {
-    const auth = (req.headers && req.headers.authorization && req.headers.authorization.split(" ")) || [];
-    if (auth.length == 2 && auth[0] == "Bearer") {
-      const user = await getUser(auth[1]);
+module.exports =
+  (pubsub) =>
+  async ({ req, connection }) => {
+    if (connection) {
       return {
-        requester: user,
+        ...connection.context,
         models,
         loaders: getLoaders(),
+        pubsub,
       };
     } else {
-      return {
-        requester: null,
-        models,
-        loaders: getLoaders(),
-      };
+      const auth = (req.headers && req.headers.authorization && req.headers.authorization.split(" ")) || [];
+      if (auth.length == 2 && auth[0] == "Bearer") {
+        const user = await getUser(auth[1]);
+        return {
+          requester: user,
+          models,
+          loaders: getLoaders(),
+          pubsub,
+        };
+      } else {
+        return {
+          requester: null,
+          models,
+          loaders: getLoaders(),
+          pubsub,
+        };
+      }
     }
-  }
-};
+  };

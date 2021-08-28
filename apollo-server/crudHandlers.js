@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 
 const fns = {
-  createOne: (filters, pubsub) =>
+  createOne: (filters, { requester, models, loaders, pubsub }) =>
     filters && filters.type
-      ? mongoose
-          .model(filters.type)
+      ? models[filters.type]
           .create(filters)
           .then((created) =>
             pubsub
@@ -20,10 +19,9 @@ const fns = {
             throw e;
           })
       : null,
-  createMany: (filters, pubsub) =>
+  createMany: (filters, { requester, models, loaders, pubsub }) =>
     filters && filters instanceof Array && filters.length && filters[0].type
-      ? mongoose
-          .model(filters.type)
+      ? models[filters.type]
           .insertMany(filters)
           .then((created) =>
             pubsub
@@ -39,31 +37,24 @@ const fns = {
             throw e;
           })
       : null,
-  readOne: (filters, method) =>
+  readOne: (filters, { requester, models, loaders, pubsub }) =>
     filters && filters.type
-      ? mongoose
-          .model(filters.type)
-          .findOne(filters)
-          .catch((e) => {
-            console.log("ERROR IN READONE:", e);
-            throw e;
-          })
+      ? models[filters.type].findOne(filters).catch((e) => {
+          console.log("ERROR IN READONE:", e);
+          throw e;
+        })
       : null,
-  readMany: (filters, dataLoader) =>
+  readMany: (filters, { requester, models, loaders, pubsub }) =>
     filters && filters.type
-      ? mongoose
-          .model(filters.type)
-          .find(filters)
-          .catch((e) => {
-            console.log("ERROR IN READMANY:", e);
-            throw e;
-          })
+      ? models[filters.type].find(filters).catch((e) => {
+          console.log("ERROR IN READMANY:", e);
+          throw e;
+        })
       : null,
-  updateOne: (filters, updates, pubsub) =>
+  updateOne: (filters, updates, { requester, models, loaders, pubsub }) =>
     filters && filters.type
-      ? mongoose
-          .model(filters.type)
-          .updateOne(filters, updates)
+      ? models[filters.type]
+          .updateOne(filters, updates, { new: true })
           .then((updated) =>
             pubsub
               ? pubsub
@@ -78,11 +69,10 @@ const fns = {
             throw e;
           })
       : null,
-  updateMany: (filters, updates, pubsub) =>
+  updateMany: (filters, updates, { requester, models, loaders, pubsub }) =>
     filters && filters.type
-      ? mongoose
-          .model(filters.type)
-          .updateMany(filters, updates)
+      ? models[filters.type]
+          .updateMany(filters, updates, { new: true })
           .then((updated) =>
             pubsub
               ? pubsub
@@ -97,10 +87,9 @@ const fns = {
             throw e;
           })
       : null,
-  deleteOne: (filters, pubsub) =>
+  deleteOne: (filters, { requester, models, loaders, pubsub }) =>
     filters && filters.type
-      ? mongoose
-          .model(filters.type)
+      ? models[filters.type]
           .deleteOne(filters)
           .then((deleted) =>
             pubsub
@@ -116,10 +105,9 @@ const fns = {
             throw e;
           })
       : null,
-  deleteMany: (filters, pubsub) =>
+  deleteMany: (filters, { requester, models, loaders, pubsub }) =>
     filters && filters.type
-      ? mongoose
-          .model(filters.type)
+      ? models[filters.type]
           .deleteMany(filters)
           .then((deleted) =>
             pubsub
