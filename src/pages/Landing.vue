@@ -6,12 +6,12 @@
       <div>
         <h1>veneu</h1>
       </div>
-      <q-bar id="landing-actions" class="q-gutter-md q-pa-sm q-ma-sm q-mt-lg justify-center">
-        <q-btn color="primary" @click="handleGoSignup">
+      <q-bar id="landing-actions" class="q-ma-md q-mt-lg justify-center">
+        <q-btn color="primary" @click="handleGoSignup" class="q-mr-md">
           <q-icon left size="2rem" name="person_add_alt" />
           <div>Sign Up</div>
         </q-btn>
-        <q-btn flat color="primary" class="q-ml-md" @click="handleGoLogin">
+        <q-btn flat color="primary" class="q-ml-md q-mr-none" @click="handleGoLogin">
           <q-icon left size="2rem" name="login" />
           <div>Log in</div>
         </q-btn>
