@@ -7,7 +7,7 @@ const eventName = {
   VIDEOSTREAMPLAYBACK_DELETED: "VIDEOSTREAMPLAYBACK_DELETED",
 };
 
-module.exports = {
+module.exports = (pubsub) => ({
   Query: {
     videoStreamPlayback: (parent, { video_stream }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
@@ -78,13 +78,13 @@ module.exports = {
   },
   Subscription: {
     VideoStreamPlaybackCreated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.VIDEOSTREAMPLAYBACK_CREATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.VIDEOSTREAMPLAYBACK_CREATED]),
     },
     VideoStreamPlaybackUpdated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.VIDEOSTREAMPLAYBACK_UPDATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.VIDEOSTREAMPLAYBACK_UPDATED]),
     },
     VideoStreamPlaybackDeleted: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.VIDEOSTREAMPLAYBACK_DELETED]),
+      subscribe: () => pubsub.asyncIterator([eventName.VIDEOSTREAMPLAYBACK_DELETED]),
     },
   },
   VideoStreamPlayback: {
@@ -92,4 +92,4 @@ module.exports = {
       parent.submission ? Submission.load(parent.submission) : null,
     video_stream: (parent, args, { loaders }, info) => loaders[parent.video_stream_type].load(parent.video_stream),
   },
-};
+});

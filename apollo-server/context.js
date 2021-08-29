@@ -1,35 +1,35 @@
-const models = require("./models");
-const modelNames = Object.keys(models);
+const getModels = require("./models");
 const DataLoader = require("dataloader");
 
 const jwt = require("jsonwebtoken");
-const getUser = async (token) =>
-  jwt.verify(token, process.env.JWTAUTH_KEY, function (err, decoded) {
-    return err || !decoded
-      ? null
-      : models.User.findOne({ _id: decoded._id }).then((user) => {
-          return models.Auth.find({ _id: { $in: user._doc.auths } }).then((auths) => {
-            return { ...user._doc, auths };
-          });
-        });
-  });
-const findForModel = (keys, modelName) => models[modelName].find({ _id: { $in: keys } });
-const cacheKeyFn = (key) => key.toString();
-const getLoaders = () => {
-  var i = 0,
-    len = modelNames.length,
-    loaders = {};
-  while (i < len) {
-    let modelName = modelNames[i];
-    loaders[modelName] = new DataLoader((keys) => findForModel(keys, modelName), { cacheKeyFn });
-    i++;
-  }
-  return loaders;
-};
 
-module.exports =
-  (pubsub) =>
-  async ({ req, connection }) => {
+module.exports = (pubsub) => {
+  const models = getModels(pubsub);
+  const modelNames = Object.keys(models);
+  const getUser = async (token) =>
+    jwt.verify(token, process.env.JWTAUTH_KEY, function (err, decoded) {
+      return err || !decoded
+        ? null
+        : models.User.findOne({ _id: decoded._id }).then((user) => {
+            return models.Auth.find({ _id: { $in: user._doc.auths } }).then((auths) => {
+              return { ...user._doc, auths };
+            });
+          });
+    });
+  const findForModel = (keys, modelName) => models[modelName].find({ _id: { $in: keys } });
+  const cacheKeyFn = (key) => key.toString();
+  const getLoaders = () => {
+    var i = 0,
+      len = modelNames.length,
+      loaders = {};
+    while (i < len) {
+      let modelName = modelNames[i];
+      loaders[modelName] = new DataLoader((keys) => findForModel(keys, modelName), { cacheKeyFn });
+      i++;
+    }
+    return loaders;
+  };
+  return async ({ req, connection }) => {
     if (connection) {
       return {
         ...connection.context,
@@ -57,3 +57,4 @@ module.exports =
       }
     }
   };
+};

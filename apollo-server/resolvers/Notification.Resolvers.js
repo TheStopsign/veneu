@@ -7,7 +7,7 @@ const eventName = {
   NOTIFICATION_DELETED: "NOTIFICATION_DELETED",
 };
 
-module.exports = {
+module.exports = (pubsub) => ({
   Query: {
     notification: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
@@ -42,16 +42,16 @@ module.exports = {
   },
   Subscription: {
     notificationCreated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.NOTIFICATION_CREATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.NOTIFICATION_CREATED]),
     },
     notificationUpdated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.NOTIFICATION_UPDATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.NOTIFICATION_UPDATED]),
     },
     notificationDeleted: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.NOTIFICATION_DELETED]),
+      subscribe: () => pubsub.asyncIterator([eventName.NOTIFICATION_DELETED]),
     },
   },
   Notification: {
     user: (parent, args, { loaders: { User } }, info) => User.load(parent.user),
   },
-};
+});

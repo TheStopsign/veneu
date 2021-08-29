@@ -1,16 +1,16 @@
 const { ForbiddenError, withFilter } = require("apollo-server-express");
-const { readOne } = require("../crudHandlers");
+const { readOne, readMany } = require("../crudHandlers");
 
 const ParentResourceResolvers = {
   ParentResource: {
-    __resolveType: (parentResource) => parentResource.type,
+    __resolveType: async (parentResource) => parentResource.type,
   },
 };
 
 const SharedResourceResolvers = {
   SharedResource: {
-    __resolveType: (sharedResource) => sharedResource.type,
-    parent_resource: (parent, args, { requester, models, loaders, pubsub }, info) => {
+    __resolveType: async (sharedResource) => sharedResource.type,
+    parent_resource: async (parent, args, { requester, models, loaders, pubsub }, info) => {
       return parent.parent_resource
         ? readOne(
             { _id: parent.parent_resource, type: parent.parent_resource_type },
@@ -18,14 +18,14 @@ const SharedResourceResolvers = {
           )
         : null;
     },
-    auths: (parent, args, { requester, models, loaders, pubsub }, info) =>
-      readOne({ _id: { $in: parent.auths }, type: "Auth" }, { requester, models, loaders, pubsub }),
+    auths: async (parent, args, { requester, models, loaders, pubsub }, info) =>
+      readMany({ _id: { $in: parent.auths }, type: "Auth" }, { requester, models, loaders, pubsub }),
   },
 };
 
 const CalendarizableEventResolvers = {
   Query: {
-    calendarEvents: (parent, args, { requester, models, loaders, pubsub }, info) => {
+    calendarEvents: async (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return readOne(
         {
@@ -39,35 +39,35 @@ const CalendarizableEventResolvers = {
     },
   },
   CalendarizableEvent: {
-    __resolveType: (CalendarizableEvent) => CalendarizableEvent.type,
+    __resolveType: async (CalendarizableEvent) => CalendarizableEvent.type,
   },
 };
 
 const AssignableResolvers = {
   Assignable: {
-    __resolveType: (assignable) => assignable.type,
+    __resolveType: async (assignable) => assignable.type,
   },
 };
 
 const SubmittableResolvers = {
   Submittable: {
-    __resolveType: (submittable) => submittable.type,
+    __resolveType: async (submittable) => submittable.type,
   },
 };
 
 const SearchResultResolvers = {
   SearchResult: {
-    __resolveType: (searchResult) => searchResult.type,
+    __resolveType: async (searchResult) => searchResult.type,
   },
 };
 
 const VideoStreamResolvers = {
   VideoStream: {
-    __resolveType: (videoStream) => videoStream.type,
+    __resolveType: async (videoStream) => videoStream.type,
   },
 };
 
-const resolvers = [
+const getResolvers = (pubsub) => [
   ParentResourceResolvers,
   SharedResourceResolvers,
   CalendarizableEventResolvers,
@@ -75,17 +75,17 @@ const resolvers = [
   SubmittableResolvers,
   SearchResultResolvers,
   VideoStreamResolvers,
-  require("./Auth.Resolvers"),
-  require("./Checkin.Resolvers"),
-  require("./Course.Resolvers"),
-  require("./Lecture.Resolvers"),
-  require("./Notification.Resolvers"),
-  require("./RegistrationSection.Resolvers"),
-  require("./Ticket.Resolvers"),
-  require("./User.Resolvers"),
-  require("./UserGroup.Resolvers"),
-  require("./VideoStreamPlayback.Resolvers"),
-  require("./YTVideoStream.Resolvers"),
+  require("./Auth.Resolvers")(pubsub),
+  require("./Checkin.Resolvers")(pubsub),
+  require("./Course.Resolvers")(pubsub),
+  require("./Lecture.Resolvers")(pubsub),
+  require("./Notification.Resolvers")(pubsub),
+  require("./RegistrationSection.Resolvers")(pubsub),
+  require("./Ticket.Resolvers")(pubsub),
+  require("./User.Resolvers")(pubsub),
+  require("./UserGroup.Resolvers")(pubsub),
+  require("./VideoStreamPlayback.Resolvers")(pubsub),
+  require("./YTVideoStream.Resolvers")(pubsub),
 ];
 
-module.exports = resolvers;
+module.exports = getResolvers;

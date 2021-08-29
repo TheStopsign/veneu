@@ -1,13 +1,15 @@
-exports.Assignment = require("./Assignment.Model");
-exports.Auth = require("./Auth.Model");
-exports.Checkin = require("./Checkin.Model");
-exports.Course = require("./Course.Model");
-exports.Lecture = require("./Lecture.Model");
-exports.Notification = require("./Notification.Model");
-exports.RegistrationSection = require("./RegistrationSection.Model");
-exports.Submission = require("./Submission.Model");
-exports.Ticket = require("./Ticket.Model");
-exports.User = require("./User.Model");
-exports.UserGroup = require("./UserGroup.Model");
-exports.VideoStreamPlayback = require("./VideoStreamPlayback.Model");
-exports.YTVideoStream = require("./YTVideoStream.Model");
+module.exports = (pubsub) => ({
+  Assignment: require("./Assignment.Model")(pubsub),
+  Auth: require("./Auth.Model")(pubsub),
+  Checkin: require("./Checkin.Model")(pubsub),
+  Course: require("./Course.Model")(pubsub),
+  Lecture: require("./Lecture.Model")(pubsub),
+  Notification: require("./Notification.Model")(pubsub),
+  RegistrationSection: require("./RegistrationSection.Model")(pubsub),
+  Submission: require("./Submission.Model")(pubsub),
+  Ticket: require("./Ticket.Model")(pubsub),
+  User: require("./User.Model")(pubsub),
+  UserGroup: require("./UserGroup.Model")(pubsub),
+  VideoStreamPlayback: require("./VideoStreamPlayback.Model")(pubsub),
+  YTVideoStream: require("./YTVideoStream.Model")(pubsub),
+});

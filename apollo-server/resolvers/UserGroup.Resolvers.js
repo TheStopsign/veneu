@@ -8,7 +8,7 @@ const eventName = {
   USERGROUP_DELETED: "USERGROUP_DELETED",
 };
 
-module.exports = {
+module.exports = (pubsub) => ({
   Query: {
     userGroup: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
@@ -65,17 +65,17 @@ module.exports = {
   },
   Subscription: {
     userGroupCreated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.USERGROUP_CREATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.USERGROUP_CREATED]),
     },
     userGroupUpdated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.USERGROUP_UPDATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.USERGROUP_UPDATED]),
     },
     userGroupDeleted: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.USERGROUP_DELETED]),
+      subscribe: () => pubsub.asyncIterator([eventName.USERGROUP_DELETED]),
     },
   },
   UserGroup: {
     user_groups: (parent, args, { loaders: { UserGroup } }, info) => UserGroup.loadMany(parent.user_groups),
     lectures: (parent, args, { loaders: { Lecture } }, info) => Lecture.loadMany(parent.lectures),
   },
-};
+});

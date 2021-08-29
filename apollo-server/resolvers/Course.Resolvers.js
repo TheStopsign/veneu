@@ -7,15 +7,15 @@ const eventName = {
   COURSE_DELETED: "COURSE_DELETED",
 };
 
-module.exports = {
+module.exports = (pubsub) => ({
   Query: {
-    course: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    course: async (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return requester.auths.find((a) => a.shared_resource == _id && a.shared_resource_type == "Course")
         ? readOne({ _id, type: "Course" }, { requester, models, loaders, pubsub })
         : null;
     },
-    courses: (parent, args, { requester, models, loaders, pubsub }, info) => {
+    courses: async (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return readMany(
         { auths: { $in: requester.auths.map((a) => a._id) }, type: "Course" },
@@ -24,7 +24,7 @@ module.exports = {
     },
   },
   Mutation: {
-    createCourse: (parent, args, { requester, models, loaders, pubsub }, info) => {
+    createCourse: async (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return createOne(
         {
@@ -37,30 +37,30 @@ module.exports = {
         { requester, models, loaders, pubsub }
       );
     },
-    updateCourse(parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) {
+    updateCourse: async (parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return updateOne({ _id, type: "Course" }, patch, { requester, models, loaders, pubsub });
     },
-    deleteCourse: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    deleteCourse: async (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return deleteOne({ _id, type: "Course" }, { requester, models, loaders, pubsub });
     },
   },
   Subscription: {
     courseCreated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.COURSE_CREATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.COURSE_CREATED]),
     },
     courseUpdated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.COURSE_UPDATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.COURSE_UPDATED]),
     },
     courseDeleted: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.COURSE_DELETED]),
+      subscribe: () => pubsub.asyncIterator([eventName.COURSE_DELETED]),
     },
   },
   Course: {
-    user_groups: (parent, args, { loaders: { UserGroup } }, info) => UserGroup.loadMany(parent.user_groups),
-    registration_sections: (parent, args, { loaders: { RegistrationSection } }, info) =>
+    user_groups: async (parent, args, { loaders: { UserGroup } }, info) => UserGroup.loadMany(parent.user_groups),
+    registration_sections: async (parent, args, { loaders: { RegistrationSection } }, info) =>
       RegistrationSection.loadMany(parent.registration_sections),
-    lectures: (parent, args, { loaders: { Lecture } }, info) => Lecture.loadMany(parent.lectures),
+    lectures: async (parent, args, { loaders: { Lecture } }, info) => Lecture.loadMany(parent.lectures),
   },
-};
+});

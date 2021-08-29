@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const fns = {
-  createOne: (filters, { requester, models, loaders, pubsub }) =>
+  createOne: async (filters, { requester, models, loaders, pubsub }) =>
     filters && filters.type
       ? models[filters.type]
           .create(filters)
@@ -19,7 +19,7 @@ const fns = {
             throw e;
           })
       : null,
-  createMany: (filters, { requester, models, loaders, pubsub }) =>
+  createMany: async (filters, { requester, models, loaders, pubsub }) =>
     filters && filters instanceof Array && filters.length && filters[0].type
       ? models[filters.type]
           .insertMany(filters)
@@ -37,21 +37,21 @@ const fns = {
             throw e;
           })
       : null,
-  readOne: (filters, { requester, models, loaders, pubsub }) =>
+  readOne: async (filters, { requester, models, loaders, pubsub }) =>
     filters && filters.type
       ? models[filters.type].findOne(filters).catch((e) => {
           console.log("ERROR IN READONE:", e);
           throw e;
         })
       : null,
-  readMany: (filters, { requester, models, loaders, pubsub }) =>
+  readMany: async (filters, { requester, models, loaders, pubsub }) =>
     filters && filters.type
       ? models[filters.type].find(filters).catch((e) => {
           console.log("ERROR IN READMANY:", e);
           throw e;
         })
       : null,
-  updateOne: (filters, updates, { requester, models, loaders, pubsub }) =>
+  updateOne: async (filters, updates, { requester, models, loaders, pubsub }) =>
     filters && filters.type
       ? models[filters.type]
           .updateOne(filters, updates, { new: true })
@@ -69,7 +69,7 @@ const fns = {
             throw e;
           })
       : null,
-  updateMany: (filters, updates, { requester, models, loaders, pubsub }) =>
+  updateMany: async (filters, updates, { requester, models, loaders, pubsub }) =>
     filters && filters.type
       ? models[filters.type]
           .updateMany(filters, updates, { new: true })
@@ -87,7 +87,7 @@ const fns = {
             throw e;
           })
       : null,
-  deleteOne: (filters, { requester, models, loaders, pubsub }) =>
+  deleteOne: async (filters, { requester, models, loaders, pubsub }) =>
     filters && filters.type
       ? models[filters.type]
           .deleteOne(filters)
@@ -105,7 +105,7 @@ const fns = {
             throw e;
           })
       : null,
-  deleteMany: (filters, { requester, models, loaders, pubsub }) =>
+  deleteMany: async (filters, { requester, models, loaders, pubsub }) =>
     filters && filters.type
       ? models[filters.type]
           .deleteMany(filters)

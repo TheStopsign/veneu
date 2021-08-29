@@ -7,7 +7,7 @@ const eventName = {
   REGISTRATIONSECTION_DELETED: "REGISTRATIONSECTION_DELETED",
 };
 
-module.exports = {
+module.exports = (pubsub) => ({
   Query: {
     registrationSection: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
@@ -48,13 +48,13 @@ module.exports = {
   },
   Subscription: {
     registrationSectionCreated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.REGISTRATIONSECTION_CREATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.REGISTRATIONSECTION_CREATED]),
     },
     registrationSectionUpdated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.REGISTRATIONSECTION_UPDATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.REGISTRATIONSECTION_UPDATED]),
     },
     registrationSectionDeleted: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.REGISTRATIONSECTION_DELETED]),
+      subscribe: () => pubsub.asyncIterator([eventName.REGISTRATIONSECTION_DELETED]),
     },
   },
   RegistrationSection: {
@@ -62,4 +62,4 @@ module.exports = {
     user_groups: (parent, args, { loaders: { UserGroup } }, info) => UserGroup.loadMany(parent.user_groups),
     lectures: (parent, args, { loaders: { Lecture } }, info) => Lecture.loadMany(parent.lectures),
   },
-};
+});

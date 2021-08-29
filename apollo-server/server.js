@@ -17,18 +17,18 @@ mongoose.connect(process.env.DB_URL, {
 });
 
 const typeDefs = require("./schema.graphql");
-const resolvers = require("./resolvers");
-const context = require("./context");
+const getResolvers = require("./resolvers");
+const getContext = require("./context");
 const schemaDirectives = require("./directives");
 
 const server = new ApolloServer({
   schema: makeExecutableSchema({
     typeDefs,
-    resolvers,
+    resolvers: getResolvers(pubsub),
     schemaDirectives,
     inheritResolversFromInterfaces: true,
   }),
-  context: context(pubsub),
+  context: getContext(pubsub),
   introspection: process.env.NODE_ENV === "production" ? false : true,
   playground: process.env.NODE_ENV === "production" ? false : true,
   tracing: process.env.NODE_ENV === "production" ? false : true,

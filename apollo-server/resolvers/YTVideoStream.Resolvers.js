@@ -7,7 +7,7 @@ const eventName = {
   YTVIDEOSTREAM_DELETED: "YTVIDEOSTREAM_DELETED",
 };
 
-module.exports = {
+module.exports = (pubsub) => ({
   Query: {
     YTVideoStream: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
@@ -66,13 +66,13 @@ module.exports = {
   },
   Subscription: {
     YTVideoStreamCreated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.YTVIDEOSTREAM_CREATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.YTVIDEOSTREAM_CREATED]),
     },
     YTVideoStreamUpdated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.YTVIDEOSTREAM_UPDATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.YTVIDEOSTREAM_UPDATED]),
     },
     YTVideoStreamDeleted: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.YTVIDEOSTREAM_DELETED]),
+      subscribe: () => pubsub.asyncIterator([eventName.YTVIDEOSTREAM_DELETED]),
     },
   },
   YTVideoStream: {
@@ -81,4 +81,4 @@ module.exports = {
     checkins: (parent, args, { loaders: { Checkin } }, info) =>
       parent.checkins ? Checkin.loadMany(parent.checkins) : [],
   },
-};
+});

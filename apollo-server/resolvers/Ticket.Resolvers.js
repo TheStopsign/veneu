@@ -1,7 +1,7 @@
 const { PubSub, ForbiddenError, withFilter } = require("apollo-server-express");
 const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
 
-module.exports = {
+module.exports = (pubsub) => ({
   Query: {
     ticket: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
@@ -28,7 +28,7 @@ module.exports = {
   Subscription: {
     claimedTicket: {
       subscribe: withFilter(
-        () => global.pubsub.asyncIterator(["CLAIMED_TICKET"]),
+        () => pubsub.asyncIterator(["CLAIMED_TICKET"]),
         (
           {
             claimedTicket: {
@@ -42,7 +42,7 @@ module.exports = {
     },
     approvedTicket: {
       subscribe: withFilter(
-        () => global.pubsub.asyncIterator(["APPROVED_TICKET"]),
+        () => pubsub.asyncIterator(["APPROVED_TICKET"]),
         (
           {
             approvedTicket: {
@@ -56,7 +56,7 @@ module.exports = {
     },
     reservedTicket: {
       subscribe: withFilter(
-        () => global.pubsub.asyncIterator(["RESERVED_TICKET"]),
+        () => pubsub.asyncIterator(["RESERVED_TICKET"]),
         ({ reservedTicket: { host } }, variables) => host == variables.host
       ),
       resolve: ({ reservedTicket: { tickets } }) => tickets,
@@ -65,4 +65,4 @@ module.exports = {
   Ticket: {
     checkin: (parent, args, { loaders: { Checkin } }, info) => Checkin.load(parent.checkin),
   },
-};
+});

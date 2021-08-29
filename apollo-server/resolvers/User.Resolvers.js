@@ -20,7 +20,7 @@ const eventName = {
   USER_DELETED: "USER_DELETED",
 };
 
-module.exports = {
+module.exports = (pubsub) => ({
   Query: {
     user: (parent, { _id }, { requester, models, loaders, pubsub }, info) =>
       !requester
@@ -161,13 +161,13 @@ module.exports = {
   },
   Subscription: {
     userCreated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.USER_CREATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.USER_CREATED]),
     },
     userUpdated: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.USER_UPDATED]),
+      subscribe: () => pubsub.asyncIterator([eventName.USER_UPDATED]),
     },
     userDeleted: {
-      subscribe: () => global.pubsub.asyncIterator([eventName.USER_DELETED]),
+      subscribe: () => pubsub.asyncIterator([eventName.USER_DELETED]),
     },
   },
   User: {
@@ -175,4 +175,4 @@ module.exports = {
     auths: (parent, args, { loaders: { Auth } }, info) => Auth.loadMany(parent.auths),
     name: (parent, args, context, info) => parent.first_name + " " + parent.last_name,
   },
-};
+});

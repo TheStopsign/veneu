@@ -16,13 +16,13 @@ const eventName = {
   AUTH_DELETED: "AUTH_DELETED",
 };
 
-module.exports = {
+module.exports = (pubsub) => ({
   Query: {
-    auth: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    auth: async (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return readOne({ _id, type: "Auth" }, { requester, models, loaders, pubsub });
     },
-    auths: (parent, args, { requester, models, loaders, pubsub }, info) => {
+    auths: async (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return args.shared_resource
         ? readMany({ shared_resource: args.shared_resource, type: "Auth" }, { requester, models, loaders, pubsub })
@@ -30,12 +30,12 @@ module.exports = {
     },
   },
   Mutation: {
-    createAuth(
+    createAuth: async (
       parent,
       { role, user, shared_resource, shared_resource_type },
       { requester, models, loaders, pubsub },
       info
-    ) {
+    ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return readOne({ email: user, type: "User" }, { requester, models, loaders, pubsub }).then((x) => {
         if (x) {
@@ -135,11 +135,11 @@ module.exports = {
         }
       });
     },
-    updateAuth(parent, { _id, role }, { requester, models, loaders, pubsub }, info) {
+    updateAuth: async (parent, { _id, role }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return updateOne({ _id, type: "Auth" }, { role });
     },
-    deleteAuth: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    deleteAuth: async (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return deleteOne({ _id, type: "Auth" });
     },
@@ -147,7 +147,7 @@ module.exports = {
   Subscription: {
     authCreated: {
       subscribe: withFilter(
-        () => global.pubsub.asyncIterator([eventName.AUTH_CREATED]),
+        () => pubsub.asyncIterator([eventName.AUTH_CREATED]),
         (payload, variables) => payload.authCreated.user == variables.user
       ),
       resolve: (payload, variables, context, info) => payload.authCreated,
@@ -158,4 +158,4 @@ module.exports = {
     shared_resource: async (parent, args, { loaders }, info) =>
       loaders["" + parent.shared_resource_type].load(parent.shared_resource),
   },
-};
+});
