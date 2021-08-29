@@ -40,7 +40,7 @@ module.exports = (pubsub) => ({
       return readOne({ email: user, type: "User" }, { requester, models, loaders, pubsub }).then((x) => {
         if (x) {
           return createOne(
-            { role, user: x[0]._id, shared_resource, shared_resource_type, type: "Auth" },
+            { role, user: x._id, shared_resource, shared_resource_type, type: "Auth" },
             { requester, models, loaders, pubsub }
           );
         } else {
