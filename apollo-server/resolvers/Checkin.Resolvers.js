@@ -15,7 +15,7 @@ module.exports = (pubsub) => ({
     },
     checkins: async (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readMany({ creator: requester._id, type: "Checkin" }), { requester, models, loaders, pubsub };
+      return readMany({ creator: requester._id, type: "Checkin" }, { requester, models, loaders, pubsub });
     },
   },
   Mutation: {
