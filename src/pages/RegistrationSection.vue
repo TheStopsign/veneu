@@ -15,7 +15,12 @@
                 v-if="hasPermissions()"
               />
             </div>
-            <h3 class="q-my-none">Scheduled for...</h3>
+            <h3
+              v-if="data.registrationSection.meeting_times && data.registrationSection.meeting_times.length"
+              class="q-my-none"
+            >
+              Scheduled for...
+            </h3>
             <div
               class="row full-width items-center"
               v-for="(wde, i) in data.registrationSection.meeting_times"
@@ -25,7 +30,11 @@
               <q-icon name="schedule" size="sm" class="q-mx-sm" /> {{ wde.event.start }} -
               {{ wde.event.end }}
             </div>
-            <q-timeline :layout="layout" color="primary" v-if="data.registrationSection.lectures">
+            <q-timeline
+              :layout="layout"
+              color="primary"
+              v-if="data.registrationSection.lectures && data.registrationSection.lectures.length"
+            >
               <q-timeline-entry class="text-primary" heading> Timeline </q-timeline-entry>
 
               <q-timeline-entry

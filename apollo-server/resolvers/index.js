@@ -3,13 +3,13 @@ const { readOne, readMany } = require("../crudHandlers");
 
 const ParentResourceResolvers = {
   ParentResource: {
-    __resolveType: async (parentResource) => parentResource.type,
+    __resolveType: ({ type }) => type,
   },
 };
 
 const SharedResourceResolvers = {
   SharedResource: {
-    __resolveType: async (sharedResource) => sharedResource.type,
+    __resolveType: async ({ type }) => type,
     parent_resource: async (parent, args, { requester, models, loaders, pubsub }, info) => {
       return parent.parent_resource
         ? readOne(
@@ -39,31 +39,31 @@ const CalendarizableEventResolvers = {
     },
   },
   CalendarizableEvent: {
-    __resolveType: async (CalendarizableEvent) => CalendarizableEvent.type,
+    __resolveType: async ({ type }) => type,
   },
 };
 
 const AssignableResolvers = {
   Assignable: {
-    __resolveType: async (assignable) => assignable.type,
+    __resolveType: async ({ type }) => type,
   },
 };
 
 const SubmittableResolvers = {
   Submittable: {
-    __resolveType: async (submittable) => submittable.type,
+    __resolveType: ({ type }) => type,
   },
 };
 
 const SearchResultResolvers = {
   SearchResult: {
-    __resolveType: async (searchResult) => searchResult.type,
+    __resolveType: async ({ type }) => type,
   },
 };
 
 const VideoStreamResolvers = {
   VideoStream: {
-    __resolveType: async (videoStream) => videoStream.type,
+    __resolveType: async ({ type }) => type,
   },
 };
 

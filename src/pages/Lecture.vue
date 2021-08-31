@@ -8,7 +8,7 @@
           <div class="q-my-md">
             <h1 class="q-mb-md q-mx-md">{{ data.lecture.name }}</h1>
             <div class="row full-width q-mb-md">
-              <q-btn label="Attendance method" icon="add" class="q-mt-md q-mr-md">
+              <q-btn v-if="hasPermissions()" label="Attendance method" icon="add" class="q-mt-md q-mr-md">
                 <q-menu class="row q-pa-md" :offset="[0, 10]">
                   <q-btn
                     class="q-mx-md q-my-md"
