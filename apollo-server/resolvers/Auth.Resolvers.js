@@ -137,11 +137,11 @@ module.exports = (pubsub) => ({
     },
     updateAuth: async (parent, { _id, role }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return updateOne({ _id, type: "Auth" }, { role });
+      return updateOne({ _id, type: "Auth" }, { role }, { requester, models, loaders, pubsub });
     },
     deleteAuth: async (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return deleteOne({ _id, type: "Auth" });
+      return deleteOne({ _id, type: "Auth" }, { requester, models, loaders, pubsub });
     },
   },
   Subscription: {

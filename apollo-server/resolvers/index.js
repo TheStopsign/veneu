@@ -27,7 +27,7 @@ const CalendarizableEventResolvers = {
   Query: {
     calendarEvents: async (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readOne(
+      return readMany(
         {
           _id: {
             $in: requester.auths.filter((a) => a.shared_resource_type == "Lecture").map((a) => a.shared_resource),

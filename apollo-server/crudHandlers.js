@@ -23,6 +23,7 @@ const fns = {
     filters && filters instanceof Array && filters.length && filters[0].type
       ? models[filters.type]
           .insertMany(filters)
+          .then((inserted) => models[filters.type].find(filters))
           .then((created) =>
             pubsub
               ? pubsub
@@ -54,7 +55,7 @@ const fns = {
   updateOne: async (filters, updates, { requester, models, loaders, pubsub }) =>
     filters && filters.type
       ? models[filters.type]
-          .updateOne(filters, updates, { new: true })
+          .findOneAndUpdate(filters, updates, { new: true })
           .then((updated) =>
             pubsub
               ? pubsub
@@ -72,7 +73,8 @@ const fns = {
   updateMany: async (filters, updates, { requester, models, loaders, pubsub }) =>
     filters && filters.type
       ? models[filters.type]
-          .updateMany(filters, updates, { new: true })
+          .updateMany(filters, updates)
+          .then((update) => models[filters.type].findOne(filters))
           .then((updated) =>
             pubsub
               ? pubsub
