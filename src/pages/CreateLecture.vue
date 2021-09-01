@@ -26,7 +26,7 @@
             v-model="date"
             mask="YYYY-MM-DD"
             color="primary"
-            class="col-12 neu-convex"
+            class="col-12"
             subtitle="What day is the lecture on?"
           />
         </div>

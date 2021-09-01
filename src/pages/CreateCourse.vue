@@ -60,8 +60,8 @@
           </q-input>
 
           <div class="row full-width q-mt-sm q-pt-none">
-            <q-date dense v-model="start" class="col-12 col-sm q-mt-md q-mr-md neu-convex" subtitle="Start date" />
-            <q-date dense v-model="end" class="col-12 col-sm q-mt-md neu-convex" subtitle="End date" />
+            <q-date dense v-model="start" class="col-12 col-sm q-mt-md q-mr-md" subtitle="Start date" />
+            <q-date dense v-model="end" class="col-12 col-sm q-mt-md" subtitle="End date" />
           </div>
           <q-bar class="q-pa-none q-gutter-x-md q-mt-md q-pl-md">
             <q-btn flat color="primary" @click="handleBack" label="Back" />

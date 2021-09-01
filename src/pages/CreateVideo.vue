@@ -54,7 +54,7 @@
               v-model="assignment.due"
               mask="YYYY-MM-DD HH:mm"
               color="primary"
-              class="col-12 col-sm q-mr-md q-mt-md neu-convex"
+              class="col-12 col-sm q-mr-md q-mt-md"
             />
             <q-time
               v-model="assignment.due"
@@ -80,7 +80,7 @@
               v-model="assignment.hidden_until"
               mask="YYYY-MM-DD HH:mm"
               color="primary"
-              class="col-12 col-sm q-mr-md q-mt-md neu-convex"
+              class="col-12 col-sm q-mr-md q-mt-md"
             />
             <q-time
               v-model="assignment.hidden_until"

@@ -1,8 +1,16 @@
 const { SchemaDirectiveVisitor, ForbiddenError } = require("apollo-server-express");
 const { defaultFieldResolver } = require("graphql");
 
-const hasRoleForResource = (requiredRole, resourceType, resourceId) => {
-  return true;
+const hasRoleForResource = (requiredRole, resourceType, resourceId, auths) => {
+  if (
+    auths.find(
+      (a) => a.shared_resource.equals(resourceId) && a.shared_resource_type == resourceType && a.role == requiredRole
+    )
+  ) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
 class AuthDirective extends SchemaDirectiveVisitor {
@@ -40,10 +48,9 @@ class AuthDirective extends SchemaDirectiveVisitor {
         }
 
         const context = args[2];
-        const user = await context.requester;
-        // const user = await getUser(context.headers.authToken);
+        const user = context.requester;
 
-        if (!hasRoleForResource(requiredRole, "", "")) {
+        if (!hasRoleForResource(requiredRole, args[0].type, args[0]._id, context.requester.auths)) {
           throw new ForbiddenError("Not authorized to perform this action on the given resource");
         }
 

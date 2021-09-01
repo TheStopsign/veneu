@@ -13,7 +13,7 @@ module.exports = gql`
     parent_resource_type: String!
     recording: VideoStream
     recording_type: String
-    checkins: [Checkin]
+    checkins: [Checkin] @auth(requires: INSTRUCTOR)
   }
 
   extend type Query {

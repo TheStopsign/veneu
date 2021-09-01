@@ -49,7 +49,8 @@ aside.q-drawer--mobile {
 .q-stepper__content,
 .q-stepper__header,
 .q-stepper__nav,
-.q-time__container-child {
+.q-time__container-child,
+.q-date__header {
   background: none !important;
 }
 
@@ -109,16 +110,18 @@ body,
 .q-dialog__inner > div,
 .q-menu,
 #me .q-avatar,
-.q-date,
 .q-tab--inactive,
 .q-timeline__entry,
 .q-notification,
-.q-tree__node--selected {
+.q-tree__node--selected,
+.q-date__main {
   animation: grow-in-button 0.5s forwards !important;
 }
 
-.q-time__header *,
-.q-date__header *,
+.q-date__main {
+  border-radius: 1rem !important;
+}
+
 .q-toggle__thumb .q-icon {
   color: var(--veneu-text-alternate) !important;
 }
@@ -149,7 +152,8 @@ body,
 .q-btn-group .q-btn:hover:not([disabled])::before,
 .q-btn-group .q-focus-helper,
 .q-btn__wrapper::before,
-.q-time {
+.q-time,
+.q-date {
   box-shadow: none !important;
   animation: none !important;
   -webkit-box-shadow: none !important;
@@ -309,7 +313,9 @@ h1 {
 }
 
 .q-tree__node-header-content,
-.video-js * {
+.video-js *,
+.q-time__header *,
+.q-date__header * {
   color: var(--veneu-text-primary);
 }
 

@@ -1,7 +1,7 @@
 const { gql } = require("apollo-server-express");
 
 const linkSchema = gql`
-  # directive @auth(requires: Role!) on OBJECT | FIELD_DEFINITION
+  directive @auth(requires: Role!) on OBJECT | FIELD_DEFINITION
 
   directive @rateLimit(
     max: Int
