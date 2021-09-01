@@ -1,8 +1,8 @@
 <template>
-  <q-page id="landing-page">
+  <q-page id="notfound-page">
     <div class="vertical-center spinner-stage">
       <VeneuLogo class="spinner" />
-      <div>
+      <div class="col">
         <h1>veneu</h1>
         <h2>404 - Content not found</h2>
       </div>
@@ -37,5 +37,8 @@ h1 {
   line-height: 5rem !important;
   margin-top: 0;
   margin-bottom: 2rem;
+}
+h2 {
+  text-align: center;
 }
 </style>
