@@ -16,9 +16,9 @@
       </q-tabs>
       <q-tab-panels v-model="tab" animated style="display: flex; flex-direction: column; height: 100%; width: 100%">
         <q-tab-panel name="calendar" class="q-pt-sm">
-          <div class="row full-width justify-between items-center">
-            <q-btn flat label="Prev" @click="calendarPrev" />
-            <q-btn flat label="Next" @click="calendarNext" />
+          <div class="row full-width justify-end">
+            <q-btn flat @click="calendarPrev" class="q-mr-md" icon="navigate_before" />
+            <q-btn flat @click="calendarNext" icon="navigate_next" />
           </div>
           <div
             class="neu-convex q-mt-md"
@@ -35,7 +35,9 @@
               transition-next="slide-left"
               class="rounded-borders q-pa-none"
               :interval-minutes="30"
-              :interval-count="48"
+              interval-height="28px"
+              :interval-count="32"
+              :interval-start="14"
               @click:time2="onClickInterval"
             >
               <template #day-header="{ timestamp }">

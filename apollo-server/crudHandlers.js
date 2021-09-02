@@ -92,7 +92,9 @@ const fns = {
   deleteOne: async (filters, { requester, models, loaders, pubsub }) =>
     filters && filters.type
       ? models[filters.type]
-          .deleteOne(filters)
+          .findOne(filters)
+          .lean()
+          .then((doc) => models[filters.type].deleteOne(doc).then((deleted) => doc))
           .then((deleted) =>
             pubsub
               ? pubsub
@@ -110,7 +112,11 @@ const fns = {
   deleteMany: async (filters, { requester, models, loaders, pubsub }) =>
     filters && filters.type
       ? models[filters.type]
-          .deleteMany(filters)
+          .find(filters)
+          .lean()
+          .then((docs) =>
+            models[filters.type].deleteMany({ _id: { $in: docs.map((a) => a._id) } }).then((deleted) => docs)
+          )
           .then((deleted) =>
             pubsub
               ? pubsub
