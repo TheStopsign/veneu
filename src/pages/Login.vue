@@ -1,43 +1,54 @@
 <template>
   <q-page id="login-page" class="container">
-    <div class="vertical-center">
-      <VeneuLogo class="spinner" />
-      <ApolloMutation
-        :mutation="require('../graphql/Login.gql')"
-        :variables="{ email, password }"
-        class="form q-px-md q-pb-md"
-        @done="handleLogin"
-      >
-        <template slot-scope="{ mutate }">
-          <q-form @submit.prevent="formValid && mutate()" class="q-gutter-y-md q-pa-md q-ma-md neu-convex">
-            <div>
-              <i><h1>Login</h1></i>
-            </div>
-            <q-input standout="bg-primary text-white" color="primary" v-model="email" label="Email" class="q-mt-md">
-              <template v-slot:prepend>
-                <q-icon name="email" />
-              </template>
-            </q-input>
-            <q-input
-              type="password"
-              standout="bg-primary text-white"
-              color="primary"
-              v-model="password"
-              label="Password"
-            >
-              <template v-slot:prepend>
-                <q-icon name="password" />
-              </template>
-            </q-input>
+    <q-scroll-area
+      style="position: absolute; height: 100%; width: 100%"
+      :thumb-style="{
+        right: '0.5rem',
+        borderRadius: '0.25rem',
+        backgroundColor: 'var(--veneu-blue)',
+        width: '0.25rem',
+        opacity: 1,
+      }"
+    >
+      <div class="vertical-center">
+        <VeneuLogo class="spinner" />
+        <ApolloMutation
+          :mutation="require('../graphql/Login.gql')"
+          :variables="{ email, password }"
+          class="form q-px-md q-pb-md"
+          @done="handleLogin"
+        >
+          <template slot-scope="{ mutate }">
+            <q-form @submit.prevent="formValid && mutate()" class="q-gutter-y-md q-pa-md q-ma-md neu-convex">
+              <div>
+                <i><h1>Login</h1></i>
+              </div>
+              <q-input standout="bg-primary text-white" color="primary" v-model="email" label="Email" class="q-mt-md">
+                <template v-slot:prepend>
+                  <q-icon name="email" />
+                </template>
+              </q-input>
+              <q-input
+                type="password"
+                standout="bg-primary text-white"
+                color="primary"
+                v-model="password"
+                label="Password"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="password" />
+                </template>
+              </q-input>
 
-            <q-bar class="bg-none q-pa-none q-gutter-x-md q-gutter-y-none q-pl-md">
-              <q-btn label="Back" type="reset" color="primary" flat @click="handleBack" />
-              <q-btn label="Submit" type="submit" color="primary" icon-right="check" class="q-ml-sm full-width" />
-            </q-bar>
-          </q-form>
-        </template>
-      </ApolloMutation>
-    </div>
+              <q-bar class="bg-none q-pa-none q-gutter-x-md q-gutter-y-none q-pl-md">
+                <q-btn label="Back" type="reset" color="primary" flat @click="handleBack" />
+                <q-btn label="Submit" type="submit" color="primary" icon-right="check" class="q-ml-sm full-width" />
+              </q-bar>
+            </q-form>
+          </template>
+        </ApolloMutation>
+      </div>
+    </q-scroll-area>
   </q-page>
 </template>
 
