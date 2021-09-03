@@ -13,7 +13,7 @@
       <ApolloMutation
         :mutation="require('../graphql/CreateUserGroup.gql')"
         :variables="{ name, parent_resource, parent_resource_type }"
-        class="form q-pt-lg q-pb-xl"
+        class="form q-pt-lg q-pb-xl q-px-md"
         @done="handleCreateUserGroup"
       >
         <template slot-scope="{ mutate }">

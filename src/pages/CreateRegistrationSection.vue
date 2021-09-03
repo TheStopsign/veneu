@@ -13,7 +13,7 @@
       <ApolloMutation
         :mutation="require('../graphql/CreateRegistrationSection.gql')"
         :variables="{ name, course, meeting_times }"
-        class="form q-pt-lg q-pb-xl"
+        class="form q-pt-lg q-pb-xl q-px-md"
         @done="handleCreateRegistrationSection"
       >
         <template slot-scope="{ mutate }">

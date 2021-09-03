@@ -11,7 +11,7 @@
       }"
     >
       <q-form @submit.prevent="handleCreateVideo">
-        <div class="q-gutter-md q-ma-md q-pt-lg q-pb-xl neu-convex">
+        <div class="q-gutter-md q-ma-md q-pt-lg q-pb-xl q-px-md neu-convex">
           <div>
             <i><h1>Create a New Video</h1></i>
           </div>
