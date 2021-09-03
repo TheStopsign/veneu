@@ -1,5 +1,5 @@
 <template>
-  <q-page id="create-course" class="q-pa-md">
+  <q-page id="create-registrationsection" class="q-pa-md">
     <ApolloMutation
       :mutation="require('../graphql/CreateRegistrationSection.gql')"
       :variables="{ name, course, meeting_times }"

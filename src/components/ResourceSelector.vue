@@ -1,16 +1,28 @@
 <template>
   <div class="q-my-md neu-concave" :class="nav ? 'neu-convex' : ''" style="overflow-x: auto">
-    <div class="q-mx-md q-mt-md q-mb-xs">{{ label || "Select a resource" }}</div>
-    <q-tree
-      v-if="rendering"
-      class="col-12 text-primary q-px-md q-pb-md q-py-xs"
-      style="max-height: 20rem; overflow-y: auto"
-      default-expand-all
-      :nodes="tree"
-      node-key="_id"
-      :selected.sync="selected_resource"
-      :expanded.sync="expanded"
-    />
+    <div class="q-mx-md q-mt-md q-mb-xs">
+      <q-icon size="xs" name="account_tree" class="q-mr-sm q-pb-xs" />{{ label || "Select a resource" }}
+    </div>
+    <q-scroll-area
+      style="height: 20rem"
+      :thumb-style="{
+        right: '0.5rem',
+        borderRadius: '0.25rem',
+        backgroundColor: 'var(--veneu-blue)',
+        width: '0.25rem',
+        opacity: 1,
+      }"
+    >
+      <q-tree
+        v-if="rendering"
+        class="col-12 text-primary q-px-md q-py-xs"
+        default-expand-all
+        :nodes="tree"
+        node-key="_id"
+        :selected.sync="selected_resource"
+        :expanded.sync="expanded"
+      />
+    </q-scroll-area>
   </div>
 </template>
 
