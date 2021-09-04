@@ -1,27 +1,38 @@
 <template>
-  <div class="checkinselector q-px-md q-pt-md neu-concave row full-width">
-    <ApolloQuery :query="require('../graphql/HostedCheckins.gql')">
+  <div class="checkinselector q-pt-md neu-concave row full-width">
+    <ApolloQuery :query="require('../graphql/HostedCheckins.gql')" style="width: 100%">
       <template slot-scope="{ result: { loading, error, data } }">
         <div v-if="error">Error...</div>
         <div v-else-if="loading">Loading...</div>
-        <q-list v-else-if="data">
-          <div class="q-mb-sm">{{ label }}</div>
-          <q-item
-            v-for="checkin in data.checkins.filter((a) => !hidden.includes(a._id))"
-            class="row items-center justify-center checkin q-my-md q-py-xs"
-            clickable
-            :class="selected.includes(checkin._id) ? 'neu-convex' : ''"
-            :key="checkin._id"
-            @click="handleSelect(checkin._id)"
+        <q-list v-else-if="data" style="width: 20rem">
+          <div class="q-mb-sm q-mx-md">{{ label }}</div>
+          <q-scroll-area
+            style="height: 20rem; width: 100%"
+            :thumb-style="{
+              right: '0.5rem',
+              borderRadius: '0.25rem',
+              backgroundColor: 'var(--veneu-blue)',
+              width: '0.25rem',
+              opacity: 1,
+            }"
           >
-            {{ getFormattedDate(checkin.created_at) }}
-          </q-item>
-          <q-item
-            v-if="!data.checkins.filter((a) => !hidden.includes(a._id)).length"
-            class="row items-center justify-center checkin q-my-md q-py-xs"
-          >
-            None
-          </q-item>
+            <q-item
+              v-for="checkin in data.checkins.filter((a) => !hidden.includes(a._id))"
+              class="checkin justify-center q-ma-md q-py-xs"
+              clickable
+              :class="selected.includes(checkin._id) ? 'neu-convex' : ''"
+              :key="checkin._id"
+              @click="handleSelect(checkin._id)"
+            >
+              {{ getFormattedDate(checkin.created_at) }}
+            </q-item>
+            <q-item
+              v-if="!data.checkins.filter((a) => !hidden.includes(a._id)).length"
+              class="row items-center justify-center checkin q-my-md q-py-xs"
+            >
+              None
+            </q-item>
+          </q-scroll-area>
         </q-list>
       </template>
     </ApolloQuery>

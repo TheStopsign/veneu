@@ -33,7 +33,7 @@
                 class="q-mt-md"
               />
               <q-dialog v-model="checkinModal" persistent>
-                <q-card>
+                <q-card style="max-width: 40rem">
                   <q-card-actions class="q-pt-md q-pb-none q-px-md">
                     <CheckinSelector
                       :me="me"
@@ -55,7 +55,7 @@
                     <q-btn label="Cancel" class="text-primary" v-close-popup />
                     <q-space />
                     <q-btn
-                      label="Delete"
+                      label="Submit"
                       color="white"
                       class="bg-primary q-ml-md"
                       v-close-popup

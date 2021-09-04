@@ -357,14 +357,12 @@ import { setPalette } from "./styles/palette";
 import { date } from "quasar";
 import gql from "graphql-tag";
 import VeneuLogo from "./components/VeneuLogo";
-// import CourseList from "./components/CourseList";
 import ResourceSelector from "./components/ResourceSelector";
 import "quasar/icon-set/fontawesome-v5";
 export default {
   name: "app",
   components: {
     VeneuLogo,
-    // CourseList,
     ResourceSelector,
   },
   watch: {

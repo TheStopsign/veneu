@@ -50,7 +50,8 @@ aside.q-drawer--mobile {
 .q-stepper__header,
 .q-stepper__nav,
 .q-time__container-child,
-.q-date__header {
+.q-date__header,
+.q-table__container {
   background: none !important;
 }
 
@@ -448,7 +449,6 @@ h1 {
 .video-js .vjs-big-play-button,
 .q-select__dialog,
 .q-menu,
-.q-table__card,
 .q-pull-to-refresh,
 .q-time {
   -webkit-backdrop-filter: blur(4px) !important;
@@ -463,8 +463,7 @@ h1 {
   .video-js .vjs-control-bar,
   .video-js .vjs-big-play-button,
   .q-select__dialog,
-  .q-menu,
-  .q-table__card {
+  .q-menu {
     background-color: var(--veneu-firefox-glass) !important;
     border: none;
   }
@@ -533,4 +532,8 @@ h1 {
     animation: none !important;
     box-shadow: none !important;
   }
+}
+
+.q-card__actions .q-btn__wrapper {
+  padding: 4px 16px;
 }
