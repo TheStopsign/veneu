@@ -57,13 +57,13 @@
               class="seatindicator q-pa-xs"
               v-for="ticket in tickets"
               :key="ticket.code"
-              :title="ticket.first_name + ' ' + ticket.last_name"
+              :title="ticket.email"
               :style="{ display: ticket && ticket.code == current.code ? 'none' : 'inline-block' }"
             >
               <div v-if="ticket.code != current.code">
                 <q-icon size="lg" color="primary" name="event_seat" />
                 <p>
-                  {{ ticket.first_name + " " + ticket.last_name }}
+                  {{ ticket.email }}
                 </p>
               </div>
             </div>
@@ -83,8 +83,7 @@
                 claimedTicket(code: $code) {
                   code
                   user
-                  first_name
-                  last_name
+                  email
                 }
               }
             `
@@ -100,8 +99,7 @@
                 reservedTicket(host: $host) {
                   code
                   user
-                  first_name
-                  last_name
+                  email
                 }
               }
             `
@@ -174,8 +172,7 @@ export default {
               checkin(_id: $_id) {
                 _id
                 tickets {
-                  first_name
-                  last_name
+                  email
                   user
                   code
                 }
@@ -204,7 +201,7 @@ export default {
       const csvContent =
         "data:text/csv;charset=utf-8,First,Last,User ID,Code\n" +
         Object.values(this.tickets)
-          .map((e) => e.user && [e.first_name, e.last_name, e.user, e.code].join(","))
+          .map((e) => e.user && [e.email, e.user, e.code].join(","))
           .join("\n");
 
       const encodedUri = encodeURI(csvContent);
@@ -239,7 +236,7 @@ export default {
         this.sendApprove(this.tickets[claimedTicket.code]);
         this.$q.notify({
           progress: true,
-          message: claimedTicket.first_name + " " + claimedTicket.last_name + " checked in",
+          message: claimedTicket.email + " checked in",
           icon: "event_seat",
           color: "primary",
         });
@@ -268,14 +265,13 @@ export default {
         var reservedticket = {
           ...this.generateTicket(),
           user: reservedTicket[0].user,
-          first_name: reservedTicket[0].first_name,
-          last_name: reservedTicket[0].last_name,
+          email: reservedTicket[0].email,
         };
         this.tickets[reservedticket.code] = reservedTicket;
         this.sendApprove(reservedticket);
         this.$q.notify({
           progress: true,
-          message: reservedticket.first_name + " " + reservedticket.last_name + " reserved their seat",
+          message: reservedticket.email + " reserved their seat",
           icon: "event_seat",
           color: "primary",
         });
@@ -297,12 +293,11 @@ export default {
     async sendApprove(ticket) {
       this.$apollo.mutate({
         mutation: gql`
-          mutation approveTicket($code: String!, $user: ID!, $first_name: String!, $last_name: String!, $checkin: ID!) {
-            approveTicket(code: $code, user: $user, first_name: $first_name, last_name: $last_name, checkin: $checkin) {
+          mutation approveTicket($code: String!, $user: ID!, $email: String!, $checkin: ID!) {
+            approveTicket(code: $code, user: $user, email: $email, checkin: $checkin) {
               code
               user
-              first_name
-              last_name
+              email
             }
           }
         `,

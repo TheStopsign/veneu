@@ -30,51 +30,21 @@
                   label="Role"
                   :menu-offset="[0, 15]"
                 />
-                <ApolloMutation
-                  :mutation="
-                    (gql) => gql`
-                      mutation (
-                        $emailInput: String!
-                        $roleSelection: Role!
-                        $resourceId: ID!
-                        $sharedResourceType: String!
-                      ) {
-                        createAuth(
-                          user: $emailInput
-                          role: $roleSelection
-                          shared_resource: $resourceId
-                          shared_resource_type: $sharedResourceType
-                        ) {
-                          _id
-                        }
-                      }
-                    `
-                  "
-                  :variables="{
-                    emailInput,
-                    roleSelection,
-                    resourceId: resourceid,
-                    sharedResourceType,
-                  }"
+                <q-btn
+                  v-close-popup
+                  color="primary"
+                  class="q-ml-md q-my-none q-mb-md"
+                  @click="handleShareResource()"
+                  label="Share"
+                  icon-right="send"
+                  size="md"
+                  :loading="loading"
+                  :disabled="isDisabled()"
                 >
-                  <template v-slot="{ mutate, loading }">
-                    <q-btn
-                      v-close-popup
-                      color="primary"
-                      class="q-ml-md q-my-none q-mb-md"
-                      @click="mutate()"
-                      label="Share"
-                      icon-right="send"
-                      size="md"
-                      :loading="loading"
-                      :disabled="isDisabled()"
-                    >
-                      <template v-slot:loading>
-                        <q-spinner-dots />
-                      </template>
-                    </q-btn>
+                  <template v-slot:loading>
+                    <q-spinner-dots />
                   </template>
-                </ApolloMutation>
+                </q-btn>
               </q-card-section>
 
               <q-card-section class="scroll row q-ma-none q-px-none q-py-none">
@@ -219,6 +189,45 @@ export default {
           this.$q.notify({
             progress: true,
             message: "Issue changing role, try again " + e,
+            icon: "error",
+            color: "negative",
+          });
+        });
+    },
+    handleShareResource() {
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation ($emailInput: String!, $roleSelection: Role!, $resourceId: ID!, $sharedResourceType: String!) {
+              createAuth(
+                user: $emailInput
+                role: $roleSelection
+                shared_resource: $resourceId
+                shared_resource_type: $sharedResourceType
+              ) {
+                _id
+              }
+            }
+          `,
+          variables: {
+            emailInput: this.emailInput,
+            roleSelection: this.roleSelection,
+            resourceId: this.resourceid,
+            sharedResourceType: this.sharedResourceType,
+          },
+        })
+        .then(({ data }) => {
+          this.$q.notify({
+            progress: true,
+            message: "Success",
+            icon: "check_circle",
+            color: "primary",
+          });
+        })
+        .catch((e) => {
+          this.$q.notify({
+            progress: true,
+            message: "Issue creating auth, refresh and try again",
             icon: "error",
             color: "negative",
           });

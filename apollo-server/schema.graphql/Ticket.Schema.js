@@ -5,15 +5,13 @@ module.exports = gql`
     _id: ID!
     code: String!
     user: ID!
-    first_name: String!
-    last_name: String!
+    email: String!
     checkin: Checkin!
   }
   input TicketInput {
     code: String!
     user: ID!
-    first_name: String!
-    last_name: String!
+    email: String!
     checkin: ID!
   }
 
@@ -23,8 +21,8 @@ module.exports = gql`
   }
 
   extend type Mutation {
-    claimTicket(code: String!, user: ID!, first_name: String!, last_name: String!, checkin: ID!): Ticket!
-    approveTicket(code: String!, user: ID!, first_name: String!, last_name: String!, checkin: ID!): Ticket!
+    claimTicket(code: String!, user: ID!, email: String!, checkin: ID!): Ticket!
+    approveTicket(code: String!, user: ID!, email: String!, checkin: ID!): Ticket!
     reserveTicket(host: ID!, tickets: [TicketInput!]!): [Ticket!]!
   }
 

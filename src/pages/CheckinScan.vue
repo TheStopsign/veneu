@@ -1,27 +1,19 @@
 <template>
   <q-page class="q-pa-md">
-    <q-dialog v-model="needsName" persistent transition-show="scale" transition-hide="scale">
+    <q-dialog v-model="needsEmail" persistent transition-show="scale" transition-hide="scale">
       <q-card class="bg-teal text-primary" style="width: 300px">
         <q-card-section>
           <div class="text-h6">A name is required</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          <q-input type="text" standout="bg-primary text-white" color="primary" v-model="first_name" label="First" />
-          <q-input
-            type="text"
-            standout="bg-primary text-white"
-            color="primary"
-            v-model="last_name"
-            label="Last"
-            class="q-pt-md"
-          />
+          <q-input type="text" standout="bg-primary text-white" color="primary" v-model="email" label="Email" />
         </q-card-section>
 
         <q-card-actions class="q-mb-md q-mx-sm">
           <q-btn label="Cancel" v-close-popup :to="{ path: '/' }" />
           <q-space />
-          <q-btn label="OK" v-close-popup :disabled="!first_name || !last_name" @click="needsName = false" />
+          <q-btn label="OK" v-close-popup :disabled="!isValidEmail(email)" @click="needsEmail = false" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -60,14 +52,14 @@
         size="xl"
         label="Stop"
       />
-      <q-icon
-        v-if="true === screen_scanning || camera_scanning"
-        size="xl"
-        :name="!last ? 'search' : 'qr_code'"
-        style="display: flex; flex-direction: row"
-      />
+      <div v-if="true === screen_scanning || camera_scanning" style="text-align: left" class="q-my-md">
+        <q-icon size="xl" :name="!last ? 'search' : 'qr_code'" style="display: inline-block" class="q-mr-sm" />
+        <div style="display: inline-block">
+          {{ !last ? "Searching for QR Code..." : "QR Code found! Keep scanning..." }}
+        </div>
+      </div>
       <q-responsive :ratio="16 / 9" style="max-height: 50vh">
-        <video id="captured-screen" autoplay :style="{ display: 'none' }"></video>
+        <video id="captured-screen" autoplay :style="screen_scanning ? '' : 'display: none'"></video>
         <video
           v-if="camera_scanning"
           id="camera-video"
@@ -86,8 +78,7 @@
               approvedTicket(user: $user) {
                 code
                 user
-                first_name
-                last_name
+                email
               }
             }
           `
@@ -116,9 +107,8 @@ export default {
       camera_scanning: false,
       camera_scanner: null,
       user: null,
-      needsName: true,
-      first_name: "",
-      last_name: "",
+      needsEmail: true,
+      email: "",
       video_el: null,
       engine: null,
       canvas: null,
@@ -127,9 +117,8 @@ export default {
   },
   created() {
     if (this.me) {
-      this.needsName = false;
-      this.first_name = this.me.first_name;
-      this.last_name = this.me.last_name;
+      this.needsEmail = false;
+      this.email = this.me.email;
       this.user = this.me._id;
     } else {
       this.user = this.generateID();
@@ -151,6 +140,15 @@ export default {
     this.handleStopCamScan();
   },
   methods: {
+    isValidEmail(val) {
+      const emailPattern =
+        /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
+      if (emailPattern.test(val)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     generateID() {
       var result = "";
       var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -170,8 +168,7 @@ export default {
           if (this.previous[this.previous.length - 1] != code) {
             this.previous.push({
               code,
-              first_name: this.first_name,
-              last_name: this.last_name,
+              email: this.email,
               user: this.user,
               checkin,
             });
@@ -276,20 +273,18 @@ export default {
     async sendClaim(code, checkin) {
       this.$apollo.mutate({
         mutation: gql`
-          mutation claimTicket($code: String!, $user: ID!, $first_name: String!, $last_name: String!, $checkin: ID!) {
-            claimTicket(code: $code, user: $user, first_name: $first_name, last_name: $last_name, checkin: $checkin) {
+          mutation claimTicket($code: String!, $user: ID!, $email: String!, $checkin: ID!) {
+            claimTicket(code: $code, user: $user, email: $email, checkin: $checkin) {
               code
               user
-              first_name
-              last_name
+              email
             }
           }
         `,
         variables: {
           code,
           user: this.user,
-          first_name: this.first_name,
-          last_name: this.last_name,
+          email: this.email,
           checkin,
         },
       });
@@ -301,8 +296,7 @@ export default {
             reserveTicket(host: $host, tickets: $tickets) {
               code
               user
-              first_name
-              last_name
+              email
             }
           }
         `,

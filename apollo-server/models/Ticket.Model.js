@@ -3,11 +3,7 @@ const mongoose = require("mongoose");
 module.exports = (pubsub) => {
   const Ticket = new mongoose.Schema(
     {
-      first_name: {
-        type: String,
-        required: true,
-      },
-      last_name: {
+      email: {
         type: String,
         required: true,
       },
