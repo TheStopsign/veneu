@@ -324,7 +324,7 @@ export default {
           },
         })
         .then(({ data }) => {
-          this.$router.push({ name: "Dashboard" });
+          location.href = "/dashboard";
         })
         .catch((e) => {
           this.$q.notify({

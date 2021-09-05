@@ -118,7 +118,7 @@ export default {
       return date.formatDate(d, "MMM Do, YYYY @ h:mma");
     },
     onDelete() {
-      this.$router.push({ name: "Dashboard" });
+      location.href = "/dashboard";
     },
     canDelete() {
       return (

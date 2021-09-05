@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { flatten } = require("../generics");
 
 module.exports = (pubsub) => {
   const UserGroup = new mongoose.Schema(
@@ -63,8 +64,8 @@ module.exports = (pubsub) => {
         if (userGroups.length) {
           const groupsids = userGroups.map((a) => a._id);
           const groupsparents = userGroups.map((a) => a.parent_resource);
-          const groupsgroups = userGroups.map((a) => a.user_groups).flat();
-          const groupslectures = userGroups.map((a) => a.lectures).flat();
+          const groupsgroups = flatten(userGroups.map((a) => a.user_groups));
+          const groupslectures = flatten(userGroups.map((a) => a.lectures));
           Promise.all([
             mongoose.model("Auth").deleteMany({ shared_resource: { $in: groupsids } }),
             mongoose

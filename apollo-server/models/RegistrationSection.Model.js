@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { flatten } = require("../generics");
 
 module.exports = (pubsub) => {
   const RegistrationSection = new mongoose.Schema(
@@ -69,10 +70,10 @@ module.exports = (pubsub) => {
       this.model.find(this.getFilter()).then((registrationSections) => {
         if (registrationSections.length) {
           const sectionsids = registrationSections.map((a) => a._id);
-          const sectionsauths = registrationSections.map((a) => a.auths).flat();
+          const sectionsauths = flatten(registrationSections.map((a) => a.auths));
           const sectionscourses = registrationSections.map((a) => a.parent_resource);
-          const sectionsgroups = registrationSections.map((a) => a.user_groups).flat();
-          const sectionslectures = registrationSections.map((a) => a.lectures).flat();
+          const sectionsgroups = flatten(registrationSections.map((a) => a.user_groups));
+          const sectionslectures = flatten(registrationSections.map((a) => a.lectures));
           Promise.all([
             mongoose.model("Auth").deleteMany({ _id: { $in: sectionsauths } }),
             mongoose

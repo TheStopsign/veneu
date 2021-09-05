@@ -58,9 +58,18 @@ module.exports = (pubsub) => ({
     },
   },
   Course: {
-    user_groups: async (parent, args, { loaders: { UserGroup } }, info) => UserGroup.loadMany(parent.user_groups),
-    registration_sections: async (parent, args, { loaders: { RegistrationSection } }, info) =>
-      RegistrationSection.loadMany(parent.registration_sections),
-    lectures: async (parent, args, { loaders: { Lecture } }, info) => Lecture.loadMany(parent.lectures),
+    user_groups: async ({ user_groups }, args, { requester: { auths }, loaders: { UserGroup } }, info) =>
+      UserGroup.loadMany(user_groups.filter((a) => auths.map((b) => b.shared_resource).includes(a))),
+    registration_sections: async (
+      { registration_sections },
+      args,
+      { requester: { auths }, loaders: { RegistrationSection } },
+      info
+    ) =>
+      RegistrationSection.loadMany(
+        registration_sections.filter((a) => auths.map((b) => b.shared_resource).includes(a))
+      ),
+    lectures: async ({ lectures }, args, { requester: { auths }, loaders: { Lecture } }, info) =>
+      Lecture.loadMany(lectures.filter((a) => auths.map((b) => b.shared_resource).includes(a))),
   },
 });

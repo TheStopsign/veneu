@@ -1,10 +1,14 @@
 const { gql } = require("apollo-server-express");
 
 module.exports = gql`
-  type Checkin {
+  type Checkin implements SharedResource {
     _id: ID!
-    type: String!
+    auths: [Auth!]!
     creator: User!
+    name: String!
+    type: String!
+    parent_resource: ParentResource
+    parent_resource_type: String
     tickets: [Ticket!]!
     created_at: Date
   }

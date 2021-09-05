@@ -41,8 +41,12 @@ module.exports = (pubsub) => {
       const auth = (req.headers && req.headers.authorization && req.headers.authorization.split(" ")) || [];
       if (auth.length == 2 && auth[0] == "Bearer") {
         const user = await getUser(auth[1]);
+        const auths = user.auths.filter((a) => undefined != a.role && null != a.role);
         return {
-          requester: user,
+          requester: {
+            ...user,
+            auths,
+          },
           models,
           loaders: getLoaders(),
           pubsub,
