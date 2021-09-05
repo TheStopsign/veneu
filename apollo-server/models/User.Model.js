@@ -58,7 +58,7 @@ module.exports = (pubsub) => {
       timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
     }
   )
-    .pre("remove", function (next) {
+    .pre("deleteOne", function (next) {
       Promise.all([
         this.model("Auth").deleteMany({ user: this._id }),
         this.model("Notification").deleteMany({ user: this._id }),

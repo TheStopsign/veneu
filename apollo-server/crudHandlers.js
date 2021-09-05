@@ -93,8 +93,7 @@ const fns = {
     filters && filters.type
       ? models[filters.type]
           .findOne(filters)
-          .lean()
-          .then((doc) => models[filters.type].deleteOne(doc).then((deleted) => doc))
+          .then((doc) => doc.deleteOne().then((deleted) => doc))
           .then((deleted) =>
             pubsub
               ? pubsub
@@ -113,10 +112,8 @@ const fns = {
     filters && filters.type
       ? models[filters.type]
           .find(filters)
-          .lean()
-          .then((docs) =>
-            models[filters.type].deleteMany({ _id: { $in: docs.map((a) => a._id) } }).then((deleted) => docs)
-          )
+          .findOne(filters)
+          .then((docs) => docs.deleteMany().then((deleted) => docs))
           .then((deleted) =>
             pubsub
               ? pubsub

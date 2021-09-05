@@ -74,7 +74,7 @@ module.exports = (pubsub) => {
   )
     .pre("deleteOne", { document: true }, function (next) {
       Promise.all([
-        mongoose.model("Auth").deleteMany({ shared_resource: this._id, shared_resource_type: "Course" }),
+        mongoose.model("Auth").deleteMany({ _id: { $in: this.auths } }),
         mongoose.model("UserGroup").deleteMany({ _id: { $in: this.user_groups } }),
         mongoose.model("RegistrationSection").deleteMany({ _id: { $in: this.registration_sections } }),
         mongoose.model("Lecture").deleteMany({ _id: { $in: this.lectures } }),
