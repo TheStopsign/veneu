@@ -537,3 +537,8 @@ h1 {
 .q-card__actions .q-btn__wrapper {
   padding: 4px 16px;
 }
+
+.q-menu .q-item,
+.q-expansion-item .q-item {
+  border-radius: 0.875rem !important;
+}
