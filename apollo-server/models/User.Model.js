@@ -62,7 +62,9 @@ module.exports = (pubsub) => {
       Promise.all([
         this.model("Auth").deleteMany({ user: this._id }),
         this.model("Notification").deleteMany({ user: this._id }),
-      ]).then(next);
+      ]).then((resolved) => {
+        next();
+      });
     })
     .pre("save", function (next) {
       this.wasNew = this.isNew;

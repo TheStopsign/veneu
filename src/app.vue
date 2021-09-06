@@ -442,9 +442,7 @@ export default {
     canCreateVideos(auths) {
       return (
         auths.filter(
-          (a) =>
-            ["Course", "RegistrationSection", "UserGroup", "Lecture"].includes(a.shared_resource_type) &&
-            ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
+          (a) => ["Lecture"].includes(a.shared_resource_type) && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
         ).length > 0
       );
     },

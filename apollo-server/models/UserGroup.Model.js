@@ -57,7 +57,9 @@ module.exports = (pubsub) => {
           .updateOne({ _id: this.parent_resource }, { $pull: { user_groups: this._id } }),
         mongoose.model("UserGroup").deleteMany({ _id: { $in: this.user_groups } }),
         mongoose.model("Lecture").deleteMany({ parent_resource: this._id }),
-      ]).then(next);
+      ]).then((resolved) => {
+        next();
+      });
     })
     .pre("deleteMany", function (next) {
       this.model.find(this.getFilter()).then((userGroups) => {

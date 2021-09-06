@@ -62,7 +62,9 @@ module.exports = (pubsub) => {
           .updateOne({ _id: this.parent_resource }, { $pull: { lectures: this._id } }),
         mongoose.model("YTVideoStream").deleteOne({ parent_resource: this._id }),
         mongoose.model("Checkin").deleteMany({ _id: { $in: this.checkins } }),
-      ]).then(next);
+      ]).then((resolved) => {
+        next();
+      });
     })
     .pre("deleteMany", function (next) {
       this.model.find(this.getFilter()).then((lectures) => {
