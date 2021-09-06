@@ -75,7 +75,9 @@ module.exports = (pubsub) => ({
     },
   },
   UserGroup: {
-    user_groups: (parent, args, { loaders: { UserGroup } }, info) => UserGroup.loadMany(parent.user_groups),
-    lectures: (parent, args, { loaders: { Lecture } }, info) => Lecture.loadMany(parent.lectures),
+    user_groups: ({ user_groups }, args, { requester: { auths }, loaders: { UserGroup } }, info) =>
+      UserGroup.loadMany(user_groups.filter((a) => auths.map((b) => b.shared_resource).includes(a))),
+    lectures: ({ lectures }, args, { requester: { auths }, loaders: { Lecture } }, info) =>
+      Lecture.loadMany(lectures.filter((a) => auths.map((b) => b.shared_resource).includes(a))),
   },
 });

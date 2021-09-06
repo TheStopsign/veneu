@@ -31,8 +31,7 @@ fragment Lecture on Lecture {
         type
         tickets {
           _id
-          first_name
-          last_name
+          email
           code
           user
         }
@@ -44,8 +43,7 @@ fragment Lecture on Lecture {
     type
     tickets {
       _id
-      first_name
-      last_name
+      email
       code
       user
     }

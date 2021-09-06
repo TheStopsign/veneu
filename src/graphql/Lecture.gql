@@ -35,8 +35,7 @@ query lecture($_id: ID!) {
           type
           tickets {
             _id
-            first_name
-            last_name
+            email
             code
             user
           }
@@ -67,8 +66,7 @@ query lecture($_id: ID!) {
       type
       tickets {
         _id
-        first_name
-        last_name
+        email
         code
         user
       }
