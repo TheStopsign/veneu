@@ -412,7 +412,9 @@ export default {
           auths: [...previousResult.me.auths, authCreated],
         },
       };
-      this.$refs.nav.initAddAuthToTree(authCreated);
+      if (authCreated.shared_resource_type != "Checkin") {
+        this.$refs.nav.initAddAuthToTree(authCreated);
+      }
       this.$q.notify({
         progress: true,
         message: "New " + authCreated.shared_resource_type + " added: " + authCreated.shared_resource.name,
