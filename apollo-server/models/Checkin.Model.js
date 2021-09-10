@@ -42,6 +42,7 @@ module.exports = (pubsub) => {
   )
     .pre("deleteOne", { document: true }, function (next) {
       Promise.all([
+        mongoose.model("Auth").deleteMany({ shared_resource: this._id }),
         mongoose.model("Ticket").deleteMany({ _id: { $in: this.tickets } }),
         mongoose.model("User").updateOne({ _id: this.creator }, { $pull: { checkins: this._id } }),
       ]).then((resolved) => {
