@@ -23,6 +23,9 @@
             :margin="12"
             :style="{ height: '100%', width: '100%' }"
             class="q-pa-md"
+            logoSrc="/img/icons/android-chrome-512x512.png"
+            logoScale="0.125"
+            logoCornerRadius="20"
           />
         </q-responsive>
       </div>
@@ -128,6 +131,7 @@
 <script>
 import VueQr from "vue-qr";
 import gql from "graphql-tag";
+import logoSrc from "../assets/logo.png";
 export default {
   props: {
     me: Object,
