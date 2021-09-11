@@ -1,111 +1,100 @@
 <template>
   <q-page id="create-course">
-    <q-scroll-area
-      style="position: absolute; height: 100%; width: 100%"
-      :thumb-style="{
-        right: '0.5rem',
-        borderRadius: '0.25rem',
-        backgroundColor: 'var(--veneu-blue)',
-        width: '0.25rem',
-        opacity: 1,
-      }"
-    >
-      <div class="q-pt-lg q-pb-xl q-px-md">
-        <q-form class="q-gutter-md q-ma-md q-py-md neu-convex form q-mb-lg">
-          <div>
-            <i><h1>Create a New Lecture</h1></i>
-          </div>
-          <ResourceSelector
-            :me="me"
-            label="For Resource..."
-            @change="handleChangeResource"
-            :selectable="me.auths.filter((a) => a.shared_resource_type != 'Lecture').map((a) => a._id)"
-            class="q-mt-md"
-          />
-          <q-input
-            standout="bg-primary text-white q-ma-none"
+    <div class="q-pt-lg q-pb-xl q-px-md">
+      <q-form class="q-gutter-md q-ma-md q-py-md neu-convex form q-mb-lg">
+        <div>
+          <i><h1>Create a New Lecture</h1></i>
+        </div>
+        <ResourceSelector
+          :me="me"
+          label="For Resource..."
+          @change="handleChangeResource"
+          :selectable="me.auths.filter((a) => a.shared_resource_type != 'Lecture').map((a) => a._id)"
+          class="q-mt-md"
+        />
+        <q-input
+          standout="bg-primary text-white q-ma-none"
+          color="primary"
+          class="text-primary q-mt-none"
+          v-model="name"
+          label="Lecture Name"
+          placeholder="e.g. S-2021 01"
+        >
+        </q-input>
+        <div class="row full-width q-px-md q-py-md">
+          <q-date
+            v-model="date"
+            mask="YYYY-MM-DD"
             color="primary"
-            class="text-primary q-mt-none"
-            v-model="name"
-            label="Lecture Name"
-            placeholder="e.g. S-2021 01"
-          >
-          </q-input>
-          <div class="row full-width q-px-md q-py-md">
-            <q-date
-              v-model="date"
-              mask="YYYY-MM-DD"
-              color="primary"
-              class="col-12"
-              subtitle="What day is the lecture on?"
-            />
-          </div>
-          <div class="row full-width q-px-md items-center justify-center">What are the start and end times?</div>
-          <div class="row full-width q-px-md q-pb-md">
-            <div class="col-12 col-sm q-mr-md q-mt-sm">
-              <div class="row full-width q-px-none">
-                <q-input
-                  standout="primary"
-                  v-model="start"
-                  :rules="['HH:mm Z']"
-                  label="Start Time"
-                  disable
-                  class="col-9 q-pb-none"
-                />
-                <div class="col-3 q-pl-md q-mt-sm">
-                  <div class="row full-width full-height items-center">
-                    <q-btn class="row full-width q-mb-lg" type="button" icon="access_time">
-                      <q-popup-proxy transition-show="scale" transition-hide="scale">
-                        <q-time v-model="start" mask="HH:mm Z" color="primary">
-                          <div class="row items-center justify-end">
-                            <q-btn v-close-popup label="Close" color="primary" />
-                          </div>
-                        </q-time>
-                      </q-popup-proxy>
-                    </q-btn>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-12 col-sm q-mr-md q-mt-sm">
-              <div class="row full-width q-px-none">
-                <q-input
-                  standout="primary"
-                  v-model="end"
-                  :rules="['HH:mm Z']"
-                  label="End Time"
-                  disable
-                  class="col-9 q-pb-none"
-                />
-                <div class="col-3 q-pl-md q-mt-sm">
-                  <div class="row full-width full-height items-center">
-                    <q-btn class="row full-width q-mb-lg" type="button" icon="access_time">
-                      <q-popup-proxy transition-show="scale" transition-hide="scale">
-                        <q-time v-model="end" mask="HH:mm Z" color="primary">
-                          <div class="row items-center justify-end">
-                            <q-btn v-close-popup label="Close" color="primary" />
-                          </div>
-                        </q-time>
-                      </q-popup-proxy>
-                    </q-btn>
-                  </div>
+            class="col-12"
+            subtitle="What day is the lecture on?"
+          />
+        </div>
+        <div class="row full-width q-px-md items-center justify-center">What are the start and end times?</div>
+        <div class="row full-width q-px-md q-pb-md">
+          <div class="col-12 col-sm q-mr-md q-mt-sm">
+            <div class="row full-width q-px-none">
+              <q-input
+                standout="primary"
+                v-model="start"
+                :rules="['HH:mm Z']"
+                label="Start Time"
+                disable
+                class="col-9 q-pb-none"
+              />
+              <div class="col-3 q-pl-md q-mt-sm">
+                <div class="row full-width full-height items-center">
+                  <q-btn class="row full-width q-mb-lg" type="button" icon="access_time">
+                    <q-popup-proxy transition-show="scale" transition-hide="scale">
+                      <q-time v-model="start" mask="HH:mm Z" color="primary">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Close" color="primary" />
+                        </div>
+                      </q-time>
+                    </q-popup-proxy>
+                  </q-btn>
                 </div>
               </div>
             </div>
           </div>
-          <q-bar class="q-pa-none q-gutter-x-md">
-            <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
-            <q-btn
-              color="primary"
-              label="Continue"
-              class="q-ml-sm full-width"
-              :disabled="!formValid()"
-              @click="handleSubmit() && mutate()"
-            />
-          </q-bar>
-        </q-form>
-      </div>
-    </q-scroll-area>
+          <div class="col-12 col-sm q-mr-md q-mt-sm">
+            <div class="row full-width q-px-none">
+              <q-input
+                standout="primary"
+                v-model="end"
+                :rules="['HH:mm Z']"
+                label="End Time"
+                disable
+                class="col-9 q-pb-none"
+              />
+              <div class="col-3 q-pl-md q-mt-sm">
+                <div class="row full-width full-height items-center">
+                  <q-btn class="row full-width q-mb-lg" type="button" icon="access_time">
+                    <q-popup-proxy transition-show="scale" transition-hide="scale">
+                      <q-time v-model="end" mask="HH:mm Z" color="primary">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Close" color="primary" />
+                        </div>
+                      </q-time>
+                    </q-popup-proxy>
+                  </q-btn>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <q-bar class="q-pa-none q-gutter-x-md">
+          <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
+          <q-btn
+            color="primary"
+            label="Continue"
+            class="q-ml-sm full-width"
+            :disabled="!formValid()"
+            @click="handleSubmit() && mutate()"
+          />
+        </q-bar>
+      </q-form>
+    </div>
   </q-page>
 </template>
 

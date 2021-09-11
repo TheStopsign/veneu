@@ -343,9 +343,20 @@
             </q-scroll-area>
           </q-drawer>
 
-          <q-page-container class="text-primary">
-            <router-view :me="data.me" style="overflow: hidden" />
-          </q-page-container>
+          <q-scroll-area
+            style="position: absolute; height: 100%; width: 100%"
+            :thumb-style="{
+              right: '0.25rem',
+              borderRadius: '0.25rem',
+              backgroundColor: 'var(--veneu-blue)',
+              width: '0.25rem',
+              opacity: 1,
+            }"
+          >
+            <q-page-container class="text-primary">
+              <router-view :me="data.me" style="overflow: hidden" />
+            </q-page-container>
+          </q-scroll-area>
         </div>
       </template>
     </ApolloQuery>

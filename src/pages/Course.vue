@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page id="course-page">
     <ApolloQuery :query="require('../graphql/Course.gql')" :variables="{ _id: $route.params._id }">
       <template slot-scope="{ result: { loading, error, data } }">
         <div v-if="loading">Loading...</div>

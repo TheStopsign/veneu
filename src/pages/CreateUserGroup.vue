@@ -1,59 +1,42 @@
 <template>
   <q-page id="create-course">
-    <q-scroll-area
-      style="position: absolute; height: 100%; width: 100%"
-      :thumb-style="{
-        right: '0.5rem',
-        borderRadius: '0.25rem',
-        backgroundColor: 'var(--veneu-blue)',
-        width: '0.25rem',
-        opacity: 1,
-      }"
+    <ApolloMutation
+      :mutation="require('../graphql/CreateUserGroup.gql')"
+      :variables="{ name, parent_resource, parent_resource_type }"
+      class="form q-pt-lg q-pb-xl q-px-md"
+      @done="handleCreateUserGroup"
     >
-      <ApolloMutation
-        :mutation="require('../graphql/CreateUserGroup.gql')"
-        :variables="{ name, parent_resource, parent_resource_type }"
-        class="form q-pt-lg q-pb-xl q-px-md"
-        @done="handleCreateUserGroup"
-      >
-        <template slot-scope="{ mutate }">
-          <q-form @submit.prevent="formValid && mutate()" class="q-gutter-md q-ma-md q-py-md neu-convex">
-            <div>
-              <i><h1>Create a New Group</h1></i>
-            </div>
-            <ResourceSelector
-              :me="me"
-              label="For Resource..."
-              @change="handleChangeResource"
-              :selectable="
-                me.auths
-                  .filter((a) => ['Course', 'RegistrationSection', 'UserGroup'].includes(a.shared_resource_type))
-                  .map((a) => a._id)
-              "
-            />
-            <q-input
-              standout="bg-primary text-white q-ma-none"
-              color="primary"
-              class="text-primary q-mt-none"
-              v-model="name"
-              label="Group Name"
-              placeholder="e.g. Team 2"
-            >
-            </q-input>
-            <q-bar class="q-pa-none q-gutter-x-md">
-              <q-btn type="button" label="Back" class="q-ml-md" @click="handleBack" />
-              <q-btn
-                type="submit"
-                color="primary"
-                label="Continue"
-                class="q-ml-md full-width"
-                :disable="!formValid()"
-              />
-            </q-bar>
-          </q-form>
-        </template>
-      </ApolloMutation>
-    </q-scroll-area>
+      <template slot-scope="{ mutate }">
+        <q-form @submit.prevent="formValid && mutate()" class="q-gutter-md q-ma-md q-py-md neu-convex">
+          <div>
+            <i><h1>Create a New Group</h1></i>
+          </div>
+          <ResourceSelector
+            :me="me"
+            label="For Resource..."
+            @change="handleChangeResource"
+            :selectable="
+              me.auths
+                .filter((a) => ['Course', 'RegistrationSection', 'UserGroup'].includes(a.shared_resource_type))
+                .map((a) => a._id)
+            "
+          />
+          <q-input
+            standout="bg-primary text-white q-ma-none"
+            color="primary"
+            class="text-primary q-mt-none"
+            v-model="name"
+            label="Group Name"
+            placeholder="e.g. Team 2"
+          >
+          </q-input>
+          <q-bar class="q-pa-none q-gutter-x-md">
+            <q-btn type="button" label="Back" class="q-ml-md" @click="handleBack" />
+            <q-btn type="submit" color="primary" label="Continue" class="q-ml-md full-width" :disable="!formValid()" />
+          </q-bar>
+        </q-form>
+      </template>
+    </ApolloMutation>
   </q-page>
 </template>
 
