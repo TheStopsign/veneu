@@ -153,7 +153,7 @@ export default {
     addAuthToTree(node, auth, depth) {
       if (!auth.shared_resource.parent_resource && !depth) {
         node.push({
-          label: auth.shared_resource.name,
+          label: auth.shared_resource.name + " " + auth.shared_resource._id,
           ...auth.shared_resource,
           icon: auth.shared_resource_type == "Course" ? "school" : "school",
         });
@@ -164,7 +164,7 @@ export default {
         let added = false;
         if (node[i]._id == auth.shared_resource.parent_resource._id) {
           node[i].children.push({
-            label: auth.shared_resource.name,
+            label: auth.shared_resource.name + " " + auth.shared_resource._id,
             ...auth.shared_resource,
             icon:
               auth.shared_resource_type == "Course"

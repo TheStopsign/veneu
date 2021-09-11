@@ -54,26 +54,7 @@ export default {
       password: "",
     };
   },
-  mounted() {
-    let self = this;
-    setTimeout(() => {
-      var inputs = document.getElementsByClassName("q-input");
-      console.log(inputs);
-      inputs.forEach((input) => {
-        input.addEventListener("focusin", (e) => self.inputFocusHandler(e, input));
-        input.addEventListener("focusout", (e) => self.inputFocusOutHandler(e, input));
-      });
-    }, 200);
-  },
   methods: {
-    inputFocusHandler(event, input) {
-      document.body.classList.add("input-focused");
-      console.log("input-focused");
-    },
-    inputFocusOutHandler(event, input) {
-      document.body.classList.remove("input-focused");
-      console.log("input-unfocused");
-    },
     formValid() {
       return (
         this.email != "" &&

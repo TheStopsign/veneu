@@ -25,7 +25,6 @@
               label="Add description - coming soon"
               icon="create"
             />
-
             <q-timeline :layout="layout" color="primary">
               <q-timeline-entry v-if="data.course.lectures && data.course.lectures.length" class="text-primary" heading>
                 Timeline
