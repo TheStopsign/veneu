@@ -59,7 +59,9 @@ module.exports = (pubsub) => ({
   },
   Course: {
     user_groups: async ({ user_groups }, args, { requester: { auths }, loaders: { UserGroup } }, info) =>
-      UserGroup.loadMany(user_groups.filter((a) => auths.map((b) => b.shared_resource).includes(a))),
+      UserGroup.loadMany(
+        user_groups.filter((a) => auths.map((b) => b.shared_resource.toString()).includes(a.toString()))
+      ),
     registration_sections: async (
       { registration_sections },
       args,
@@ -67,9 +69,9 @@ module.exports = (pubsub) => ({
       info
     ) =>
       RegistrationSection.loadMany(
-        registration_sections.filter((a) => auths.map((b) => b.shared_resource).includes(a))
+        registration_sections.filter((a) => auths.map((b) => b.shared_resource.toString()).includes(a.toString()))
       ),
     lectures: async ({ lectures }, args, { requester: { auths }, loaders: { Lecture } }, info) =>
-      Lecture.loadMany(lectures.filter((a) => auths.map((b) => b.shared_resource).includes(a))),
+      Lecture.loadMany(lectures.filter((a) => auths.map((b) => b.shared_resource.toString()).includes(a.toString()))),
   },
 });

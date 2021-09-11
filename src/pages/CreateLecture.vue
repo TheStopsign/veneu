@@ -9,6 +9,7 @@
           :me="me"
           label="For Resource..."
           @change="handleChangeResource"
+          :selected="parent_resource"
           :selectable="me.auths.filter((a) => a.shared_resource_type != 'Lecture').map((a) => a._id)"
           class="q-mt-md"
         />
@@ -113,7 +114,7 @@ export default {
     return {
       name: "",
       date: null,
-      parent_resource: null,
+      parent_resource: this.$route.query.from ? this.$route.query.from : null,
       parent_resource_type: null,
       start: "",
       end: "",

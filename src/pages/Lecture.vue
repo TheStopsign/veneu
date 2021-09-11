@@ -4,7 +4,7 @@
       <template slot-scope="{ result: { loading, error, data } }">
         <div v-if="loading">Loading...</div>
         <div v-if="error">Error...</div>
-        <div v-if="data && data.lecture" id="lectureloaded">
+        <div v-if="data && data.lecture" id="lectureloaded" style="max-width: 60rem; margin: auto">
           <div class="q-my-md">
             <h1 class="q-mb-md q-mx-md">{{ data.lecture.name }}</h1>
             <div class="row full-width q-mb-md">
@@ -33,7 +33,7 @@
                 class="q-mt-md"
               />
               <q-dialog v-model="checkinModal" persistent>
-                <q-card style="max-width: 40rem">
+                <q-card style="max-width: 60rem">
                   <q-card-actions class="q-pt-md q-pb-none q-px-md">
                     <CheckinSelector
                       :me="me"

@@ -5,7 +5,7 @@
         <div v-if="loading">Loading...</div>
         <div v-if="error">Error...</div>
         <div v-if="data && data.userGroup" id="registrationsectionloaded">
-          <div>
+          <div style="max-width: 60rem; margin: auto">
             <h1 class="q-pa-sm">{{ data.userGroup.name }}</h1>
             <div class="row full-width q-my-sm">
               <ShareResourceModal
@@ -15,6 +15,34 @@
                 v-if="hasPermissions()"
               />
             </div>
+            <q-timeline :layout="layout" color="primary">
+              <q-timeline-entry
+                v-if="data.userGroup.lectures && data.userGroup.lectures.length"
+                class="text-primary"
+                heading
+              >
+                Timeline
+              </q-timeline-entry>
+
+              <q-btn
+                v-if="hasPermissions()"
+                class="row full-width q-my-md"
+                label="Add lecture"
+                :to="{ name: 'CreateLecture', query: { from: data.userGroup._id } }"
+                icon="class"
+              />
+
+              <q-timeline-entry
+                :title="'Lecture - ' + lect.name"
+                :subtitle="getFormattedDate(lect.start)"
+                side="left"
+                v-for="lect in getSorted(data.userGroup.lectures)"
+                :key="lect._id"
+                icon="class"
+              >
+                <div>ATTENDANCE IF EXISTS</div>
+              </q-timeline-entry>
+            </q-timeline>
             <div class="row full-width justify-center" v-if="canDelete()">
               <div class="dangerzone">
                 <ApolloMutation

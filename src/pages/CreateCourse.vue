@@ -97,14 +97,7 @@ export default {
       this.$router.go(-1);
     },
     formValid() {
-      return (
-        this.name.length &&
-        this.prefix.length &&
-        this.suffix &&
-        this.start.length &&
-        this.end.length &&
-        this.description.length
-      );
+      return this.name.length && this.prefix.length && this.suffix && this.start.length && this.end.length;
     },
     handleCreateCourse({ data }) {
       this.$router.push({ name: "Course", params: { _id: data.createCourse._id } });

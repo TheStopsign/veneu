@@ -16,4 +16,29 @@ fragment UserGroup on UserGroup {
       last_name
     }
   }
+  lectures {
+    _id
+    name
+    start
+    end
+    auths {
+      _id
+      role
+      user {
+        _id
+        name
+        first_name
+        last_name
+        email
+      }
+    }
+    parent_resource {
+      ... on SharedResource {
+        _id
+        name
+        type
+      }
+    }
+    parent_resource_type
+  }
 }

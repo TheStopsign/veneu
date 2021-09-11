@@ -5,7 +5,7 @@
         <div v-if="loading">Loading...</div>
         <div v-if="error">Error...</div>
         <div v-if="data && data.registrationSection" id="registrationsectionloaded">
-          <div>
+          <div style="max-width: 60rem; margin: auto">
             <h1 class="q-pa-sm">{{ data.registrationSection.name }}</h1>
             <div class="row full-width q-my-sm">
               <ShareResourceModal
@@ -30,12 +30,22 @@
               <q-icon name="schedule" size="sm" class="q-mx-sm" /> {{ wde.event.start }} -
               {{ wde.event.end }}
             </div>
-            <q-timeline
-              :layout="layout"
-              color="primary"
-              v-if="data.registrationSection.lectures && data.registrationSection.lectures.length"
-            >
-              <q-timeline-entry class="text-primary" heading> Timeline </q-timeline-entry>
+            <q-timeline :layout="layout" color="primary">
+              <q-timeline-entry
+                v-if="data.registrationSection.lectures && data.registrationSection.lectures.length"
+                class="text-primary"
+                heading
+              >
+                Timeline
+              </q-timeline-entry>
+
+              <q-btn
+                v-if="hasPermissions()"
+                class="row full-width q-my-md"
+                label="Add lecture"
+                :to="{ name: 'CreateLecture', query: { from: data.registrationSection._id } }"
+                icon="class"
+              />
 
               <q-timeline-entry
                 :title="'Lecture - ' + lect.name"
@@ -45,9 +55,7 @@
                 :key="lect._id"
                 icon="class"
               >
-                <div>
-                  {{ lect.description || "" }}
-                </div>
+                <div>ATTENDANCE IF EXISTS</div>
               </q-timeline-entry>
             </q-timeline>
             <div class="row full-width justify-center" v-if="canDelete()">

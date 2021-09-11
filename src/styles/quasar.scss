@@ -112,11 +112,15 @@ body,
 .q-menu,
 #me .q-avatar,
 .q-tab--inactive,
-.q-timeline__entry,
 .q-notification,
 .q-tree__node--selected,
 .q-date__main {
   animation: grow-in-button 0.5s forwards !important;
+}
+
+.q-timeline__dot,
+.q-timeline--loose .q-timeline__dot {
+  margin-bottom: 0px !important;
 }
 
 .q-date__main {
@@ -388,7 +392,7 @@ h1 {
 }
 
 .q-timeline__entry {
-  margin: 16px 0px !important;
+  margin: 0px !important;
   padding: 16px !important;
   width: 100% !important;
 }
@@ -399,6 +403,7 @@ h1 {
 
 .q-timeline__heading .q-timeline__heading-title {
   margin-left: 16px !important;
+  padding: 0rem;
 }
 
 .q-timeline--loose .q-timeline__heading .q-timeline__heading-title {

@@ -1,7 +1,7 @@
 <template>
   <q-page id="create-course">
     <q-form @submit.prevent="handleCreateVideo">
-      <div class="q-gutter-md q-ma-md q-pt-lg q-pb-xl q-px-md neu-convex">
+      <div class="q-gutter-md q-mt-md q-mb-xl q-pt-lg q-pb-md q-mx-md neu-convex">
         <div>
           <i><h1>Create a New Video</h1></i>
         </div>

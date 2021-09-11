@@ -1,12 +1,12 @@
 <template>
-  <q-page id="course-page">
+  <q-page id="course-page" class="q-px-md">
     <ApolloQuery :query="require('../graphql/Course.gql')" :variables="{ _id: $route.params._id }">
       <template slot-scope="{ result: { loading, error, data } }">
         <div v-if="loading">Loading...</div>
         <div v-if="error">Error...</div>
-        <div v-if="data && data.course" id="courseloaded">
-          <div>
-            <h1 class="q-pa-sm">{{ data.course.name }}</h1>
+        <div v-if="data && data.course" id="courseloaded" class="q-mb-xl">
+          <div style="max-width: 60rem; margin: auto">
+            <h1 class="q-pa-sm q-mt-md">{{ data.course.name }}</h1>
             <div class="row full-width q-mt-sm q-mb-md">
               <ShareResourceModal
                 :resourceid="data.course._id"
@@ -15,11 +15,29 @@
                 v-if="hasPermissions()"
               />
             </div>
-            <div class="row full-width">
-              Description: {{ data.course.description ? data.course.description : "None" }}
+            <div v-if="data.course.description" class="row full-width">
+              {{ data.course.description }}
             </div>
-            <q-timeline :layout="layout" color="primary" v-if="data.course.lectures">
-              <q-timeline-entry class="text-primary" heading> Timeline </q-timeline-entry>
+            <q-btn
+              v-else-if="hasPermissions()"
+              size="md"
+              class="row full-width q-my-md"
+              label="Add description - coming soon"
+              icon="create"
+            />
+
+            <q-timeline :layout="layout" color="primary">
+              <q-timeline-entry v-if="data.course.lectures && data.course.lectures.length" class="text-primary" heading>
+                Timeline
+              </q-timeline-entry>
+
+              <q-btn
+                v-if="hasPermissions()"
+                class="row full-width q-my-md"
+                label="Add lecture"
+                :to="{ name: 'CreateLecture', query: { from: data.course._id } }"
+                icon="class"
+              />
 
               <q-timeline-entry
                 :title="'Lecture - ' + lect.name"
@@ -29,10 +47,7 @@
                 :key="lect._id"
                 icon="class"
               >
-                <div>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-                  et dolore magna aliqua.
-                </div>
+                <div>ATTENDANCE IF EXISTS</div>
               </q-timeline-entry>
             </q-timeline>
             <div class="row full-width justify-center" v-if="canDelete()">
