@@ -19,7 +19,7 @@
               v-if="data.registrationSection.meeting_times && data.registrationSection.meeting_times.length"
               class="q-my-none"
             >
-              Scheduled for...
+              Usually meets on...
             </h3>
             <div
               class="row full-width items-center"
@@ -30,34 +30,47 @@
               <q-icon name="schedule" size="sm" class="q-mx-sm" /> {{ wde.event.start }} -
               {{ wde.event.end }}
             </div>
-            <q-timeline :layout="layout" color="primary">
-              <q-timeline-entry
-                v-if="data.registrationSection.lectures && data.registrationSection.lectures.length"
-                class="text-primary"
-                heading
-              >
-                Timeline
-              </q-timeline-entry>
+            <div class="q-my-md">
+              <div class="row full-width">
+                <ResourceSelector
+                  :me="me"
+                  label="Additional Resources"
+                  :scope="data.registrationSection._id"
+                  :selectable="me.auths.map((a) => a._id)"
+                  class="col-12 col-sm q-mr-md q-mt-md"
+                  nav
+                  flat
+                />
+                <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md">
+                  <q-timeline-entry
+                    v-if="data.registrationSection.lectures && data.registrationSection.lectures.length"
+                    class="text-primary"
+                    heading
+                  >
+                    Timeline
+                  </q-timeline-entry>
 
-              <q-btn
-                v-if="hasPermissions()"
-                class="row full-width q-my-md"
-                label="Add lecture"
-                :to="{ name: 'CreateLecture', query: { from: data.registrationSection._id } }"
-                icon="class"
-              />
+                  <q-btn
+                    v-if="hasPermissions()"
+                    class="row full-width q-my-md"
+                    label="Add lecture"
+                    :to="{ name: 'CreateLecture', query: { from: data.registrationSection._id } }"
+                    icon="class"
+                  />
 
-              <q-timeline-entry
-                :title="'Lecture - ' + lect.name"
-                :subtitle="getFormattedDate(lect.start)"
-                side="left"
-                v-for="lect in getSorted(data.registrationSection.lectures)"
-                :key="lect._id"
-                icon="class"
-              >
-                <div>ATTENDANCE IF EXISTS</div>
-              </q-timeline-entry>
-            </q-timeline>
+                  <q-timeline-entry
+                    :title="'Lecture - ' + lect.name"
+                    :subtitle="getFormattedDate(lect.start)"
+                    side="left"
+                    v-for="lect in getSorted(data.registrationSection.lectures)"
+                    :key="lect._id"
+                    icon="class"
+                  >
+                    <div>ATTENDANCE IF EXISTS</div>
+                  </q-timeline-entry>
+                </q-timeline>
+              </div>
+            </div>
             <div class="row full-width justify-center" v-if="canDelete()">
               <div class="dangerzone">
                 <ApolloMutation
@@ -105,13 +118,14 @@
 <script>
 import { date } from "quasar";
 import ShareResourceModal from "../components/ShareResourceModal.vue";
+import ResourceSelector from "../components/ResourceSelector";
 export default {
   computed: {
     layout() {
       return this.$q.screen.lt.sm ? "dense" : this.$q.screen.lt.md ? "comfortable" : "loose";
     },
   },
-  components: { ShareResourceModal },
+  components: { ShareResourceModal, ResourceSelector },
   props: {
     me: Object,
   },

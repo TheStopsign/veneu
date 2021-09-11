@@ -51,7 +51,8 @@ aside.q-drawer--mobile {
 .q-stepper__nav,
 .q-time__container-child,
 .q-date__header,
-.q-table__container {
+.q-table__container,
+.q-toggle__thumb {
   background: none !important;
 }
 
@@ -67,8 +68,13 @@ body,
 .q-tab-panels,
 .q-calendar,
 .q-toggle__inner--falsy .q-toggle__thumb:after,
-.q-tree__node--selected {
+.q-tree__node--selected,
+.q-drawer,
+.q-calendar {
+  background: unset !important;
   background-color: var(--veneu-background) !important;
+  // background-size: calc(100% / 2);
+  /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
 }
 
 .q-dialog__backdrop {
@@ -454,11 +460,10 @@ h1 {
 .video-js .vjs-big-play-button,
 .q-select__dialog,
 .q-menu,
-.q-pull-to-refresh,
 .q-time {
   -webkit-backdrop-filter: blur(4px) !important;
   backdrop-filter: blur(4px) !important;
-  background: none !important;
+  background: unset !important;
   background-color: var(--veneu-background-backdrop) !important;
   border: none;
 }
@@ -546,19 +551,4 @@ h1 {
 .q-menu .q-item,
 .q-expansion-item .q-item {
   border-radius: 0.875rem !important;
-}
-
-body.input-focused .fixed,
-body.input-focused .fixed-bottom,
-body.input-focused .fixed-bottom-left,
-body.input-focused .fixed-bottom-right,
-body.input-focused .fixed-center,
-body.input-focused .fixed-full,
-body.input-focused .fixed-left,
-body.input-focused .fixed-right,
-body.input-focused .fixed-top,
-body.input-focused .fixed-top-left,
-body.input-focused .fixed-top-right,
-body.input-focused .fullscreen {
-  position: absolute;
 }

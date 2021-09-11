@@ -1,5 +1,5 @@
 <template>
-  <div class="q-my-md neu-concave" :class="nav ? 'neu-convex' : ''" style="overflow-x: auto">
+  <div class="q-my-md nav-tree" :class="flat ? '' : nav ? 'neu-convex' : 'neu-concave'" style="overflow-x: auto">
     <div class="q-mx-md q-mt-md q-mb-xs">
       <q-icon size="xs" name="account_tree" class="q-mr-sm q-pb-xs" />{{ label || "Select a resource" }}
     </div>
@@ -50,6 +50,10 @@ export default {
       required: false,
       default: false,
     },
+    scope: {
+      required: false,
+    },
+    flat: { type: Boolean, required: false, default: false },
   },
   data() {
     return {
@@ -60,6 +64,7 @@ export default {
       error: "",
       rendering: true,
       unbuilt: [],
+      scopeRef: null,
     };
   },
   watch: {
@@ -126,6 +131,9 @@ export default {
       : this.nav && this.$route.params._id
       ? this.$route.params._id
       : null;
+    if (this.scopeRef) {
+      this.tree = this.scopeRef.children;
+    }
   },
   methods: {
     handleNav(selected_auth) {
@@ -152,18 +160,22 @@ export default {
     },
     addAuthToTree(node, auth, depth) {
       if (!auth.shared_resource.parent_resource && !depth) {
-        node.push({
+        const n = {
           label: auth.shared_resource.name,
           ...auth.shared_resource,
           icon: auth.shared_resource_type == "Course" ? "school" : "school",
-        });
+        };
+        node.push(n);
+        if (this.scope && this.scope == auth.shared_resource._id) {
+          this.scopeRef = n;
+        }
         return;
       }
       for (let i = 0; i < node.length; i++) {
         node[i].children = node[i].children || [];
         let added = false;
         if (node[i]._id == auth.shared_resource.parent_resource._id) {
-          node[i].children.push({
+          const n = {
             label: auth.shared_resource.name,
             ...auth.shared_resource,
             icon:
@@ -178,11 +190,17 @@ export default {
                 : auth.shared_resource_type == "YTVideoStream"
                 ? "smart_display"
                 : "error",
-          });
+          };
+          node[i].children.push(n);
+          if (this.scope && this.scope == auth.shared_resource._id) {
+            this.scopeRef = n;
+          }
           added = true;
         }
         if (!added) {
-          this.addAuthToTree(node[i].children, auth, depth + 1);
+          if (!this.addAuthToTree(node[i].children, auth, depth + 1)) {
+            return;
+          }
         }
       }
     },
@@ -191,6 +209,9 @@ export default {
       this.addAuthToTree(this.tree, auth, 0);
       let self = this;
       this.$nextTick(function () {
+        if (this.scopeRef) {
+          this.tree = this.scopeRef.children;
+        }
         self.rendering = true;
       });
     },
