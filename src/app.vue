@@ -381,6 +381,7 @@ export default {
       setPalette(document.documentElement, String(val));
       localStorage.setItem("theme", val);
     },
+    $route: function (from, to) {},
   },
   data() {
     return {

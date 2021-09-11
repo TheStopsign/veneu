@@ -542,3 +542,18 @@ h1 {
 .q-expansion-item .q-item {
   border-radius: 0.875rem !important;
 }
+
+body.input-focused .fixed,
+body.input-focused .fixed-bottom,
+body.input-focused .fixed-bottom-left,
+body.input-focused .fixed-bottom-right,
+body.input-focused .fixed-center,
+body.input-focused .fixed-full,
+body.input-focused .fixed-left,
+body.input-focused .fixed-right,
+body.input-focused .fixed-top,
+body.input-focused .fixed-top-left,
+body.input-focused .fixed-top-right,
+body.input-focused .fullscreen {
+  position: absolute;
+}
