@@ -55,11 +55,11 @@ module.exports = (pubsub) => ({
       }
     },
     updateUserGroup(parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) {
-      if (!requester || requester._id != _id) throw new ForbiddenError("Not allowed");
+      if (!requester) throw new ForbiddenError("Not allowed");
       return updateOne({ _id, type: "UserGroup" }, patch, { requester, models, loaders, pubsub });
     },
     deleteUserGroup: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
-      if (!requester || requester._id != _id) throw new ForbiddenError("Not allowed");
+      if (!requester) throw new ForbiddenError("Not allowed");
       return deleteOne({ _id, type: "UserGroup" }, { requester, models, loaders, pubsub });
     },
   },
