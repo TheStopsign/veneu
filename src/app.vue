@@ -55,7 +55,7 @@
               <q-toolbar
                 id="headertoolbar"
                 :class="
-                  'q-pa-none q-pr-sm ' +
+                  'q-pa-none q-px-xs ' +
                   (data.me ? 'neu-convex ' : '') +
                   ($q.platform.is.mobile ? 'q-mt-sm' : 'q-mt-md')
                 "
@@ -65,7 +65,7 @@
                   round
                   size="sm"
                   icon="menu"
-                  class="q-ma-md"
+                  class="q-mx-sm"
                   title="Menu"
                   aria-label="Menu"
                   @click="left = !left"
@@ -88,7 +88,7 @@
                   indeterminate-icon="palette"
                   checked-icon="light_mode"
                   color="primary"
-                  size="xl"
+                  size="md"
                   s
                 />
 

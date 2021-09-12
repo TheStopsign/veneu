@@ -7,7 +7,7 @@
         <q-list v-else-if="data" style="width: 20rem">
           <div class="q-mb-sm q-mx-md">{{ label }}</div>
           <q-scroll-area
-            style="height: 20rem; width: 100%"
+            style="max-height: 20rem; width: 100%"
             :thumb-style="{
               right: '0.5rem',
               borderRadius: '0.25rem',

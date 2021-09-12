@@ -4,7 +4,7 @@
       <q-icon size="xs" name="account_tree" class="q-mr-sm q-pb-xs" />{{ label || "Select a resource" }}
     </div>
     <q-scroll-area
-      style="height: 20rem"
+      style="max-height: 20rem"
       :thumb-style="{
         right: '0.5rem',
         borderRadius: '0.25rem',
