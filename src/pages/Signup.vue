@@ -19,7 +19,7 @@
               class="text-primary q-pa-none q-ma-none q-mt-md"
               v-model="email"
               label="Email"
-              @focus="onFocus"
+              @focus="onFocus()"
             >
               <template v-slot:prepend>
                 <q-icon name="email" />
@@ -50,7 +50,7 @@ export default {
   },
   methods: {
     onFocus() {
-      window.scrollBy(0, 0);
+      window.scrollTo(0, 0);
       document.body.scrollTop = 0;
     },
     formValid() {
