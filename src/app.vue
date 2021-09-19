@@ -241,7 +241,7 @@
                     )
                     .map((a) => a._id)
                 "
-                :nav="true"
+                nav
               />
               <!-- <q-list class="text-primary neu-convex q-ma-md q-pa-xs">
               <course-list :me="data.me" />
