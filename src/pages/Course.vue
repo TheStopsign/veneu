@@ -33,7 +33,6 @@
                   :scope="data.course._id"
                   :selectable="me.auths.map((a) => a._id)"
                   class="col-12 col-sm q-mr-md q-mt-md"
-                  nav
                   flat
                 />
                 <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md">

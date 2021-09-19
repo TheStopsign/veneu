@@ -14,11 +14,10 @@
       }"
     >
       <q-tree
-        v-if="rendering"
         class="col-12 text-primary q-px-md q-py-xs"
         default-expand-all
         :nodes="tree"
-        node-key="_id"
+        node-key="treeid"
         :selected.sync="selected_resource"
         :expanded.sync="expanded"
       />
@@ -62,26 +61,33 @@ export default {
       ticked: [],
       expanded: [],
       error: "",
-      rendering: true,
-      unbuilt: [],
       scopeRef: null,
+      flatTree: [...this.me.auths],
     };
+  },
+  beforeDestroy() {
+    this.tree = [];
+    this.flatTree = [];
+    this.scopeRef = [];
+    this.selected_resource = [];
   },
   watch: {
     $route: function (val, oldVal) {
-      let selected_auth = this.me.auths.find((a) => a.shared_resource._id == val.params._id);
-      if (selected_auth) {
-        this.selected_resource = selected_auth.shared_resource._id;
-      } else {
-        this.selected_resource = null;
+      if (this.nav) {
+        let selected_auth = this.flatTree.find((a) => a.shared_resource._id == val.params._id);
+        if (selected_auth) {
+          this.selected_resource = selected_auth.shared_resource._id;
+        } else {
+          this.selected_resource = null;
+        }
       }
     },
     selected_resource: function (val, oldVal) {
-      let selected_auth = this.me.auths.find((a) => a.shared_resource._id == val);
-      let old_auth = this.me.auths.find((a) => a.shared_resource._id == oldVal);
-      let route_auth = this.me.auths.find((a) => a.shared_resource._id == this.$route.params._id);
+      let selected_auth = this.flatTree.find((a) => a.shared_resource._id == val);
+      let old_auth = this.flatTree.find((a) => a.shared_resource._id == oldVal);
+      let route_auth = this.flatTree.find((a) => a.shared_resource._id == this.$route.params._id);
       if (this.nav) {
-        if (val && !old_auth && !route_auth) {
+        if (selected_auth) {
           this.handleNav(selected_auth);
           return;
         }
@@ -125,7 +131,8 @@ export default {
     },
   },
   created() {
-    this.buildTree();
+    this.tree = [];
+    this.buildTree(this.flatTree);
     this.selected_resource = this.selected
       ? this.selected
       : this.nav && this.$route.params._id
@@ -139,10 +146,11 @@ export default {
     handleNav(selected_auth) {
       if (selected_auth.shared_resource_type == "YTVideoStream") {
         location.href = "/watch/" + selected_auth.shared_resource._id;
-        // this.$router.push({
-        //   name: "Watch",
-        //   params: { _id: selected_auth.shared_resource._id },
-        // });
+      } else if (selected_auth.shared_resource_type == "Checkin") {
+        this.$router.push({
+          name: "CheckinShow",
+          params: { _id: selected_auth.shared_resource._id },
+        });
       } else {
         this.$router.push({
           name: selected_auth.shared_resource_type,
@@ -158,93 +166,60 @@ export default {
         color: "negative",
       });
     },
-    addAuthToTree(node, auth, depth) {
-      if (!auth.shared_resource.parent_resource && !depth) {
-        const n = {
-          label: auth.shared_resource.name,
-          ...auth.shared_resource,
-          icon: auth.shared_resource_type == "Course" ? "school" : "school",
-        };
-        node.push(n);
-        if (this.scope && this.scope == auth.shared_resource._id) {
-          this.scopeRef = n;
-        }
-        return;
-      }
-      for (let i = 0; i < node.length; i++) {
-        node[i].children = node[i].children || [];
-        let added = false;
-        if (node[i]._id == auth.shared_resource.parent_resource._id) {
-          const n = {
-            label: auth.shared_resource.name,
-            ...auth.shared_resource,
-            icon:
-              auth.shared_resource_type == "Course"
-                ? "school"
-                : auth.shared_resource_type == "RegistrationSection"
-                ? "event_seat"
-                : auth.shared_resource_type == "UserGroup"
-                ? "groups"
-                : auth.shared_resource_type == "Lecture"
-                ? "book"
-                : auth.shared_resource_type == "YTVideoStream"
-                ? "smart_display"
-                : "error",
-          };
-          node[i].children.push(n);
-          if (this.scope && this.scope == auth.shared_resource._id) {
-            this.scopeRef = n;
-          }
-          added = true;
-        }
-        if (!added) {
-          if (!this.addAuthToTree(node[i].children, auth, depth + 1)) {
-            return;
-          }
-        }
-      }
-    },
     initAddAuthToTree(auth) {
-      this.rendering = false;
-      this.addAuthToTree(this.tree, auth, 0);
-      let self = this;
-      this.$nextTick(function () {
-        if (this.scopeRef) {
-          this.tree = this.scopeRef.children;
-        }
-        self.rendering = true;
-      });
+      this.flatTree.push(auth);
+      this.tree = [];
+      this.buildTree(this.flatTree);
     },
-    addFromUnbuilt(unbuilt) {
-      while (unbuilt.length) {
-        var i = unbuilt.length - 1,
-          stop = 0;
-        while (i >= stop) {
-          this.addAuthToTree(this.tree, unbuilt[i], 0);
-          unbuilt.splice(i--, 1);
-        }
-      }
-    },
-    buildTree() {
-      var resourcemap = this.me.auths.groupByProperty("shared_resource_type");
-      var buildOrder = ["Course", "RegistrationSection", "UserGroup", "Lecture", "YTVideoStream"];
-      var i = 0,
-        len = buildOrder.length;
-      for (; i < len; i++) {
-        if (resourcemap[buildOrder[i]]) {
-          this.addFromUnbuilt(resourcemap[buildOrder[i]]);
-        }
-      }
+    getAuthIcon: (shared_resource_type) =>
+      shared_resource_type == "Course"
+        ? "school"
+        : shared_resource_type == "RegistrationSection"
+        ? "event_seat"
+        : shared_resource_type == "UserGroup"
+        ? "groups"
+        : shared_resource_type == "Lecture"
+        ? "book"
+        : shared_resource_type == "YTVideoStream"
+        ? "smart_display"
+        : shared_resource_type == "Checkin"
+        ? "qr_code_2"
+        : "error",
+    buildTree(auths) {
+      const data = [...auths];
+      const idMapping = data.reduce((acc, auth, i) => {
+        acc[auth.shared_resource._id] = i;
+        return acc;
+      }, {});
 
-      // for (let i = 0; i < this.me.auths.length; i++) {
-      //   if (
-      //     ["Course", "RegistrationSection", "UserGroup", "Lecture", "YTVideoStream"].includes(
-      //       this.me.auths[i].shared_resource_type
-      //     )
-      //   ) {
-      //     this.addAuthToTree(this.tree, this.me.auths[i], 0);
-      //   }
-      // }
+      const root = [];
+      data.forEach((auth) => {
+        // Handle the root element
+        if (auth.shared_resource.parent_resource === null) {
+          auth.children = [];
+          auth.treeid = auth.shared_resource._id;
+          auth.label = auth.shared_resource.name;
+          auth.icon = this.getAuthIcon(auth.shared_resource_type);
+          if (this.scope && auth.shared_resource._id == this.scope) {
+            this.scopeRef = auth;
+          }
+          root.push(auth);
+          return;
+        }
+        // Use our mapping to locate the parent element in our data array
+        const parentEl = data[idMapping[auth.shared_resource.parent_resource._id]];
+
+        // Add our current auth to its parent's `children` array
+        auth.treeid = auth.shared_resource._id;
+        auth.children = [];
+        auth.label = auth.shared_resource.name;
+        auth.icon = this.getAuthIcon(auth.shared_resource_type);
+        if (this.scope && auth.shared_resource._id == this.scope) {
+          this.scopeRef = auth;
+        }
+        parentEl.children.push(auth);
+      });
+      this.tree = root;
     },
   },
 };
