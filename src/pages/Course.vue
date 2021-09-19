@@ -34,6 +34,7 @@
                   :selectable="me.auths.map((a) => a._id)"
                   class="col-12 col-sm q-mr-md q-mt-md"
                   flat
+                  nav
                 />
                 <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md">
                   <q-timeline-entry

@@ -87,7 +87,7 @@ export default {
       let old_auth = this.flatTree.find((a) => a.shared_resource._id == oldVal);
       let route_auth = this.flatTree.find((a) => a.shared_resource._id == this.$route.params._id);
       if (this.nav) {
-        if (selected_auth) {
+        if (selected_auth && route_auth._id != selected_auth._id) {
           this.handleNav(selected_auth);
           return;
         }
@@ -107,7 +107,10 @@ export default {
             return;
           }
         }
-        if ((selected_auth && this.selectable.includes(selected_auth._id) && oldVal != null) || old_auth != null) {
+        if (
+          ((selected_auth && this.selectable.includes(selected_auth._id) && oldVal != null) || old_auth != null) &&
+          route_auth._id != selected_auth._id
+        ) {
           this.handleNav(selected_auth);
           return;
         }
