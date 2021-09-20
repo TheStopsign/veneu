@@ -10,16 +10,18 @@
       style="border-radius: inherit"
     >
       <template v-slot:body="props">
-        <q-tr :props="props" :title="Math.max(props.row.checkin, props.row.recording) * 100 + '%'">
+        <q-tr :props="props" :title="getPercentText(Math.max(props.row.checkin, props.row.recording))">
           <q-td key="name" :props="props">
             {{ props.row.name }}
           </q-td>
           <q-td key="email" :props="props">
             {{ props.row.email }}
           </q-td>
-          <q-td key="checkin" :props="props"> {{ props.row.checkin * 100 }}% </q-td>
-          <q-td key="recording" :props="props"> {{ props.row.recording * 100 }}% </q-td>
-          <q-td key="attendance" :props="props"> {{ Math.max(props.row.checkin, props.row.recording) * 100 }}% </q-td>
+          <q-td key="checkin" :props="props"> {{ getPercentText(props.row.checkin) }}</q-td>
+          <q-td key="recording" :props="props"> {{ getPercentText(props.row.recording) }} </q-td>
+          <q-td key="attendance" :props="props">
+            {{ getPercentText(props.row.checkin, props.row.recording) }}
+          </q-td>
         </q-tr>
       </template>
     </q-table>
@@ -75,6 +77,15 @@ export default {
     this.calculateAttendance();
   },
   methods: {
+    getPercentText(val, val2) {
+      if (val == "N/A") {
+        return val;
+      } else if (typeof val2 == "undefined") {
+        return val * 100 + "%";
+      } else {
+        return Math.max(val, val2) * 100 + "%";
+      }
+    },
     calculateAttendance() {
       var i = 0,
         len = this.for.length;
@@ -98,6 +109,25 @@ export default {
             : obj.recording;
         }
         this.rows = [...this.rows, obj];
+      }
+
+      let forIDs = this.for.map((a) => a.user._id);
+      (i = 0), (len = this.checkins.length);
+      for (; i < len; i++) {
+        let j = 0,
+          jlen = this.checkins[i].tickets.length;
+        for (; j < jlen; j++) {
+          let nonStudentID = this.checkins[i].tickets[j].user;
+          if (!forIDs.includes(nonStudentID)) {
+            let obj = {
+              name: "Guest",
+              email: this.checkins[i].tickets[j].email,
+              checkin: "N/A",
+              recording: "N/A",
+            };
+            this.rows = [...this.rows, obj];
+          }
+        }
       }
       this.calculated = true;
     },
