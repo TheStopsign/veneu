@@ -14,7 +14,8 @@
       }"
     >
       <q-tree
-        class="col-12 text-primary q-px-md q-py-xs"
+        ref="scrollContents"
+        class="col-12 text-primary q-px-md q-py-xs q-pb-md"
         default-expand-all
         :nodes="tree"
         node-key="treeid"
@@ -70,6 +71,11 @@ export default {
     this.flatTree = [];
     this.scopeRef = [];
     this.selected_resource = [];
+  },
+  mounted() {
+    this.$refs.scrollContents.$el.parentElement.parentElement.parentElement.style.height =
+      this.$refs.scrollContents.$el.offsetHeight + "px";
+    this.$refs.scrollContents.$el.parentElement.style.position = "absolute";
   },
   watch: {
     $route: function (val, oldVal) {
