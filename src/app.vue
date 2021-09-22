@@ -344,6 +344,7 @@
           </q-drawer>
 
           <q-scroll-area
+            ref="scrollContents"
             style="position: absolute; height: 100%; width: 100%"
             :thumb-style="{
               right: '0.25rem',
@@ -402,6 +403,11 @@ export default {
     if (this.theme === "null") {
       this.theme = null;
     }
+  },
+  mounted() {
+    this.$refs.scrollContents.$el.parentElement.parentElement.parentElement.style.height =
+      this.$refs.scrollContents.$el.offsetHeight + "px";
+    this.$refs.scrollContents.$el.parentElement.style.position = "absolute";
   },
   methods: {
     canCreateSections(auths) {

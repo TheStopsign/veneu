@@ -7,8 +7,7 @@
         <q-list v-else-if="data" style="width: 20rem">
           <div class="q-mb-sm q-mx-md">{{ label }}</div>
           <q-scroll-area
-            ref="checkinSelectorScrollContents"
-            style="max-height: 20rem; width: 100%"
+            style="max-height: 20rem; width: 100%; min-height: 3.125rem"
             :thumb-style="{
               right: '0.5rem',
               borderRadius: '0.25rem',
@@ -59,9 +58,14 @@ export default {
   },
   created() {},
   mounted() {
-    this.$refs.checkinSelectorScrollContents.$el.parentElement.parentElement.parentElement.style.height =
-      this.$refs.checkinSelectorScrollContents.$el.offsetHeight + "px";
-    this.$refs.checkinSelectorScrollContents.$el.parentElement.style.position = "absolute";
+    this.$nextTick(function () {
+      this.$nextTick(function () {
+        console.log(this.$refs.checkinSelectorScrollContents);
+        this.$refs.checkinSelectorScrollContents.$el.parentElement.parentElement.parentElement.style.height =
+          this.$refs.checkinSelectorScrollContents.$el.offsetHeight + "px";
+        this.$refs.checkinSelectorScrollContents.$el.parentElement.style.position = "absolute";
+      });
+    });
   },
   methods: {
     getFormattedDate(d) {
