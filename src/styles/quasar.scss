@@ -129,7 +129,8 @@ body,
   margin-bottom: 0px !important;
 }
 
-.q-date__main {
+.q-date__main,
+.q-card {
   border-radius: 1rem !important;
 }
 
@@ -559,4 +560,8 @@ h1 {
 
 .q-tree__node--parent {
   padding-bottom: 0px;
+}
+
+.q-card {
+  background: unset;
 }
