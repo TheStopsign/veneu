@@ -411,6 +411,9 @@ export default {
     // this.$refs.scrollContents.$el.parentElement.style.position = "absolute";
     let self = this;
     document.addEventListener("DOMContentLoaded", function () {
+      window.visualViewport.addEventListener("resize", (event) => {
+        self.iosDebug = self.iosDebug + " resize";
+      });
       console.log("here3");
       document.ontouchstart = function (e) {
         e.preventDefault();
@@ -420,7 +423,7 @@ export default {
         self.iosDebug = self.iosDebug + " here2";
         var len = inputs.length;
         for (let i = 0; i < len; i++) {
-          inputs[i].addEventListener("focus", function (e) {
+          inputs[i].addEventListener("focusin", function (e) {
             console.log(" here");
             self.iosDebug = self.iosDebug + " here";
 
