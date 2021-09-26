@@ -32,18 +32,11 @@
                   label="Additional Resources"
                   :scope="data.course._id"
                   :selectable="me.auths.map((a) => a._id)"
-                  class="col-12 col-sm q-mr-md q-mt-md"
-                  flat
+                  class="col-12 col-sm q-mr-sm q-mt-md"
                   nav
                 />
-                <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md">
-                  <q-timeline-entry
-                    v-if="data.course.lectures && data.course.lectures.length"
-                    class="text-primary"
-                    heading
-                  >
-                    Timeline
-                  </q-timeline-entry>
+                <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md q-px-sm">
+                  <q-timeline-entry class="text-primary" heading> Timeline </q-timeline-entry>
 
                   <q-btn
                     v-if="hasPermissions()"

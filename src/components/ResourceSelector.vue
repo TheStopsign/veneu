@@ -6,7 +6,7 @@
     <q-scroll-area
       style="max-height: 20rem; min-height: 3.125rem"
       :thumb-style="{
-        right: '0.5rem',
+        right: '0.25rem',
         borderRadius: '0.25rem',
         backgroundColor: 'var(--veneu-blue)',
         width: '0.25rem',

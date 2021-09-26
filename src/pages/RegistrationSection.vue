@@ -37,11 +37,10 @@
                   label="Additional Resources"
                   :scope="data.registrationSection._id"
                   :selectable="me.auths.map((a) => a._id)"
-                  class="col-12 col-sm q-mr-md q-mt-md"
+                  class="col-12 col-sm q-mr-sm q-mt-md"
                   nav
-                  flat
                 />
-                <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md">
+                <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md q-px-sm">
                   <q-timeline-entry
                     v-if="data.registrationSection.lectures && data.registrationSection.lectures.length"
                     class="text-primary"

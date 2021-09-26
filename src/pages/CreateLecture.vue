@@ -10,7 +10,11 @@
           label="For Resource..."
           @change="handleChangeResource"
           :selected="parent_resource"
-          :selectable="me.auths.filter((a) => a.shared_resource_type != 'Lecture').map((a) => a._id)"
+          :selectable="
+            me.auths
+              .filter((a) => ['Course', 'UserGroup', 'RegistrationSection'].includes(a.shared_resource_type))
+              .map((a) => a._id)
+          "
           class="q-mt-md"
         />
         <q-input

@@ -344,7 +344,6 @@
           </q-drawer>
 
           <q-scroll-area
-            ref="scrollContents"
             style="position: absolute; height: 100%; width: 100%"
             :thumb-style="{
               right: '0.25rem',
@@ -355,6 +354,7 @@
             }"
           >
             <q-page-container class="text-primary">
+              {{ iosDebug }}
               <router-view :me="data.me" style="overflow: hidden" />
             </q-page-container>
           </q-scroll-area>
@@ -390,6 +390,7 @@ export default {
       searchString: "",
       confirmLogout: false,
       theme: localStorage.getItem("theme"),
+      iosDebug: "",
     };
   },
   created() {
@@ -405,9 +406,26 @@ export default {
     }
   },
   mounted() {
-    this.$refs.scrollContents.$el.parentElement.parentElement.parentElement.style.height =
-      this.$refs.scrollContents.$el.offsetHeight + "px";
-    this.$refs.scrollContents.$el.parentElement.style.position = "absolute";
+    // this.$refs.scrollContents.$el.parentElement.parentElement.parentElement.style.height =
+    //   this.$refs.scrollContents.$el.offsetHeight + "px";
+    // this.$refs.scrollContents.$el.parentElement.style.position = "absolute";
+
+    document.addEventListener("DOMContentLoaded", function () {
+      console.log("here3");
+      document.ontouchmove = function (e) {
+        console.log("here2");
+        e.preventDefault();
+        var inputs = document.getElementsByTagName("input");
+        var len = inputs.length;
+        for (let i = 0; i < len; i++) {
+          inputs[i].addEventListener("onfocus", function (e) {
+            console.log("here");
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+          });
+        }
+      };
+    });
   },
   methods: {
     canCreateSections(auths) {

@@ -22,18 +22,11 @@
                   label="Additional Resources"
                   :scope="data.userGroup._id"
                   :selectable="me.auths.map((a) => a._id)"
-                  class="col-12 col-sm q-mr-md q-mt-md"
+                  class="col-12 col-sm q-mr-sm q-mt-md"
                   nav
-                  flat
                 />
-                <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md">
-                  <q-timeline-entry
-                    v-if="data.userGroup.lectures && data.userGroup.lectures.length"
-                    class="text-primary"
-                    heading
-                  >
-                    Timeline
-                  </q-timeline-entry>
+                <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md q-px-sm">
+                  <q-timeline-entry class="text-primary" heading> Timeline </q-timeline-entry>
 
                   <q-btn
                     v-if="hasPermissions()"
