@@ -392,7 +392,6 @@ export default {
       searchString: "",
       confirmLogout: false,
       theme: localStorage.getItem("theme"),
-      iosDebug: "",
     };
   },
   created() {
@@ -411,10 +410,12 @@ export default {
     // this.$refs.scrollContents.$el.parentElement.parentElement.parentElement.style.height =
     //   this.$refs.scrollContents.$el.offsetHeight + "px";
     // this.$refs.scrollContents.$el.parentElement.style.position = "absolute";
-    let self = this;
-    document.addEventListener("DOMContentLoaded", function () {
-      self.setIosKeyboardHandling();
-    });
+    if (this.$q.platform.is.ios) {
+      let self = this;
+      document.addEventListener("DOMContentLoaded", function () {
+        self.setIosKeyboardHandling();
+      });
+    }
   },
   methods: {
     setIosKeyboardHandling() {
@@ -434,10 +435,9 @@ export default {
             window.scrollTo(sx, document.body.scrollHeight);
             var keyboardHeight = naturalHeight - window.innerHeight;
             window.scrollTo(sx, sy);
-            let target = getScrollTarget(element);
-            let offset = element.getBoundingClientRect().top + window.scrollY;
-            let duration = 1000;
-            self.iosDebug = self.iosDebug + " " + target.className + " " + offset;
+            let target = getScrollTarget(element),
+              offset = element.getBoundingClientRect().top + window.scrollY - element.offsetHeight,
+              duration = 200;
             setScrollPosition(target, offset, duration);
             return keyboardHeight;
           };
