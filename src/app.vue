@@ -418,6 +418,7 @@ export default {
   },
   methods: {
     setIosKeyboardHandling() {
+      let self = this;
       document.ontouchstart = function (e) {
         e.preventDefault();
         var inputs = document.getElementsByTagName("input");
@@ -436,6 +437,7 @@ export default {
             let target = getScrollTarget(element);
             let offset = element.offsetTop; // do not subtract the el.scrollHeight here
             let duration = 1000;
+            self.iosDebug = self.iosDebug + " " + target.tagName + " " + offset;
             setScrollPosition(target, offset, duration);
             return keyboardHeight;
           };
@@ -444,7 +446,7 @@ export default {
             focused = true;
             setTimeout(function () {
               virtualKeyboardHeight();
-            }, 1); // to allow for orientation scrolling
+            }, 100);
           };
 
           window.onresize = function () {
