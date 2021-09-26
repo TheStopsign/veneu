@@ -412,18 +412,16 @@ export default {
     let self = this;
     document.addEventListener("DOMContentLoaded", function () {
       console.log("here3");
-
-      var inputs = document.getElementsByTagName("input");
-      self.iosDebug = self.iosDebug + "here3" + "\n" + inputs.length;
-      document.ontouchmove = function (e) {
-        console.log("here2");
-        self.iosDebug = self.iosDebug + "here2";
-        e.preventDefault();
+      document.ontouchstart = function (e) {
+        var inputs = document.getElementsByTagName("input");
+        self.iosDebug = self.iosDebug + " " + inputs.length;
+        console.log(" here2");
+        self.iosDebug = self.iosDebug + " here2";
         var len = inputs.length;
         for (let i = 0; i < len; i++) {
           inputs[i].addEventListener("onfocus", function (e) {
-            console.log("here");
-            self.iosDebug = self.iosDebug + "here";
+            console.log(" here");
+            self.iosDebug = self.iosDebug + " here";
 
             window.scrollTo(0, 0);
             document.body.scrollTop = 0;
