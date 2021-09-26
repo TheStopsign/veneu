@@ -421,16 +421,16 @@ export default {
         self.iosDebug = self.iosDebug + " " + inputs.length;
         console.log(" here2");
         self.iosDebug = self.iosDebug + " here2";
-        var len = inputs.length;
-        for (let i = 0; i < len; i++) {
-          inputs[i].addEventListener("focusin", function (e) {
-            console.log(" here");
-            self.iosDebug = self.iosDebug + " here";
+        // var len = inputs.length;
+        // for (let i = 0; i < len; i++) {
+        //   inputs[i].addEventListener("focusin", function (e) {
+        //     console.log(" here");
+        //     self.iosDebug = self.iosDebug + " here";
 
-            window.scrollTo(0, 0);
-            document.body.scrollTop = 0;
-          });
-        }
+        //     window.scrollTo(0, 0);
+        //     document.body.scrollTop = 0;
+        //   });
+        // }
       };
     });
   },
