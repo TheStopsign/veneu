@@ -354,7 +354,6 @@
             }"
           >
             <q-page-container class="text-primary">
-              {{ iosDebug }}
               <router-view :me="data.me" style="overflow: hidden" />
             </q-page-container>
           </q-scroll-area>
