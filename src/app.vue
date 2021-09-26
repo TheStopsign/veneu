@@ -437,7 +437,7 @@ export default {
             let target = getScrollTarget(element);
             let offset = element.offsetTop; // do not subtract the el.scrollHeight here
             let duration = 1000;
-            self.iosDebug = self.iosDebug + " " + target.tagName + " " + offset;
+            self.iosDebug = self.iosDebug + " " + target.className + " " + offset;
             setScrollPosition(target, offset, duration);
             return keyboardHeight;
           };
