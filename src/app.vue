@@ -421,16 +421,38 @@ export default {
         self.iosDebug = self.iosDebug + " " + inputs.length;
         console.log(" here2");
         self.iosDebug = self.iosDebug + " here2";
-        // var len = inputs.length;
-        // for (let i = 0; i < len; i++) {
-        //   inputs[i].addEventListener("focusin", function (e) {
-        //     console.log(" here");
-        //     self.iosDebug = self.iosDebug + " here";
+        var len = inputs.length;
+        var focused = false;
+        for (let i = 0; i < len; i++) {
+          var element = inputs[i]; // the input field
 
-        //     window.scrollTo(0, 0);
-        //     document.body.scrollTop = 0;
-        //   });
-        // }
+          var virtualKeyboardHeight = function () {
+            var sx = document.body.scrollLeft,
+              sy = document.body.scrollTop;
+            var naturalHeight = window.innerHeight;
+            window.scrollTo(sx, document.body.scrollHeight);
+            var keyboardHeight = naturalHeight - window.innerHeight;
+            window.scrollTo(sx, sy);
+            return keyboardHeight;
+          };
+
+          element.onfocus = function () {
+            focused = true;
+            setTimeout(function () {
+              element.value = "keyboardHeight = " + virtualKeyboardHeight();
+            }, 1); // to allow for orientation scrolling
+          };
+
+          window.onresize = function () {
+            if (focused) {
+              element.value = "keyboardHeight = " + virtualKeyboardHeight();
+            }
+          };
+
+          element.onblur = function () {
+            focused = false;
+          };
+        }
       };
     });
   },
