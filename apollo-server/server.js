@@ -4,6 +4,7 @@ const http = require("http");
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
+const voyagerMiddleware = require("graphql-voyager/middleware");
 
 const { ApolloServer, PubSub, makeExecutableSchema } = require("apollo-server-express");
 const pubsub = new PubSub();
@@ -29,13 +30,15 @@ const server = new ApolloServer({
     inheritResolversFromInterfaces: true,
   }),
   context: getContext(pubsub),
-  introspection: process.env.NODE_ENV === "production" ? false : true,
+  introspection: process.env.NODE_ENV === "production" ? true : true,
   playground: process.env.NODE_ENV === "production" ? false : true,
   tracing: process.env.NODE_ENV === "production" ? false : true,
 });
 
 const app = express();
 app.use(cors());
+
+app.use("/voyager", voyagerMiddleware.express({ endpointUrl: "/graphql" }));
 
 if (process.env.NODE_ENV === "production") {
   app.enable("trust proxy");

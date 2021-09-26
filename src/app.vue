@@ -115,6 +115,15 @@
                 >
                   <q-badge rounded color="red" floating label="1+" />
                 </q-btn>
+                <q-btn
+                  size="sm"
+                  round
+                  icon="insights"
+                  class="q-mx-sm"
+                  title="Voyager"
+                  aria-label="Voyager"
+                  @click="handleVoyager()"
+                />
               </q-toolbar>
             </q-pull-to-refresh>
           </q-header>
@@ -417,6 +426,10 @@ export default {
     }
   },
   methods: {
+    handleVoyager() {
+      location.href = this.isProduction() ? "/voyager" : "http://localhost:4000/voyager";
+    },
+    isProduction: () => process.env.NODE_ENV === "production",
     setIosKeyboardHandling() {
       let self = this;
       document.ontouchstart = function (e) {
