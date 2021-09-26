@@ -433,9 +433,9 @@ export default {
             window.scrollTo(sx, document.body.scrollHeight);
             var keyboardHeight = naturalHeight - window.innerHeight;
             window.scrollTo(sx, sy);
-            const target = getScrollTarget(element);
-            const offset = element.offsetTop - element.scrollHeight;
-            const duration = 0;
+            let target = getScrollTarget(element);
+            let offset = element.offsetTop; // do not subtract the el.scrollHeight here
+            let duration = 1000;
             setScrollPosition(target, offset, duration);
             return keyboardHeight;
           };
@@ -443,13 +443,13 @@ export default {
           element.onfocus = function () {
             focused = true;
             setTimeout(function () {
-              element.value = "keyboardHeight = " + virtualKeyboardHeight();
+              virtualKeyboardHeight();
             }, 1); // to allow for orientation scrolling
           };
 
           window.onresize = function () {
             if (focused) {
-              element.value = "keyboardHeight = " + virtualKeyboardHeight();
+              virtualKeyboardHeight();
             }
           };
 
