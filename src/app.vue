@@ -412,12 +412,13 @@ export default {
     let self = this;
     document.addEventListener("DOMContentLoaded", function () {
       console.log("here3");
-      self.iosDebug = self.iosDebug + "here3";
+
+      var inputs = document.getElementsByTagName("input");
+      self.iosDebug = self.iosDebug + "here3" + "\n" + inputs.length;
       document.ontouchmove = function (e) {
         console.log("here2");
         self.iosDebug = self.iosDebug + "here2";
         e.preventDefault();
-        var inputs = document.getElementsByTagName("input");
         var len = inputs.length;
         for (let i = 0; i < len; i++) {
           inputs[i].addEventListener("onfocus", function (e) {
