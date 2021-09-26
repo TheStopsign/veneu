@@ -409,17 +409,21 @@ export default {
     // this.$refs.scrollContents.$el.parentElement.parentElement.parentElement.style.height =
     //   this.$refs.scrollContents.$el.offsetHeight + "px";
     // this.$refs.scrollContents.$el.parentElement.style.position = "absolute";
-
+    let self = this;
     document.addEventListener("DOMContentLoaded", function () {
       console.log("here3");
+      self.iosDebug = self.iosDebug + "here3";
       document.ontouchmove = function (e) {
         console.log("here2");
+        self.iosDebug = self.iosDebug + "here2";
         e.preventDefault();
         var inputs = document.getElementsByTagName("input");
         var len = inputs.length;
         for (let i = 0; i < len; i++) {
           inputs[i].addEventListener("onfocus", function (e) {
             console.log("here");
+            self.iosDebug = self.iosDebug + "here";
+
             window.scrollTo(0, 0);
             document.body.scrollTop = 0;
           });
