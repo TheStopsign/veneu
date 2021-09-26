@@ -371,6 +371,8 @@ import gql from "graphql-tag";
 import VeneuLogo from "./components/VeneuLogo";
 import ResourceSelector from "./components/ResourceSelector";
 import "quasar/icon-set/fontawesome-v5";
+import { scroll } from "quasar";
+const { getScrollTarget, setScrollPosition } = scroll;
 export default {
   name: "app",
   components: {
@@ -411,18 +413,16 @@ export default {
     // this.$refs.scrollContents.$el.parentElement.style.position = "absolute";
     let self = this;
     document.addEventListener("DOMContentLoaded", function () {
-      window.visualViewport.addEventListener("resize", (event) => {
-        self.iosDebug = self.iosDebug + " resize";
-      });
-      console.log("here3");
+      self.setIosKeyboardHandling();
+    });
+  },
+  methods: {
+    setIosKeyboardHandling() {
       document.ontouchstart = function (e) {
         e.preventDefault();
         var inputs = document.getElementsByTagName("input");
-        self.iosDebug = self.iosDebug + " " + inputs.length;
-        console.log(" here2");
-        self.iosDebug = self.iosDebug + " here2";
-        var len = inputs.length;
-        var focused = false;
+        var len = inputs.length,
+          focused = false;
         for (let i = 0; i < len; i++) {
           var element = inputs[i]; // the input field
 
@@ -433,6 +433,10 @@ export default {
             window.scrollTo(sx, document.body.scrollHeight);
             var keyboardHeight = naturalHeight - window.innerHeight;
             window.scrollTo(sx, sy);
+            const target = getScrollTarget(element);
+            const offset = element.offsetTop - element.scrollHeight;
+            const duration = 0;
+            setScrollPosition(target, offset, duration);
             return keyboardHeight;
           };
 
@@ -454,9 +458,7 @@ export default {
           };
         }
       };
-    });
-  },
-  methods: {
+    },
     canCreateSections(auths) {
       return (
         auths.filter((a) => a.shared_resource_type == "Course" && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role))
