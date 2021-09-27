@@ -3,6 +3,14 @@
     <div class="q-mx-md q-mt-md q-mb-xs">
       <q-icon size="xs" name="account_tree" class="q-mr-sm q-pb-xs" />{{ label || "Select a resource" }}
     </div>
+    <q-input borderless v-model="filter" label="Search..." class="q-ma-md q-px-md q-py-none neu-concave">
+      <template v-slot:prepend>
+        <q-icon name="search" />
+      </template>
+      <template v-slot:append v-if="filter">
+        <q-icon name="close" @click="filter = ''" class="cursor-pointer text-dangerous" />
+      </template>
+    </q-input>
     <q-scroll-area
       style="max-height: 20rem; min-height: 3.125rem"
       :thumb-style="{
@@ -21,6 +29,8 @@
         node-key="treeid"
         :selected.sync="selected_resource"
         :expanded.sync="expanded"
+        :filter="filter"
+        :filter-method="filterFn"
       />
     </q-scroll-area>
   </div>
@@ -64,6 +74,7 @@ export default {
       error: "",
       scopeRef: null,
       flatTree: [...this.me.auths],
+      filter: "",
     };
   },
   beforeDestroy() {
@@ -152,6 +163,12 @@ export default {
     }
   },
   methods: {
+    filterFn(node, filter) {
+      return (
+        (node.label && node.label.toLowerCase().indexOf(filter.toLowerCase()) > -1) ||
+        (node.shared_resource_type && node.shared_resource_type.toLowerCase().indexOf(filter.toLowerCase()) > -1)
+      );
+    },
     handleNav(selected_auth) {
       if (selected_auth.shared_resource_type == "YTVideoStream") {
         location.href = "/watch/" + selected_auth.shared_resource._id;

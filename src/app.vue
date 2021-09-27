@@ -228,14 +228,6 @@
                   </q-menu>
                 </q-btn>
               </div>
-              <q-input borderless v-model="searchString" label="Search..." class="q-ma-md q-px-md q-py-none neu-convex">
-                <template v-slot:prepend>
-                  <q-icon name="search" />
-                </template>
-                <template v-slot:append v-if="searchString">
-                  <q-icon name="close" @click="searchString = ''" class="cursor-pointer" />
-                </template>
-              </q-input>
               <ResourceSelector
                 ref="nav"
                 class="q-mx-md"
