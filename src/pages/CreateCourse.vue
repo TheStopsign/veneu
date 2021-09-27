@@ -3,7 +3,7 @@
     <ApolloMutation
       :mutation="require('../graphql/CreateCourse.gql')"
       :variables="{ name, prefix, suffix, start, end, description }"
-      class="form q-pt-lg q-pb-xl q-px-md"
+      class="form q-pt-md q-pb-xl q-px-md"
       @done="handleCreateCourse"
     >
       <template slot-scope="{ mutate }">
@@ -32,32 +32,34 @@
           >
           </q-input>
 
-          <q-input
-            type="text"
-            standout="bg-primary text-white"
-            color="primary"
-            v-model="prefix"
-            label="Department"
-            placeholder="e.g. CSCI"
-            class="q-mt-lg"
-          >
-            <template v-slot:prepend>
-              <q-icon name="sort_by_alpha" />
-            </template>
-          </q-input>
-          <q-input
-            type="number"
-            standout="bg-primary text-white"
-            color="primary"
-            v-model="suffix"
-            label="Number"
-            placeholder="e.g. 101"
-            class="q-mt-md"
-          >
-            <template v-slot:prepend>
-              <q-icon name="pin" />
-            </template>
-          </q-input>
+          <div class="row full-width">
+            <q-input
+              type="text"
+              standout="bg-primary text-white"
+              color="primary"
+              v-model="prefix"
+              label="Department"
+              placeholder="e.g. CSCI"
+              class="col-12 col-sm q-mt-md q-mr-md"
+            >
+              <template v-slot:prepend>
+                <q-icon name="sort_by_alpha" />
+              </template>
+            </q-input>
+            <q-input
+              type="number"
+              standout="bg-primary text-white"
+              color="primary"
+              v-model="suffix"
+              label="Number"
+              placeholder="e.g. 101"
+              class="col-12 col-sm q-mt-md"
+            >
+              <template v-slot:prepend>
+                <q-icon name="pin" />
+              </template>
+            </q-input>
+          </div>
 
           <div class="row full-width q-mt-sm q-pt-none">
             <q-date dense v-model="start" class="col-12 col-sm q-mt-md q-mr-md" subtitle="Start date" />

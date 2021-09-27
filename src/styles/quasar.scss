@@ -569,3 +569,8 @@ h1 {
 .text-dangerous {
   color: var(--veneu-red) !important;
 }
+
+.q-date__main {
+  overflow-x: auto;
+  overflow-y: hidden;
+}

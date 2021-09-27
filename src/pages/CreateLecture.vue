@@ -1,6 +1,6 @@
 <template>
   <q-page id="create-course">
-    <div class="q-pt-lg q-pb-xl q-px-md">
+    <div class="q-pt-md q-pb-xl q-px-md">
       <q-form class="q-gutter-md q-ma-md q-py-md neu-convex form q-mb-lg">
         <div>
           <i><h1>Create a New Lecture</h1></i>
