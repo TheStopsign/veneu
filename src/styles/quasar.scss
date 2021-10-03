@@ -119,7 +119,6 @@ body,
 #me .q-avatar,
 .q-tab--inactive,
 .q-notification,
-.q-tree__node--selected,
 .q-date__main {
   animation: grow-in-button 0.5s forwards !important;
 }
@@ -229,8 +228,13 @@ body,
 .q-btn:focus:not([disabled]),
 .q-btn:hover:not([disabled]),
 .q-focusable:active:not([disabled]) .q-focus-helper,
-.q-hoverable:active:not([disabled]) {
+.q-hoverable:active:not([disabled]),
+.q-tree__node--selected {
   animation: grow-in-input 0.5s forwards !important;
+}
+
+.q-tree__node-header-content {
+  padding-left: 0.25rem;
 }
 
 .q-focusable:active[disabled] .q-focus-helper,

@@ -1,9 +1,9 @@
 <template>
-  <div class="q-my-md nav-tree" :class="flat ? '' : nav ? 'neu-convex' : 'neu-concave'" style="overflow-x: auto">
+  <div class="q-my-md nav-tree" :class="flat ? '' : nav ? 'neu-convex' : 'neu-convex'" style="overflow-x: auto">
     <div class="q-mx-md q-mt-md q-mb-xs">
       <q-icon size="xs" name="account_tree" class="q-mr-sm q-pb-xs" />{{ label || "Select a resource" }}
     </div>
-    <q-input borderless v-model="filter" label="Search..." class="q-ma-md q-px-md q-py-none neu-concave">
+    <q-input borderless v-model="filter" label="Search..." class="q-mx-md q-mt-md q-px-md q-py-none neu-concave">
       <template v-slot:prepend>
         <q-icon name="search" />
       </template>
