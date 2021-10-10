@@ -11,6 +11,15 @@
           <div>
             <i><h1>Create a New Group</h1></i>
           </div>
+          <q-input
+            standout="bg-primary text-white q-ma-none"
+            color="primary"
+            class="text-primary q-mt-none q-mx-md q-mt-md"
+            v-model="name"
+            label="Group Name"
+            placeholder="e.g. Team 2"
+          >
+          </q-input>
           <ResourceSelector
             :me="me"
             label="For Resource..."
@@ -20,17 +29,8 @@
                 .filter((a) => ['Course', 'RegistrationSection', 'UserGroup'].includes(a.shared_resource_type))
                 .map((a) => a._id)
             "
-            class="q-mt-md q-mx-none"
+            class="q-mx-none"
           />
-          <q-input
-            standout="bg-primary text-white q-ma-none"
-            color="primary"
-            class="text-primary q-mt-none q-mx-md"
-            v-model="name"
-            label="Group Name"
-            placeholder="e.g. Team 2"
-          >
-          </q-input>
           <q-bar class="q-pa-none q-ml-md q-pr-md q-gutter-x-md">
             <q-btn type="button" label="Back" class="q-ml-md" @click="handleBack" />
             <q-btn type="submit" color="primary" label="Continue" class="q-ml-md full-width" :disable="!formValid()" />

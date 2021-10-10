@@ -119,7 +119,8 @@ body,
 #me .q-avatar,
 .q-tab--inactive,
 .q-notification,
-.q-date__main {
+.q-date__main,
+.q-tree__node--selected {
   animation: grow-in-button 0.5s forwards !important;
 }
 
@@ -228,8 +229,7 @@ body,
 .q-btn:focus:not([disabled]),
 .q-btn:hover:not([disabled]),
 .q-focusable:active:not([disabled]) .q-focus-helper,
-.q-hoverable:active:not([disabled]),
-.q-tree__node--selected {
+.q-hoverable:active:not([disabled]) {
   animation: grow-in-input 0.5s forwards !important;
 }
 

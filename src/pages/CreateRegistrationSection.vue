@@ -11,22 +11,22 @@
           <div>
             <i><h1>Create a New Registration Section</h1></i>
           </div>
-          <ResourceSelector
-            :me="me"
-            label="For Course..."
-            :selectable="me.auths.filter((a) => a.shared_resource_type === 'Course').map((a) => a._id)"
-            @change="handleChangeCourse"
-            class="q-mt-md q-mx-none"
-          />
           <q-input
             standout="bg-primary text-white q-ma-none"
             color="primary"
-            class="text-primary q-mt-none q-mx-md"
+            class="text-primary q-mt-none q-mx-md q-mt-md"
             v-model="name"
             label="Section Name"
             placeholder="e.g. S-2021 01"
           >
           </q-input>
+          <ResourceSelector
+            :me="me"
+            label="For Course..."
+            :selectable="me.auths.filter((a) => a.shared_resource_type === 'Course').map((a) => a._id)"
+            @change="handleChangeCourse"
+            class="q-mx-none"
+          />
           <div
             class="row full-width q-px-md q-pb-md"
             :class="i == 0 ? 'q-pt-md' : ''"

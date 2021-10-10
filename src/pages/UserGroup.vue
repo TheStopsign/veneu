@@ -22,10 +22,10 @@
                   label="Additional Resources"
                   :scope="data.userGroup._id"
                   :selectable="me.auths.map((a) => a._id)"
-                  class="col-12 col-sm q-ml-md q-mt-md"
+                  class="col-12 col-sm q-ml-md q-mt-md q-px-xs"
                   nav
                 />
-                <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md q-px-sm">
+                <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md q-px-xs">
                   <q-timeline-entry class="text-primary" heading> Timeline </q-timeline-entry>
 
                   <q-btn
