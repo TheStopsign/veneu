@@ -7,7 +7,7 @@
       @done="handleCreateUserGroup"
     >
       <template slot-scope="{ mutate }">
-        <q-form @submit.prevent="formValid && mutate()" class="q-gutter-md q-ma-md q-py-md neu-convex">
+        <q-form @submit.prevent="formValid && mutate()" class="q-gutter-y-md q-ma-md q-py-md neu-convex">
           <div>
             <i><h1>Create a New Group</h1></i>
           </div>
@@ -20,17 +20,18 @@
                 .filter((a) => ['Course', 'RegistrationSection', 'UserGroup'].includes(a.shared_resource_type))
                 .map((a) => a._id)
             "
+            class="q-mt-md q-mx-none"
           />
           <q-input
             standout="bg-primary text-white q-ma-none"
             color="primary"
-            class="text-primary q-mt-none"
+            class="text-primary q-mt-none q-mx-md"
             v-model="name"
             label="Group Name"
             placeholder="e.g. Team 2"
           >
           </q-input>
-          <q-bar class="q-pa-none q-gutter-x-md">
+          <q-bar class="q-pa-none q-ml-md q-pr-md q-gutter-x-md">
             <q-btn type="button" label="Back" class="q-ml-md" @click="handleBack" />
             <q-btn type="submit" color="primary" label="Continue" class="q-ml-md full-width" :disable="!formValid()" />
           </q-bar>
@@ -67,7 +68,7 @@ export default {
     handleCreateUserGroup() {
       this.name = "";
       this.parent_resource = null;
-      this.$router.push({ name: "Dashboard" });
+      this.$router.push({ name: "Calendar" });
     },
     handleChangeResource(resource, type) {
       this.parent_resource = resource;

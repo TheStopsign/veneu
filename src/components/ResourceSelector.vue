@@ -1,6 +1,6 @@
 <template>
-  <div class="q-my-md nav-tree" :class="flat ? '' : nav ? 'neu-convex' : 'neu-convex'" style="overflow-x: auto">
-    <div class="q-mx-md q-mt-md q-mb-xs">
+  <div class="nav-tree q-mt-sm" :class="flat ? '' : nav ? '' : ''" style="overflow-x: auto">
+    <div class="q-mx-md q-mt-md">
       <q-icon size="xs" name="account_tree" class="q-mr-sm q-pb-xs" />{{ label || "Select a resource" }}
     </div>
     <q-input borderless v-model="filter" label="Search..." class="q-mx-md q-mt-md q-px-md q-py-none neu-concave">
@@ -11,28 +11,34 @@
         <q-icon name="close" @click="filter = ''" class="cursor-pointer text-dangerous" />
       </template>
     </q-input>
-    <q-scroll-area
-      style="max-height: 20rem; min-height: 3.125rem"
-      :thumb-style="{
-        right: '0.25rem',
-        borderRadius: '0.25rem',
-        backgroundColor: 'var(--veneu-blue)',
-        width: '0.25rem',
-        opacity: 1,
-      }"
-    >
-      <q-tree
-        ref="scrollContents"
-        class="col-12 text-primary q-px-md q-py-xs q-pb-md"
-        default-expand-all
-        :nodes="tree"
-        node-key="treeid"
-        :selected.sync="selected_resource"
-        :expanded.sync="expanded"
-        :filter="filter"
-        :filter-method="filterFn"
-      />
-    </q-scroll-area>
+    <div class="neu-concave q-mx-md" style="max-height: 20rem; min-height: 3.125rem">
+      <q-scroll-area
+        class="neu-convex q-my-md"
+        style="max-height: 20rem; min-height: 3.125rem"
+        :bar-style="{
+          top: '0.5rem',
+        }"
+        :thumb-style="{
+          right: '0.25rem',
+          borderRadius: '0.25rem',
+          backgroundColor: 'var(--veneu-blue)',
+          width: '0.25rem',
+          opacity: 1,
+        }"
+      >
+        <q-tree
+          ref="scrollContents"
+          class="col-12 text-primary q-mx-md q-my-md"
+          default-expand-all
+          :nodes="tree"
+          node-key="treeid"
+          :selected.sync="selected_resource"
+          :expanded.sync="expanded"
+          :filter="filter"
+          :filter-method="filterFn"
+        />
+      </q-scroll-area>
+    </div>
   </div>
 </template>
 

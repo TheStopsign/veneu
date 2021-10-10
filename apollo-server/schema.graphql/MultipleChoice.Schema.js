@@ -1,24 +1,32 @@
 const { gql } = require("apollo-server-express");
 
 module.exports = gql`
-  type MultipleChoice implements Question {
+  type MultipleChoice implements Question & Assignable {
     _id: ID!
+    type: String!
     question: String!
     answers: [Answer]
+    assignment: Assignment
+  }
+
+  extend type MultipleChoice {
+    choices: [String!]!
   }
 
   extend type Query {
-    freeResponse(_id: ID!): FreeResponse!
-    freeResponses: [FreeResponse!]!
+    multipleChoice(_id: ID!): MultipleChoice!
+    multipleChoices: [MultipleChoice!]!
   }
 
   extend type Mutation {
-    createFreeResponse(question: String!): FreeResponse!
+    createMultipleChoice(question: String!, choices: [String], assignment: Boolean): MultipleChoice!
+    #TODO updateMultipleChoice
+    #TODO deleteMultipleChoice
   }
 
   extend type Subscription {
-    freeResponseCreated: FreeResponse!
-    freeResponseUpdated: FreeResponse!
-    freeResponseDeleted: FreeResponse!
+    multipleChoiceCreated: MultipleChoice!
+    multipleChoiceUpdated: MultipleChoice!
+    multipleChoiceDeleted: MultipleChoice!
   }
 `;

@@ -9,6 +9,9 @@ module.exports = gql`
     type: String!
     parent_resource: ParentResource
     parent_resource_type: String
+  }
+
+  extend type Checkin {
     tickets: [Ticket!]!
     created_at: Date
   }

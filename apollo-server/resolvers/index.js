@@ -67,6 +67,12 @@ const VideoStreamResolvers = {
   },
 };
 
+const QuestionResolvers = {
+  Question: {
+    __resolveType: async ({ type }) => type,
+  },
+};
+
 const getResolvers = (pubsub) => [
   ParentResourceResolvers,
   SharedResourceResolvers,
@@ -75,6 +81,7 @@ const getResolvers = (pubsub) => [
   SubmittableResolvers,
   SearchResultResolvers,
   VideoStreamResolvers,
+  QuestionResolvers,
   require("./Auth.Resolvers")(pubsub),
   require("./Checkin.Resolvers")(pubsub),
   require("./Course.Resolvers")(pubsub),

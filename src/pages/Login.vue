@@ -65,7 +65,7 @@ export default {
     handleLogin(res) {
       if (res && res.data && res.data.login) {
         window.localStorage.setItem("token", res.data.login);
-        location.href = this.$router.history.current.query.redirect || "/dashboard";
+        location.href = this.$router.history.current.query.redirect || "/calendar";
       }
       (this.email = ""), (this.password = "");
     },

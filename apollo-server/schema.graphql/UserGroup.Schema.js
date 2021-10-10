@@ -7,10 +7,13 @@ module.exports = gql`
     creator: User!
     type: String!
     auths: [Auth!]!
-    user_groups: [UserGroup!]!
-    lectures: [Lecture!]!
     parent_resource: ParentResource!
     parent_resource_type: String!
+  }
+
+  extend type UserGroup {
+    user_groups: [UserGroup!]!
+    lectures: [Lecture!]!
   }
 
   extend type Query {

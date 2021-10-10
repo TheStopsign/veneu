@@ -1,10 +1,18 @@
 <template>
   <q-page id="create-course">
     <div class="q-pt-md q-pb-xl q-px-md">
-      <q-form class="q-gutter-md q-ma-md q-py-md neu-convex form q-mb-lg">
+      <q-form class="q-gutter-y-md q-ma-md q-py-md neu-convex">
         <div>
           <i><h1>Create a New Lecture</h1></i>
         </div>
+        <q-input
+          standout="bg-primary text-white q-ma-none"
+          color="primary"
+          class="text-primary q-mx-md q-mt-md"
+          v-model="name"
+          label="Lecture Name"
+          placeholder="e.g. S-2021 01"
+        />
         <ResourceSelector
           :me="me"
           label="For Resource..."
@@ -15,17 +23,7 @@
               .filter((a) => ['Course', 'UserGroup', 'RegistrationSection'].includes(a.shared_resource_type))
               .map((a) => a._id)
           "
-          class="q-mt-md"
         />
-        <q-input
-          standout="bg-primary text-white q-ma-none"
-          color="primary"
-          class="text-primary q-mt-none"
-          v-model="name"
-          label="Lecture Name"
-          placeholder="e.g. S-2021 01"
-        >
-        </q-input>
         <div class="row full-width q-px-md q-py-md">
           <q-date
             v-model="date"
@@ -36,8 +34,8 @@
           />
         </div>
         <div class="row full-width q-px-md items-center justify-center">What are the start and end times?</div>
-        <div class="row full-width q-px-md q-pb-md">
-          <div class="col-12 col-sm q-mr-md q-mt-sm">
+        <div class="row full-width q-pl-md q-pb-md">
+          <div class="col-12 col-sm q-pr-md q-mt-sm">
             <div class="row full-width q-px-none">
               <q-input
                 standout="primary"
@@ -62,7 +60,7 @@
               </div>
             </div>
           </div>
-          <div class="col-12 col-sm q-mr-md q-mt-sm">
+          <div class="col-12 col-sm q-pr-md q-mt-sm">
             <div class="row full-width q-px-none">
               <q-input
                 standout="primary"
@@ -88,7 +86,7 @@
             </div>
           </div>
         </div>
-        <q-bar class="q-pa-none q-gutter-x-md">
+        <q-bar class="q-pa-none q-ml-md q-pr-md q-gutter-x-md">
           <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
           <q-btn
             color="primary"
@@ -198,7 +196,7 @@ export default {
       return true;
     },
     handleCreateLecture() {
-      this.$router.push({ name: "Dashboard" });
+      this.$router.push({ name: "Calendar" });
     },
     handleChangeResource(resource, type) {
       this.parent_resource = resource;

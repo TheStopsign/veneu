@@ -103,6 +103,17 @@ const linkSchema = gql`
     event: CalendarEvent!
   }
 
+  interface Question implements Assignable {
+    _id: ID!
+    type: String!
+    assignment: Assignment
+  }
+
+  extend interface Question {
+    question: String!
+    answers: [Answer]
+  }
+
   type Query {
     _: Boolean
     calendarEvents: [CalendarizableEvent!]!
@@ -117,11 +128,14 @@ const linkSchema = gql`
 
 module.exports = [
   linkSchema,
+  require("./Answer.Schema"),
   require("./Assignment.Schema"),
   require("./Auth.Schema"),
   require("./Checkin.Schema"),
   require("./Course.Schema"),
+  require("./FreeResponse.Schema"),
   require("./Lecture.Schema"),
+  require("./MultipleChoice.Schema"),
   require("./Notification.Schema"),
   require("./RegistrationSection.Schema"),
   require("./Submission.Schema"),

@@ -37,17 +37,11 @@
                   label="Additional Resources"
                   :scope="data.registrationSection._id"
                   :selectable="me.auths.map((a) => a._id)"
-                  class="col-12 col-sm q-mr-sm q-mt-md"
+                  class="col-12 col-sm q-ml-md q-mt-md"
                   nav
                 />
                 <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md q-px-sm">
-                  <q-timeline-entry
-                    v-if="data.registrationSection.lectures && data.registrationSection.lectures.length"
-                    class="text-primary"
-                    heading
-                  >
-                    Timeline
-                  </q-timeline-entry>
+                  <q-timeline-entry class="text-primary" heading> Timeline </q-timeline-entry>
 
                   <q-btn
                     v-if="hasPermissions()"
@@ -139,7 +133,7 @@ export default {
       return date.formatDate(d, "MMM Do, YYYY @ h:mma");
     },
     onDelete() {
-      location.href = "/dashboard";
+      location.href = "/calendar";
     },
     canDelete() {
       return (

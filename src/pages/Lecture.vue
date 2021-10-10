@@ -159,7 +159,7 @@ export default {
       return date.formatDate(d, "MMM Do, YYYY @ h:mma");
     },
     onDelete() {
-      location.href = "/dashboard";
+      location.href = "/calendar";
     },
     canDelete() {
       return (

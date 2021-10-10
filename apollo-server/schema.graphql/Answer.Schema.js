@@ -1,13 +1,18 @@
-const {
-  gql
-} = require("apollo-server-express");
+const { gql } = require("apollo-server-express");
 
-export default gql `
-  type Answer {
+module.exports = gql`
+  type Answer implements Submittable {
+    _id: ID!
+    type: String!
+    submission: Submission
+    created_at: Date!
+    updated_at: Date!
+  }
+
+  extend type Answer {
     answer: String
-    grade: Float
-    question: Question
-		question_type: String
+    question: Question!
+    question_type: String!
   }
 
   extend type Query {
@@ -16,7 +21,7 @@ export default gql `
   }
 
   extend type Mutation {
-    createAnswer(name: String!, start: Date!, end: Date!, prefix: String, suffix: String, description: String): Course!
+    createAnswer(question: ID!, question_type: String!, answer: String): Answer!
   }
 
   extend type Subscription {

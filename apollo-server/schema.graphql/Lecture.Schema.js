@@ -11,6 +11,9 @@ module.exports = gql`
     end: Date!
     parent_resource: ParentResource!
     parent_resource_type: String!
+  }
+
+  extend type Lecture {
     recording: VideoStream
     recording_type: String
     checkins: [Checkin]

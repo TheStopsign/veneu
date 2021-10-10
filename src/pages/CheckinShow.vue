@@ -323,7 +323,7 @@ export default {
           },
         })
         .then(({ data }) => {
-          location.href = "/dashboard";
+          location.href = "/calendar";
         })
         .catch((e) => {
           this.$q.notify({

@@ -6,13 +6,16 @@ module.exports = gql`
     name: String!
     creator: User!
     type: String!
-    course: Course!
     auths: [Auth!]!
+    parent_resource: ParentResource!
+    parent_resource_type: String!
+  }
+
+  extend type RegistrationSection {
+    course: Course!
     user_groups: [UserGroup!]!
     lectures: [Lecture!]!
     meeting_times: [WeekDayEvent!]!
-    parent_resource: ParentResource!
-    parent_resource_type: String!
   }
 
   extend type Query {

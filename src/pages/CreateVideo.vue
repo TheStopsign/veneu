@@ -1,14 +1,14 @@
 <template>
   <q-page id="create-course">
     <q-form @submit.prevent="handleCreateVideo">
-      <div class="q-gutter-md q-mt-md q-mb-xl q-pt-lg q-pb-md q-mx-md neu-convex">
+      <div class="q-gutter-y-md q-ma-md q-py-md neu-convex">
         <div>
           <i><h1>Create a New Video</h1></i>
         </div>
         <q-input
           standout="bg-primary text-white q-ma-none"
           color="primary"
-          class="text-primary q-mt-md"
+          class="text-primary q-mt-md q-mx-md"
           v-model="name"
           label="Video Name"
           placeholder="e.g. Syllabus Day Recording"
@@ -19,12 +19,11 @@
           :selected="parent_resource"
           :selectable="me.auths.filter((a) => a.shared_resource_type === 'Lecture').map((a) => a._id)"
           @change="handleChangeLecture"
-          class="q-mt-lg q-mb-lg"
         />
         <q-input
           standout="bg-primary text-white q-ma-none"
           color="primary"
-          class="text-primary q-mt-md"
+          class="text-primary q-mx-md q-mt-md"
           v-model="url"
           label="YT Link"
           placeholder="e.g. https://www.youtube.com/watch?v=tz56ac6BaJQ"
@@ -86,7 +85,7 @@
           </div>
         </div>
 
-        <q-bar class="q-pa-none q-gutter-x-md q-mt-md">
+        <q-bar class="q-pa-none q-ml-md q-pr-md q-gutter-x-md">
           <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
           <q-btn type="submit" color="primary" label="Continue" class="q-ml-sm full-width" :disabled="!formValid()" />
         </q-bar>
@@ -278,7 +277,7 @@ export default {
             },
           })
           .then(({ data: { createYTVideoStream } }) => {
-            this.$router.push({ name: "Dashboard" });
+            this.$router.push({ name: "Calendar" });
           })
           .catch((e) => {
             this.$q.notify({

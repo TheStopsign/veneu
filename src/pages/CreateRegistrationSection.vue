@@ -7,7 +7,7 @@
       @done="handleCreateRegistrationSection"
     >
       <template slot-scope="{ mutate }">
-        <q-form @submit.prevent="mutate()" class="q-gutter-md q-ma-md q-py-md q-pt-lg neu-convex">
+        <q-form @submit.prevent="mutate()" class="q-gutter-y-md q-ma-md q-py-md q-pt-lg neu-convex">
           <div>
             <i><h1>Create a New Registration Section</h1></i>
           </div>
@@ -16,12 +16,12 @@
             label="For Course..."
             :selectable="me.auths.filter((a) => a.shared_resource_type === 'Course').map((a) => a._id)"
             @change="handleChangeCourse"
-            class="q-mt-md"
+            class="q-mt-md q-mx-none"
           />
           <q-input
             standout="bg-primary text-white q-ma-none"
             color="primary"
-            class="text-primary q-mt-none"
+            class="text-primary q-mt-none q-mx-md"
             v-model="name"
             label="Section Name"
             placeholder="e.g. S-2021 01"
@@ -108,7 +108,7 @@
           <div class="row full-width q-px-md">
             <q-btn label="Add a weekly meeting time" class="row full-width" @click="handleAddMeeting" />
           </div>
-          <q-bar class="q-pa-none q-gutter-x-md">
+          <q-bar class="q-pa-none q-ml-md q-pr-md q-gutter-x-md">
             <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
             <q-btn type="submit" color="primary" label="Continue" class="q-ml-sm full-width" :disabled="!formValid()" />
           </q-bar>
@@ -173,7 +173,7 @@ export default {
     handleCreateRegistrationSection() {
       this.name = "";
       this.course = null;
-      this.$router.push({ name: "Dashboard" });
+      this.$router.push({ name: "Calendar" });
     },
     handleAddMeeting() {
       this.meeting_times.push({

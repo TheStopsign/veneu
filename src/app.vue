@@ -74,7 +74,7 @@
                   class="q-px-none"
                   v-if="!['Landing', 'Login', 'Signup', 'FirstTimeLogin'].includes($route.name)"
                 >
-                  <q-avatar @click="$router.push({ name: 'Dashboard' })">
+                  <q-avatar @click="$router.push({ name: 'Calendar' })">
                     <VeneuLogo id="nav-logo" />
                   </q-avatar>
                 </q-toolbar-title>
@@ -89,7 +89,6 @@
                   checked-icon="light_mode"
                   color="primary"
                   size="md"
-                  s
                 />
 
                 <q-btn size="sm" round icon="qr_code_2" class="q-mx-sm" title="Checkin" aria-label="Checkin">
@@ -230,7 +229,6 @@
               </div>
               <ResourceSelector
                 ref="nav"
-                class="q-mx-md"
                 :me="data.me"
                 label="Navigation"
                 :selectable="
@@ -247,7 +245,7 @@
               <!-- <q-list class="text-primary neu-convex q-ma-md q-pa-xs">
               <course-list :me="data.me" />
             </q-list> -->
-              <q-list class="text-primary neu-convex q-ma-md q-pa-xs">
+              <q-list class="text-primary neu-convex q-mx-md q-mb-md q-pa-xs">
                 <q-expansion-item
                   icon="qr_code_2"
                   label="Check-ins"

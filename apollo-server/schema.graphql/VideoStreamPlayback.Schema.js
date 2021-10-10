@@ -5,12 +5,15 @@ module.exports = gql`
     _id: ID!
     type: String!
     submission: Submission
-    video_stream: VideoStream!
-    video_stream_type: String!
-    creator: User!
-    seconds_watched: Int!
     created_at: Date!
     updated_at: Date!
+  }
+
+  extend type VideoStreamPlayback {
+    creator: User!
+    video_stream: VideoStream!
+    video_stream_type: String!
+    seconds_watched: Int!
   }
 
   extend type Query {

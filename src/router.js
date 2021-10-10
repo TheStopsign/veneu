@@ -8,7 +8,8 @@ import NotFound from "./pages/NotFound";
 import Signup from "./pages/Signup";
 import FirstTimeLogin from "./pages/FirstTimeLogin.vue";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import Calendar from "./pages/Calendar";
+import Timeline from "./pages/Timeline";
 import Course from "./pages/Course.vue";
 import RegistrationSection from "./pages/RegistrationSection.vue";
 import UserGroup from "./pages/UserGroup.vue";
@@ -47,9 +48,17 @@ const router = new VueRouter({
       },
     },
     {
-      path: "/dashboard",
-      name: "Dashboard",
-      component: Dashboard,
+      path: "/calendar",
+      name: "Calendar",
+      component: Calendar,
+      meta: {
+        auth: true,
+      },
+    },
+    {
+      path: "/timeline",
+      name: "Timeline",
+      component: Timeline,
       meta: {
         auth: true,
       },
@@ -193,7 +202,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.meta.auth && !localStorage.getItem("token")) next({ name: "Login", query: { redirect: to.path } });
-  else if (to.meta.noAuth && localStorage.getItem("token")) next({ name: "Dashboard" });
+  else if (to.meta.noAuth && localStorage.getItem("token")) next({ name: "Calendar" });
   else next();
 });
 
