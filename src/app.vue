@@ -117,7 +117,7 @@
                 <q-btn
                   size="sm"
                   round
-                  icon="insights"
+                  icon="auto_awesome"
                   class="q-mx-sm"
                   title="Voyager"
                   aria-label="Voyager"
@@ -140,8 +140,8 @@
             >
               <q-item clickable class="rounded-borders q-ma-md neu-convex" id="me">
                 <q-item-section avatar class="q-my-xs">
-                  <q-avatar class="spinner">
-                    <img src="https://i1.sndcdn.com/avatars-000574262967-22er0z-t500x500.jpg" />
+                  <q-avatar class="spinner" id="avatar">
+                    <span v-html="getAvatar(data.me._id)"></span>
                   </q-avatar>
                 </q-item-section>
 
@@ -226,6 +226,14 @@
                     </q-list>
                   </q-menu>
                 </q-btn>
+              </div>
+              <div class="row full-width q-mt-md q-px-md">
+                <div class="col-6 q-pr-sm">
+                  <q-btn size="sm" label="Calendar" icon="today" class="full-width" :to="{ name: 'Calendar' }" />
+                </div>
+                <div class="col-6 q-pl-sm">
+                  <q-btn size="sm" label="Timeline" icon="timeline" class="full-width" :to="{ name: 'Timeline' }" />
+                </div>
               </div>
               <ResourceSelector
                 ref="nav"
@@ -368,9 +376,10 @@ import { date } from "quasar";
 import gql from "graphql-tag";
 import VeneuLogo from "./components/VeneuLogo";
 import ResourceSelector from "./components/ResourceSelector";
-import "quasar/icon-set/fontawesome-v5";
 import { scroll } from "quasar";
 const { getScrollTarget, setScrollPosition } = scroll;
+import { createAvatar } from "@dicebear/avatars";
+import * as botttsStyle from "@dicebear/avatars-bottts-sprites";
 export default {
   name: "app",
   components: {
@@ -416,6 +425,10 @@ export default {
     }
   },
   methods: {
+    getAvatar: (seed) =>
+      createAvatar(botttsStyle, {
+        seed,
+      }),
     handleVoyager() {
       location.href = this.isProduction() ? "/voyager" : "http://localhost:4000/voyager";
     },

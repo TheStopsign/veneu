@@ -103,9 +103,14 @@ const linkSchema = gql`
     event: CalendarEvent!
   }
 
-  interface Question implements Assignable {
+  interface Question implements Assignable & SharedResource {
     _id: ID!
     type: String!
+    creator: User!
+    name: String!
+    auths: [Auth!]!
+    parent_resource: ParentResource
+    parent_resource_type: String
     assignment: Assignment
   }
 

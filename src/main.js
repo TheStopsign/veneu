@@ -26,7 +26,9 @@ Array.prototype.groupByProperty = function (prop) {
 Vue.use(Plugin);
 
 Vue.use(Quasar, {
-  config: {},
+  config: {
+    extras: ["material-icons"],
+  },
   plugins: { Notify },
 });
 

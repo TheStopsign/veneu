@@ -8,6 +8,39 @@
   src: local("Comfortaa"), url(../fonts/Comfortaa/Comfortaa-VariableFont_wght.ttf) format("truetype");
 }
 
+@font-face {
+  font-family: "Material Icons";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Material Icons"), local("MaterialIcons-Regular"),
+    url(../fonts/Material_Icons/MaterialIcons-Regular.ttf) format("truetype");
+}
+
+.material-icons {
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  // font-size: 24px; /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: "liga";
+}
+
 :root {
   /* Colors */
   --veneu-blue: #1a4974;
@@ -26,7 +59,7 @@
   --veneu-light-backdrop: #dfdfdfbb;
   --veneu-light-highlight: #0000002a;
   --veneu-light-lowlight: #ffffff50;
-  --veneu-light-firefox-glass: #dfdfdff8;
+  --veneu-light-firefox-glass: #dfdfdff4;
 
   --veneu-dark: #3d3d3d;
   --veneu-dark-backdrop: #3d3d3dbb;

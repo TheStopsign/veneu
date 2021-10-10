@@ -3,12 +3,18 @@
     <div class="q-mx-md q-mt-md">
       <q-icon size="xs" name="account_tree" class="q-mr-sm q-pb-xs" />{{ label || "Select a resource" }}
     </div>
-    <q-input borderless v-model="filter" label="Search..." class="q-mx-md q-mt-md q-px-md q-py-none neu-concave">
+    <q-input
+      flat
+      v-model="filter"
+      label="Search..."
+      standout="bg-primary text-white"
+      class="q-mx-md q-mt-md q-mx-md q-py-none"
+    >
       <template v-slot:prepend>
         <q-icon name="search" />
       </template>
       <template v-slot:append v-if="filter">
-        <q-icon name="close" @click="filter = ''" class="cursor-pointer text-dangerous" />
+        <q-icon name="close" @click="filter = ''" class="cursor-pointer" />
       </template>
     </q-input>
     <div class="neu-concave q-mx-md" style="max-height: 20rem; min-height: 3.125rem">
@@ -28,7 +34,7 @@
       >
         <q-tree
           ref="scrollContents"
-          class="col-12 text-primary q-mx-md q-my-md"
+          class="col-12 text-primary q-px-md q-py-md"
           default-expand-all
           :nodes="tree"
           node-key="treeid"

@@ -1,12 +1,17 @@
 const { gql } = require("apollo-server-express");
 
 module.exports = gql`
-  type MultipleChoice implements Question & Assignable {
+  type MultipleChoice implements Question & Assignable & SharedResource {
     _id: ID!
     type: String!
+    creator: User!
+    name: String!
+    auths: [Auth!]!
+    parent_resource: ParentResource
+    parent_resource_type: String
+    assignment: Assignment
     question: String!
     answers: [Answer]
-    assignment: Assignment
   }
 
   extend type MultipleChoice {

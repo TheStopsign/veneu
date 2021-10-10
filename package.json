@@ -17,6 +17,9 @@
     "pretty": "prettier --write \"./**/*.{js,jsx,json,vue,gql}\""
   },
   "dependencies": {
+    "@dicebear/avatars": "^4.9.1",
+    "@dicebear/avatars-bottts-sprites": "^4.9.1",
+    "@material-icons/font": "^1.0.16",
     "@quasar/extras": "^1.10.7",
     "@quasar/quasar-ui-qcalendar": "^3.4.0",
     "apollo-server-express": "^2.25.2",

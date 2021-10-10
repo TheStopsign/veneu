@@ -11,6 +11,7 @@ module.exports = {
     quasar: {
       importStrategy: "kebab",
       rtlSupport: false,
+      extras: ["material-icons"],
     },
   },
 
