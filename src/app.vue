@@ -138,6 +138,7 @@
                 opacity: 1,
               }"
             >
+              {{ getAvatar(data.me._id) }}
               <q-item clickable class="rounded-borders q-ma-md neu-convex" id="me">
                 <q-item-section avatar class="q-my-xs">
                   <q-avatar class="spinner" id="avatar">
