@@ -138,11 +138,10 @@
                 opacity: 1,
               }"
             >
-              {{ getAvatar(data.me._id) }}
               <q-item clickable class="rounded-borders q-ma-md neu-convex" id="me">
                 <q-item-section avatar class="q-my-xs">
                   <q-avatar class="spinner" id="avatar">
-                    <span v-html="getAvatar(data.me._id)"></span>
+                    {{ getAvatar(data.me._id) }}
                   </q-avatar>
                 </q-item-section>
 
@@ -426,10 +425,15 @@ export default {
     }
   },
   methods: {
-    getAvatar: (seed) =>
-      createAvatar(botttsStyle, {
-        seed,
-      }),
+    getAvatar: (seed) => {
+      let avatarEl = document.getElementById("avatar");
+      if (avatarEl) {
+        avatarEl.innerHTML = createAvatar(botttsStyle, {
+          seed,
+        });
+      }
+    },
+
     handleVoyager() {
       location.href = this.isProduction() ? "/voyager" : "http://localhost:4000/voyager";
     },
