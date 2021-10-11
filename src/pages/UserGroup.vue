@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-py-md">
     <ApolloQuery :query="require('../graphql/UserGroup.gql')" :variables="{ _id: $route.params._id }">
       <template slot-scope="{ result: { loading, error, data } }">
         <div v-if="loading">Loading...</div>
@@ -16,16 +16,22 @@
               />
             </div>
             <div class="q-my-md">
-              <div class="row full-width">
+              <div class="row full-width q-pl-md">
                 <ResourceSelector
                   :me="me"
                   label="Additional Resources"
                   :scope="data.userGroup._id"
                   :selectable="me.auths.map((a) => a._id)"
-                  class="col-12 col-sm q-ml-md q-mt-md q-px-xs"
+                  class="col-12 col-sm q-mt-md q-pr-md"
+                  style="overflow: visible"
                   nav
                 />
-                <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md q-px-xs">
+                <q-timeline
+                  :layout="layout"
+                  color="primary"
+                  class="col-12 col-sm q-mt-md q-pr-md"
+                  style="overflow: visible"
+                >
                   <q-timeline-entry class="text-primary" heading> Timeline </q-timeline-entry>
 
                   <q-btn

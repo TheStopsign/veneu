@@ -25,7 +25,7 @@
             label="For Course..."
             :selectable="me.auths.filter((a) => a.shared_resource_type === 'Course').map((a) => a._id)"
             @change="handleChangeCourse"
-            class="q-mx-none"
+            class="q-px-md"
           />
           <div
             class="row full-width q-px-md q-pb-md"

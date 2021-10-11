@@ -19,6 +19,7 @@
           :selected="parent_resource"
           :selectable="me.auths.filter((a) => a.shared_resource_type === 'Lecture').map((a) => a._id)"
           @change="handleChangeLecture"
+          class="q-px-md"
         />
         <q-input
           standout="bg-primary text-white q-ma-none"

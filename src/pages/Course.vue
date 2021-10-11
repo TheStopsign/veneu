@@ -1,5 +1,5 @@
 <template>
-  <q-page id="course-page" class="q-px-md">
+  <q-page id="course-page">
     <ApolloQuery :query="require('../graphql/Course.gql')" :variables="{ _id: $route.params._id }">
       <template slot-scope="{ result: { loading, error, data } }">
         <div v-if="loading">Loading...</div>
@@ -7,7 +7,7 @@
         <div v-if="data && data.course" id="courseloaded" class="q-mb-xl">
           <div style="max-width: 60rem; margin: auto">
             <h1 class="q-pa-sm q-mt-md">{{ data.course.name }}</h1>
-            <div class="row full-width q-mt-sm q-mb-md">
+            <div class="row full-width q-mt-sm q-mb-md q-px-md">
               <ShareResourceModal
                 :resourceid="data.course._id"
                 resourcetype="Course"
@@ -15,7 +15,7 @@
                 v-if="hasPermissions()"
               />
             </div>
-            <div v-if="data.course.description" class="row full-width">
+            <div v-if="data.course.description" class="row full-width q-px-md">
               {{ data.course.description }}
             </div>
             <q-btn
@@ -25,39 +25,43 @@
               label="Add description - coming soon"
               icon="create"
             />
-            <div class="q-my-md">
-              <div class="row full-width">
-                <ResourceSelector
-                  :me="me"
-                  label="Additional Resources"
-                  :scope="data.course._id"
-                  :selectable="me.auths.map((a) => a._id)"
-                  class="col-12 col-sm q-mt-md q-px-xs"
-                  nav
+            <div class="row full-width q-pl-md">
+              <ResourceSelector
+                :me="me"
+                label="Additional Resources"
+                :scope="data.course._id"
+                :selectable="me.auths.map((a) => a._id)"
+                class="col-12 col-sm q-pr-md"
+                style="overflow: visible"
+                nav
+              />
+              <q-timeline
+                :layout="layout"
+                color="primary"
+                class="col-12 col-sm q-mt-md q-pr-md"
+                style="overflow: visible"
+              >
+                <q-timeline-entry class="text-primary" heading> Timeline </q-timeline-entry>
+
+                <q-btn
+                  v-if="hasPermissions()"
+                  class="row full-width q-my-md"
+                  label="Add lecture"
+                  :to="{ name: 'CreateLecture', query: { from: data.course._id } }"
+                  icon="class"
                 />
-                <q-timeline :layout="layout" color="primary" class="col-12 col-sm q-mt-md q-px-xs">
-                  <q-timeline-entry class="text-primary" heading> Timeline </q-timeline-entry>
 
-                  <q-btn
-                    v-if="hasPermissions()"
-                    class="row full-width q-my-md"
-                    label="Add lecture"
-                    :to="{ name: 'CreateLecture', query: { from: data.course._id } }"
-                    icon="class"
-                  />
-
-                  <q-timeline-entry
-                    :title="'Lecture - ' + lect.name"
-                    :subtitle="getFormattedDate(lect.start)"
-                    side="left"
-                    v-for="lect in getSorted(data.course.lectures)"
-                    :key="lect._id"
-                    icon="class"
-                  >
-                    <div>ATTENDANCE IF EXISTS</div>
-                  </q-timeline-entry>
-                </q-timeline>
-              </div>
+                <q-timeline-entry
+                  :title="'Lecture - ' + lect.name"
+                  :subtitle="getFormattedDate(lect.start)"
+                  side="left"
+                  v-for="lect in getSorted(data.course.lectures)"
+                  :key="lect._id"
+                  icon="class"
+                >
+                  <div>ATTENDANCE IF EXISTS</div>
+                </q-timeline-entry>
+              </q-timeline>
             </div>
             <div class="row full-width justify-center" v-if="canDelete()">
               <div class="dangerzone">

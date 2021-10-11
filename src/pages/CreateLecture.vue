@@ -23,6 +23,7 @@
               .filter((a) => ['Course', 'UserGroup', 'RegistrationSection'].includes(a.shared_resource_type))
               .map((a) => a._id)
           "
+          class="q-px-md"
         />
         <div class="row full-width q-px-md q-py-md">
           <q-date

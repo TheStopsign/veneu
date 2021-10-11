@@ -248,6 +248,7 @@
                     )
                     .map((a) => a._id)
                 "
+                class="q-px-md"
                 nav
               />
               <!-- <q-list class="text-primary neu-convex q-ma-md q-pa-xs">

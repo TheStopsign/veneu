@@ -29,7 +29,7 @@
                 .filter((a) => ['Course', 'RegistrationSection', 'UserGroup'].includes(a.shared_resource_type))
                 .map((a) => a._id)
             "
-            class="q-mx-none"
+            class="q-px-md"
           />
           <q-bar class="q-pa-none q-ml-md q-pr-md q-gutter-x-md">
             <q-btn type="button" label="Back" class="q-ml-md" @click="handleBack" />

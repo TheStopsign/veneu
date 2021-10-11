@@ -1,15 +1,9 @@
 <template>
   <div class="nav-tree q-mt-sm" :class="flat ? '' : nav ? '' : ''" style="overflow-x: auto">
-    <div class="q-mx-md q-mt-md">
+    <div class="q-mt-md">
       <q-icon size="xs" name="account_tree" class="q-mr-sm q-pb-xs" />{{ label || "Select a resource" }}
     </div>
-    <q-input
-      flat
-      v-model="filter"
-      label="Search..."
-      standout="bg-primary text-white"
-      class="q-mx-md q-mt-md q-mx-md q-py-none"
-    >
+    <q-input flat v-model="filter" label="Search..." standout="bg-primary text-white" class="q-mt-md q-py-none">
       <template v-slot:prepend>
         <q-icon name="search" />
       </template>
@@ -17,7 +11,7 @@
         <q-icon name="close" @click="filter = ''" class="cursor-pointer" />
       </template>
     </q-input>
-    <div class="neu-concave q-mx-md" style="max-height: 20rem; min-height: 3.125rem">
+    <div class="neu-concave" style="max-height: 20rem; min-height: 3.125rem">
       <q-scroll-area
         class="neu-convex q-my-md"
         style="max-height: 20rem; min-height: 3.125rem"
