@@ -122,6 +122,7 @@ const linkSchema = gql`
   type Query {
     _: Boolean
     calendarEvents: [CalendarizableEvent!]!
+    assignables: [Assignable!]!
   }
   type Mutation {
     _: Boolean

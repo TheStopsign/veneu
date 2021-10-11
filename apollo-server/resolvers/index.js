@@ -1,5 +1,6 @@
 const { ForbiddenError, withFilter } = require("apollo-server-express");
 const { readOne, readMany } = require("../crudHandlers");
+const { flatten } = require("../generics");
 
 const ParentResourceResolvers = {
   ParentResource: {
@@ -44,7 +45,33 @@ const CalendarizableEventResolvers = {
 };
 
 const AssignableResolvers = {
+  Query: {
+    assignables: async (parent, args, { requester, models, loaders, pubsub }, info) => {
+      if (!requester) throw new ForbiddenError("Not allowed");
+      let ytvideostreamAuthIds = requester.auths
+          .filter((a) => a.shared_resource_type == "YTVideoStream")
+          .map((a) => a.shared_resource),
+        freeresponseAuthIds = requester.auths
+          .filter((a) => a.shared_resource_type == "FreeResponse")
+          .map((a) => a.shared_resource),
+        multiplechoiceAuthIds = requester.auths
+          .filter((a) => a.shared_resource_type == "MultipleChoice")
+          .map((a) => a.shared_resource);
+      return Promise.all([
+        readOne({ _id: { $in: ytvideostreamAuthIds }, type: "YTVideoStream" }, { requester, models, loaders, pubsub }),
+        readOne({ _id: { $in: freeresponseAuthIds }, type: "FreeResponse" }, { requester, models, loaders, pubsub }),
+        readOne(
+          { _id: { $in: multiplechoiceAuthIds }, type: "MultipleChoice" },
+          { requester, models, loaders, pubsub }
+        ),
+      ]).then((resolved) => flatten(resolved));
+    },
+  },
   Assignable: {
+    assignment: async (parent, args, { requester, models, loaders, pubsub }, info) => {
+      if (!requester) throw new ForbiddenError("Not allowed");
+      return readOne({ _id: parent.assignment, type: "Assignment" }, { requester, models, loaders, pubsub });
+    },
     __resolveType: async ({ type }) => type,
   },
 };
@@ -82,10 +109,13 @@ const getResolvers = (pubsub) => [
   SearchResultResolvers,
   VideoStreamResolvers,
   QuestionResolvers,
+  require("./Answer.Resolvers")(pubsub),
+  require("./Assignment.Resolvers")(pubsub),
   require("./Auth.Resolvers")(pubsub),
   require("./Checkin.Resolvers")(pubsub),
   require("./Course.Resolvers")(pubsub),
   require("./Lecture.Resolvers")(pubsub),
+  require("./MultipleChoice.Resolvers")(pubsub),
   require("./Notification.Resolvers")(pubsub),
   require("./RegistrationSection.Resolvers")(pubsub),
   require("./Ticket.Resolvers")(pubsub),
