@@ -203,9 +203,9 @@ export default {
     },
     downloadCSV() {
       const csvContent =
-        "data:text/csv;charset=utf-8,First,Last,User ID,Code\n" +
+        "data:text/csv;charset=utf-8,Email,Code\n" +
         Object.values(this.tickets)
-          .map((e) => e.user && [e.email, e.user, e.code].join(","))
+          .map((e) => e.user && [e.email, e.code].join(","))
           .join("\n");
 
       const encodedUri = encodeURI(csvContent);
