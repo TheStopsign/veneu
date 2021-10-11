@@ -7,7 +7,7 @@
         <div v-if="data && data.userGroup" id="registrationsectionloaded">
           <div style="max-width: 60rem; margin: auto">
             <h1 class="q-pa-sm">{{ data.userGroup.name }}</h1>
-            <div class="row full-width q-my-sm">
+            <div class="row full-width q-my-sm q-px-md">
               <ShareResourceModal
                 :resourceid="data.userGroup._id"
                 resourcetype="UserGroup"

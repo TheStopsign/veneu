@@ -17,7 +17,7 @@
             </div>
             <h3
               v-if="data.registrationSection.meeting_times && data.registrationSection.meeting_times.length"
-              class="q-my-none"
+              class="q-my-none q-pl-md"
             >
               Usually meets on...
             </h3>
