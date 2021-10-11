@@ -70,14 +70,12 @@
                   aria-label="Menu"
                   @click="left = !left"
                 />
-                <q-toolbar-title
+                <!-- <q-toolbar-title
                   class="q-px-none"
                   v-if="!['Landing', 'Login', 'Signup', 'FirstTimeLogin'].includes($route.name)"
                 >
-                  <q-avatar @click="$router.push({ name: 'Calendar' })">
-                    <VeneuLogo id="nav-logo" />
-                  </q-avatar>
-                </q-toolbar-title>
+                  
+                </q-toolbar-title> -->
 
                 <q-space />
 
@@ -138,7 +136,14 @@
                 opacity: 1,
               }"
             >
-              <q-item clickable class="rounded-borders q-ma-md neu-convex" id="me">
+              <div class="row fuull-width">
+                <q-avatar @click="$router.push({ name: 'Calendar' })" class="q-mt-md q-mx-md">
+                  <VeneuLogo id="nav-logo" />
+                </q-avatar>
+
+                <h1 class="q-mt-md">veneu</h1>
+              </div>
+              <q-item clickable class="rounded-borders q-ma-md neu-convex" id="me" @click="handleMe">
                 <q-item-section avatar class="q-my-xs">
                   <q-avatar class="spinner" id="avatar">
                     {{ getAvatar(data.me._id) }}
@@ -426,6 +431,14 @@ export default {
     }
   },
   methods: {
+    isOnMePage() {
+      this.$route.name == "Me";
+    },
+    handleMe() {
+      if (!this.isOnMePage()) {
+        this.$router.push({ name: "Me" });
+      }
+    },
     getAvatar: (seed) => {
       let avatarEl = document.getElementById("avatar");
       if (avatarEl) {

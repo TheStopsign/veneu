@@ -14,6 +14,8 @@ module.exports = gql`
     checkins: [Checkin!]!
     access_code: String
     active: Boolean!
+    created_at: Date
+    updated_at: Date
   }
 
   extend type Query {

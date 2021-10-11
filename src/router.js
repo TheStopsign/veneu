@@ -14,6 +14,7 @@ import Course from "./pages/Course.vue";
 import RegistrationSection from "./pages/RegistrationSection.vue";
 import UserGroup from "./pages/UserGroup.vue";
 import Lecture from "./pages/Lecture.vue";
+import Me from "./pages/Me.vue";
 
 import CreateCourse from "./pages/CreateCourse.vue";
 import CreateUserGroup from "./pages/CreateUserGroup.vue";
@@ -186,6 +187,14 @@ const router = new VueRouter({
       path: "/create-video",
       name: "CreateVideo",
       component: CreateVideo,
+    },
+    {
+      path: "/me",
+      name: "Me",
+      component: Me,
+      meta: {
+        auth: true,
+      },
     },
     {
       path: "/404",
