@@ -267,64 +267,27 @@
             </q-list> -->
               <q-list class="text-primary neu-convex q-mx-md q-mb-md q-pa-xs">
                 <q-expansion-item
-                  icon="qr_code_2"
-                  label="Check-ins"
+                  icon="qr_code_scanner"
+                  label="Attended"
+                  :content-inset-level="0"
                   expand-icon-class="text-primary"
-                  :header-inset-level="0"
-                  :content-inset-level="0.5"
                 >
-                  <q-list class="rounded-borders">
-                    <q-expansion-item
-                      icon="present_to_all"
-                      label="Hosted"
-                      :header-inset-level="0"
-                      :content-inset-level="0"
-                      expand-icon-class="text-primary"
-                    >
-                      <ApolloQuery :query="require('./graphql/HostedCheckins.gql')">
-                        <template slot-scope="{ result: { loading, error, data } }">
-                          <div v-if="error">Error...</div>
-                          <div v-else-if="loading">Loading...</div>
-                          <q-list v-else-if="data">
-                            <q-item
-                              class="row items-center justify-center"
-                              :clickable="$route.params._id != checkin._id || $route.name != 'CheckinShow'"
-                              v-for="checkin in data.checkins"
-                              :key="checkin._id"
-                              @click="handleHosted(checkin._id)"
-                            >
-                              {{ getFormattedDate(checkin.created_at) }}
-                            </q-item>
-                            <q-item v-if="!data.checkins.length" class="row items-center justify-center"> None </q-item>
-                          </q-list>
-                        </template>
-                      </ApolloQuery>
-                    </q-expansion-item>
-
-                    <q-expansion-item
-                      icon="qr_code_scanner"
-                      label="Attended"
-                      :content-inset-level="0"
-                      expand-icon-class="text-primary"
-                    >
-                      <ApolloQuery :query="require('./graphql/AttendedCheckins.gql')">
-                        <template slot-scope="{ result: { loading, error, data } }">
-                          <div v-if="error">Error...</div>
-                          <div v-else-if="loading">Loading...</div>
-                          <q-list v-else-if="data">
-                            <q-item
-                              class="row items-center justify-center"
-                              v-for="ticket in data.tickets"
-                              :key="ticket._id"
-                            >
-                              {{ getFormattedDate(ticket.checkin.created_at) }}
-                            </q-item>
-                            <q-item v-if="!data.tickets.length" class="row items-center justify-center"> None </q-item>
-                          </q-list>
-                        </template>
-                      </ApolloQuery>
-                    </q-expansion-item>
-                  </q-list>
+                  <ApolloQuery :query="require('./graphql/AttendedCheckins.gql')">
+                    <template slot-scope="{ result: { loading, error, data } }">
+                      <div v-if="error">Error...</div>
+                      <div v-else-if="loading">Loading...</div>
+                      <q-list v-else-if="data">
+                        <q-item
+                          class="row items-center justify-center"
+                          v-for="ticket in data.tickets"
+                          :key="ticket._id"
+                        >
+                          {{ getFormattedDate(ticket.checkin.created_at) }}
+                        </q-item>
+                        <q-item v-if="!data.tickets.length" class="row items-center justify-center"> None </q-item>
+                      </q-list>
+                    </template>
+                  </ApolloQuery>
                 </q-expansion-item>
               </q-list>
               <q-list class="fdsafdsfdsatext-primary neu-convex q-mx-md q-my-md q-pa-xs">
