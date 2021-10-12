@@ -195,7 +195,13 @@
                         <!-- <q-icon color="primary" size="sm" name="present_to_all" class="q-mr-sm" /> -->
                         Checkin
                       </q-item>
-                      <q-item class="items-center" title="Course" :to="{ name: 'CreateCourse' }">Course</q-item>
+                      <q-item
+                        class="items-center"
+                        title="Course"
+                        :clickable="$route.name != 'CreateCourse'"
+                        @click="$router.push({ name: 'CreateCourse' })"
+                        >Course</q-item
+                      >
                       <q-item
                         class="items-center"
                         title="Registration Section"

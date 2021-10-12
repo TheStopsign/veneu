@@ -1,6 +1,6 @@
 <template>
-  <div id="first_login" class="container">
-    <div class="vertical-center q-px-md">
+  <div id="first-login">
+    <div class="vertical-center q-px-md spinner-stage">
       <VeneuLogo class="spinner" />
       <ApolloMutation
         :mutation="require('../graphql/FirstLogin.gql')"
