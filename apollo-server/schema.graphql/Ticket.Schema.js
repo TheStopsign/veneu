@@ -3,6 +3,7 @@ const { gql } = require("apollo-server-express");
 module.exports = gql`
   type Ticket {
     _id: ID!
+    type: String!
     code: String!
     user: ID!
     email: String!

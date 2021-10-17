@@ -21,6 +21,11 @@ module.exports = (pubsub) => {
         ref: "Checkin",
         required: true,
       },
+      type: {
+        type: String,
+        default: "Ticket",
+        required: true,
+      },
     },
     {
       timestamps: { createdAt: "created_at", updatedAt: "updated_at" },

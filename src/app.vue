@@ -136,14 +136,20 @@
                 opacity: 1,
               }"
             >
-              <div class="row fuull-width">
+              <div class="row full-width">
                 <q-avatar @click="$router.push({ name: 'Calendar' })" class="q-mt-md q-mx-md">
                   <VeneuLogo id="nav-logo" />
                 </q-avatar>
 
                 <h1 class="q-mt-md">veneu</h1>
               </div>
-              <q-item clickable class="rounded-borders q-ma-md neu-convex" id="me" @click="handleMe">
+              <q-item
+                clickable
+                class="rounded-borders q-my-md q-ml-md neu-convex"
+                :class="$q.screen.lt.md ? 'q-mr-md' : 'q-mr-xs'"
+                id="me"
+                @click="handleMe"
+              >
                 <q-item-section avatar class="q-my-xs">
                   <q-avatar class="spinner" id="avatar">
                     {{ getAvatar(data.me._id) }}
@@ -187,7 +193,7 @@
                   </q-dialog>
                 </q-item-section>
               </q-item>
-              <div class="row full-width q-px-md q-mt-md">
+              <div class="row full-width q-pl-md q-mt-md" :class="$q.screen.lt.md ? 'q-pr-md' : 'q-pr-xs'">
                 <q-btn size="1.35rem" label="New" icon="add" class="full-width">
                   <q-menu anchor="bottom middle" self="top middle" :offset="[0, 8]">
                     <q-list class="q-pa-xs text-primary">
@@ -238,7 +244,7 @@
                   </q-menu>
                 </q-btn>
               </div>
-              <div class="row full-width q-mt-md q-px-md">
+              <div class="row full-width q-mt-md q-pl-md" :class="$q.screen.lt.md ? 'q-pr-md' : 'q-pr-xs'">
                 <div class="col-6 q-pr-sm">
                   <q-btn size="sm" label="Calendar" icon="today" class="full-width" :to="{ name: 'Calendar' }" />
                 </div>
@@ -259,38 +265,36 @@
                     )
                     .map((a) => a._id)
                 "
-                class="q-px-md"
+                class="q-pl-md"
+                :class="$q.screen.lt.md ? 'q-pr-md' : 'q-pr-xs'"
                 nav
               />
               <!-- <q-list class="text-primary neu-convex q-ma-md q-pa-xs">
               <course-list :me="data.me" />
             </q-list> -->
-              <q-list class="text-primary neu-convex q-mx-md q-mb-md q-pa-xs">
+              <q-list
+                class="text-primary neu-convex q-ml-md q-mb-md q-pa-xs"
+                :class="$q.screen.lt.md ? 'q-mr-md' : 'q-mr-xs'"
+              >
                 <q-expansion-item
                   icon="qr_code_scanner"
                   label="Attended"
                   :content-inset-level="0"
                   expand-icon-class="text-primary"
                 >
-                  <ApolloQuery :query="require('./graphql/AttendedCheckins.gql')">
-                    <template slot-scope="{ result: { loading, error, data } }">
-                      <div v-if="error">Error...</div>
-                      <div v-else-if="loading">Loading...</div>
-                      <q-list v-else-if="data">
-                        <q-item
-                          class="row items-center justify-center"
-                          v-for="ticket in data.tickets"
-                          :key="ticket._id"
-                        >
-                          {{ getFormattedDate(ticket.checkin.created_at) }}
-                        </q-item>
-                        <q-item v-if="!data.tickets.length" class="row items-center justify-center"> None </q-item>
-                      </q-list>
-                    </template>
-                  </ApolloQuery>
+                  <div v-if="$apollo.queries.tickets.loading">Loading...</div>
+                  <q-list v-else-if="tickets">
+                    <q-item class="row items-center justify-center" v-for="ticket in tickets" :key="ticket._id">
+                      {{ getFormattedDate(ticket.checkin.created_at) }}
+                    </q-item>
+                    <q-item v-if="!tickets.length" class="row items-center justify-center"> None </q-item>
+                  </q-list>
                 </q-expansion-item>
               </q-list>
-              <q-list class="fdsafdsfdsatext-primary neu-convex q-mx-md q-my-md q-pa-xs">
+              <q-list
+                class="fdsafdsfdsatext-primary neu-convex q-ml-md q-my-md q-pa-xs"
+                :class="$q.screen.lt.md ? 'q-mr-md' : 'q-mr-xs'"
+              >
                 <q-expansion-item
                   icon="assignment"
                   label="Assignments"
@@ -355,11 +359,17 @@ import { scroll } from "quasar";
 const { getScrollTarget, setScrollPosition } = scroll;
 import { createAvatar } from "@dicebear/avatars";
 import * as botttsStyle from "@dicebear/avatars-bottts-sprites";
+import TICKETSQUERY from "./graphql/tickets.gql";
 export default {
   name: "app",
   components: {
     VeneuLogo,
     ResourceSelector,
+  },
+  apollo: {
+    tickets: {
+      query: TICKETSQUERY,
+    },
   },
   watch: {
     theme: function (val, oldVal) {
