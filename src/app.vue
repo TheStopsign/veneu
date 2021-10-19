@@ -340,7 +340,7 @@
             }"
           >
             <q-page-container class="text-primary">
-              <router-view :me="data.me" style="overflow: hidden" />
+              <router-view :me="data.me" style="overflow: hidden" :key="$route.params._id" />
             </q-page-container>
           </q-scroll-area>
         </div>

@@ -67,7 +67,7 @@ body,
 .q-date,
 .q-tab-panels,
 .q-calendar,
-.q-toggle__inner--falsy .q-toggle__thumb:after,
+.q-toggle__inner--falsy .q-toggle__thumb::after,
 .q-tree__node--selected,
 .q-drawer,
 .q-calendar {

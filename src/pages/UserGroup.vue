@@ -118,7 +118,6 @@ export default {
       deleteModal: false,
     };
   },
-
   methods: {
     getFormattedDate(d) {
       return date.formatDate(d, "MMM Do, YYYY @ h:mma");
