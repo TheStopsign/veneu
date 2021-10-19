@@ -1,6 +1,6 @@
 <template>
-  <div id="first-login">
-    <div class="vertical-center q-px-md spinner-stage">
+  <q-page id="first-login">
+    <div class="q-pa-md spinner-stage">
       <VeneuLogo class="spinner" />
       <ApolloMutation
         :mutation="require('../graphql/FirstLogin.gql')"
@@ -63,7 +63,7 @@
         </template>
       </ApolloMutation>
     </div>
-  </div>
+  </q-page>
 </template>
 
 <script>

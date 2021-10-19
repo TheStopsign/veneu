@@ -3,7 +3,7 @@
     <q-dialog v-model="needsEmail" persistent transition-show="scale" transition-hide="scale">
       <q-card class="bg-teal text-primary" style="width: 300px">
         <q-card-section>
-          <div class="text-h6">A name is required</div>
+          <div class="text-h6">An email is required</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">

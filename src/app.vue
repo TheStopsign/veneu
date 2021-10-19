@@ -129,7 +129,7 @@
             <q-scroll-area
               style="position: absolute; height: 100%; width: 100%"
               :thumb-style="{
-                right: '0rem',
+                right: '-0.5rem',
                 borderRadius: '0.25rem',
                 backgroundColor: 'var(--veneu-blue)',
                 width: '0.25rem',
@@ -137,11 +137,11 @@
               }"
             >
               <div class="row full-width">
-                <q-avatar @click="$router.push({ name: 'Calendar' })" class="q-mt-md q-mx-md">
+                <q-avatar @click="$router.push({ name: 'Calendar' })" class="q-mt-md q-ml-md">
                   <VeneuLogo id="nav-logo" />
                 </q-avatar>
 
-                <h1 class="q-mt-md">veneu</h1>
+                <h1 class="q-mt-md q-mx-md">veneu</h1>
               </div>
               <q-item
                 clickable
@@ -170,7 +170,7 @@
                     class="text-primary"
                     title="Logout"
                     aria-label="Logout"
-                    @click="confirmLogout = true"
+                    @click.stop="confirmLogout = true"
                   />
                   <q-dialog v-model="confirmLogout">
                     <q-card class="q-pa-sm">

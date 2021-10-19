@@ -368,20 +368,20 @@ label {
 }
 
 .spinner {
-  -webkit-animation-name: spinner;
-  -webkit-animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-duration: 8s;
-
   animation-name: spinner;
   animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
   animation-iteration-count: infinite;
   animation-duration: 8s;
 
+  -webkit-animation-name: spinner;
+  -webkit-animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-duration: 8s;
+
+  transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
   -ms-transform-style: preserve-3d;
-  transform-style: preserve-3d;
 }
 
 /* .spinner:hover {
