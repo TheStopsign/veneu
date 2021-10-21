@@ -58,7 +58,17 @@
           {{ !last ? "Searching for QR Code..." : "QR Code found! Keep scanning..." }}
         </div>
       </div>
-      <q-responsive :ratio="16 / 9" style="max-height: 50vh">
+      <div v-if="$q.screen.lt.sm">
+        <video id="captured-screen" autoplay :style="screen_scanning ? '' : 'display: none'"></video>
+        <video
+          v-if="camera_scanning"
+          id="camera-video"
+          autoplay
+          style="display: flex; flex-direction: row"
+          class="q-pa-md neu-convex"
+        ></video>
+      </div>
+      <q-responsive v-else :ratio="16 / 9" style="max-height: 50vh">
         <video id="captured-screen" autoplay :style="screen_scanning ? '' : 'display: none'"></video>
         <video
           v-if="camera_scanning"
