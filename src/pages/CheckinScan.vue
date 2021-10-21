@@ -58,7 +58,7 @@
           {{ !last ? "Searching for QR Code..." : "QR Code found! Keep scanning..." }}
         </div>
       </div>
-      <q-responsive v-if="$q.screen.lt.sm" style="max-height: 50vh; max-width: 100%">
+      <q-responsive v-if="$q.screen.lt.sm" style="height: 50vh; max-width: 100%">
         <video id="captured-screen" autoplay :style="screen_scanning ? '' : 'display: none'"></video>
         <video
           v-if="camera_scanning"
