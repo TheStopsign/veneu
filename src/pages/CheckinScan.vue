@@ -58,7 +58,7 @@
           {{ !last ? "Searching for QR Code..." : "QR Code found! Keep scanning..." }}
         </div>
       </div>
-      <q-responsive :ratio="$q.screen.lt.sm ? undefined : 16 / 9" style="max-height: 50vh; max-width: 100%">
+      <q-responsive v-if="$q.screen.lt.sm" style="max-height: 50vh; max-width: 100%">
         <video id="captured-screen" autoplay :style="screen_scanning ? '' : 'display: none'"></video>
         <video
           v-if="camera_scanning"
@@ -68,7 +68,7 @@
           class="q-pa-md neu-convex"
         ></video>
       </q-responsive>
-      <!-- <q-responsive v-else :ratio="16 / 9" style="max-height: 50vh">
+      <q-responsive v-else :ratio="16 / 9" style="max-height: 50vh">
         <video id="captured-screen" autoplay :style="screen_scanning ? '' : 'display: none'"></video>
         <video
           v-if="camera_scanning"
@@ -77,7 +77,7 @@
           style="display: flex; flex-direction: row"
           class="q-pa-md neu-convex"
         ></video>
-      </q-responsive> -->
+      </q-responsive>
     </div>
     <ApolloSubscribeToMore
       v-if="user"
