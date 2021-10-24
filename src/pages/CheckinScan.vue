@@ -194,7 +194,13 @@ export default {
       let self = this;
       if (navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices
-          .getUserMedia({ video: true, audio: false, frameRate: 24 })
+          .getUserMedia({
+            audio: false,
+            video: {
+              facingMode: "environment",
+            },
+            frameRate: 24,
+          })
           .then((res) => {
             if (res) {
               self.camera_stream = res;
