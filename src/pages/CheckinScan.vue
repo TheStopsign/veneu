@@ -181,6 +181,9 @@ export default {
       this.camera_scanning = false;
       let self = this;
       if (navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        this.video_el.setAttribute("autoplay", "");
+        this.video_el.setAttribute("muted", "");
+        this.video_el.setAttribute("playsinline", "");
         navigator.mediaDevices
           .getUserMedia({
             audio: false,
