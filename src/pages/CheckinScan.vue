@@ -318,6 +318,6 @@ export default {
   background: var(--veneu-red) !important;
 }
 video {
-  filter: hue-rotate(40);
+  filter: hue-rotate(180deg);
 }
 </style>
