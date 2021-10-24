@@ -1,32 +1,32 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
-import AdminOverview from "./components/AdminOverview";
-import AdminUsers from "./components/AdminUsers";
-import Landing from "./pages/Landing";
-import NotFound from "./pages/NotFound";
-import Signup from "./pages/Signup";
-import FirstTimeLogin from "./pages/FirstTimeLogin.vue";
-import Login from "./pages/Login";
-import Calendar from "./pages/Calendar";
-import Timeline from "./pages/Timeline";
-import Course from "./pages/Course.vue";
-import RegistrationSection from "./pages/RegistrationSection.vue";
-import UserGroup from "./pages/UserGroup.vue";
-import Lecture from "./pages/Lecture.vue";
-import Me from "./pages/Me.vue";
+const AdminOverview = () => import("./components/AdminOverview");
+const AdminUsers = () => import("./components/AdminUsers");
+const Landing = () => import("./pages/Landing");
+const NotFound = () => import("./pages/NotFound");
+const Signup = () => import("./pages/Signup");
+const FirstTimeLogin = () => import("./pages/FirstTimeLogin.vue");
+const Login = () => import("./pages/Login");
+const Calendar = () => import("./pages/Calendar");
+const Timeline = () => import("./pages/Timeline");
+const Course = () => import("./pages/Course.vue");
+const RegistrationSection = () => import("./pages/RegistrationSection.vue");
+const UserGroup = () => import("./pages/UserGroup.vue");
+const Lecture = () => import("./pages/Lecture.vue");
+const Me = () => import("./pages/Me.vue");
 
-import CreateCourse from "./pages/CreateCourse.vue";
-import CreateUserGroup from "./pages/CreateUserGroup.vue";
-import CreateRegistrationSection from "./pages/CreateRegistrationSection.vue";
-import CreateLecture from "./pages/CreateLecture.vue";
-import CreateVideo from "./pages/CreateVideo.vue";
-import Settings from "./components/Settings.vue";
+const CreateCourse = () => import("./pages/CreateCourse.vue");
+const CreateUserGroup = () => import("./pages/CreateUserGroup.vue");
+const CreateRegistrationSection = () => import("./pages/CreateRegistrationSection.vue");
+const CreateLecture = () => import("./pages/CreateLecture.vue");
+const CreateVideo = () => import("./pages/CreateVideo.vue");
+const Settings = () => import("./components/Settings.vue");
 
-import CheckinShow from "./pages/CheckinShow.vue";
-import CheckinScan from "./pages/CheckinScan.vue";
+const CheckinShow = () => import("./pages/CheckinShow.vue");
+const CheckinScan = () => import("./pages/CheckinScan.vue");
 
-import Watch from "./pages/Watch.vue";
+const Watch = () => import("./pages/Watch.vue");
 
 Vue.use(VueRouter);
 
