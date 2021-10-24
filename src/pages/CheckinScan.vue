@@ -53,22 +53,10 @@
         </div>
       </div>
       <q-responsive v-if="$q.screen.lt.sm" style="height: 50vh; max-width: 100%">
-        <video
-          id="camera-video"
-          autoplay
-          style="display: flex; flex-direction: row"
-          class="q-pa-md neu-convex"
-          :style="camera_scanning ? '' : 'display: none'"
-        ></video>
+        <video id="captured-camera" autoplay :style="camera_scanning ? '' : 'display: none'"></video>
       </q-responsive>
       <q-responsive v-else :ratio="16 / 9" style="max-height: 50vh">
-        <video
-          id="camera-video"
-          autoplay
-          style="display: flex; flex-direction: row"
-          class="q-pa-md neu-convex"
-          :style="camera_scanning ? '' : 'display: none'"
-        ></video>
+        <video id="captured-camera" autoplay :style="camera_scanning ? '' : 'display: none'"></video>
       </q-responsive>
     </div>
     <ApolloSubscribeToMore
@@ -133,7 +121,7 @@ export default {
     this.canvas = document.createElement("canvas");
   },
   mounted() {
-    this.video_el = document.getElementById("camera-video");
+    this.video_el = document.getElementById("captured-camera");
   },
   beforeDestroy() {
     this.handleStopCamScan();
@@ -190,7 +178,7 @@ export default {
       this.last = "";
     },
     async handleStartCamScan() {
-      this.camera_scanning = null;
+      this.camera_scanning = false;
       let self = this;
       if (navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices
@@ -199,7 +187,6 @@ export default {
             video: {
               facingMode: "environment",
             },
-            frameRate: 24,
           })
           .then((res) => {
             if (res) {
@@ -217,7 +204,7 @@ export default {
             }
           })
           .catch((err) => {
-            console.log(err);
+            self.handleStopCamScan();
           });
       }
     },
