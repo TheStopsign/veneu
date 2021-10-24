@@ -18,40 +18,41 @@
       </q-card>
     </q-dialog>
     <div class="text-center" style="display: flex; flex-direction: column; height: 100%">
-      <q-btn
-        v-if="$q.platform.is.desktop && false === screen_scanning && !camera_scanning"
-        @click="handleStartScreenScan()"
-        icon="monitor"
-        icon-right="qr_code_scanner"
-        size="xl"
-        label="Screen Scan"
-        class="row"
-      />
-      <q-btn
-        v-else-if="true === screen_scanning"
-        @click="handleStopScreenScan()"
-        icon-right="stop"
-        size="xl"
-        label="Stop"
-        class="row"
-      />
-      <q-btn
-        v-if="has_camera && false === screen_scanning && !camera_scanning"
-        class="q-mt-md row"
-        @click="handleStartCamScan()"
-        icon="photo_camera"
-        icon-right="qr_code_scanner"
-        size="xl"
-        label="Camera Scan"
-      />
-      <q-btn
-        v-else-if="camera_scanning"
-        class="q-mt-md row"
-        @click="handleStopCamScan()"
-        icon-right="stop"
-        size="xl"
-        label="Stop"
-      />
+      <div class="row full-width" style="justify-content: center">
+        <q-btn
+          v-if="$q.platform.is.desktop && false === screen_scanning && !camera_scanning"
+          @click="handleStartScreenScan()"
+          icon="monitor"
+          icon-right="qr_code_scanner"
+          size="xl"
+          label="Screen Scan"
+        />
+        <q-btn
+          v-else-if="true === screen_scanning"
+          @click="handleStopScreenScan()"
+          icon-right="stop"
+          size="xl"
+          label="Stop"
+          color="red"
+        />
+        <q-btn
+          v-if="has_camera && false === screen_scanning && !camera_scanning"
+          class="q-ml-md"
+          @click="handleStartCamScan()"
+          icon="photo_camera"
+          icon-right="qr_code_scanner"
+          size="xl"
+          label="Camera Scan"
+        />
+        <q-btn
+          v-else-if="camera_scanning"
+          @click="handleStopCamScan()"
+          icon-right="stop"
+          size="xl"
+          label="Stop"
+          color="red"
+        />
+      </div>
       <div v-if="true === screen_scanning || camera_scanning" style="text-align: left" class="q-my-md">
         <q-icon size="xl" :name="!last ? 'search' : 'qr_code'" style="display: inline-block" class="q-mr-sm" />
         <div style="display: inline-block">
