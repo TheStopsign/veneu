@@ -21,7 +21,7 @@
             colorLight="#fff"
             colorDark="#1a4974"
             :margin="12"
-            :style="{ height: '100%', width: '100%' }"
+            style="height: 100%; width: 100%; border-radius: 1.5rem"
             class="q-pa-md"
             logoSrc="/img/icons/android-chrome-512x512.png"
             :logoScale="0.125"
