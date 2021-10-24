@@ -82,6 +82,7 @@
 <script>
 import QrScanner from "qr-scanner";
 QrScanner.WORKER_PATH = "../../qr-scanner-worker.min.js";
+console.log(QrScanner);
 import gql from "graphql-tag";
 export default {
   props: {
@@ -315,5 +316,8 @@ export default {
 }
 .scanning.no-qr {
   background: var(--veneu-red) !important;
+}
+video {
+  filter: hue-rotate(40);
 }
 </style>
