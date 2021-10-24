@@ -317,7 +317,4 @@ export default {
 .scanning.no-qr {
   background: var(--veneu-red) !important;
 }
-video {
-  filter: hue-rotate(180deg);
-}
 </style>
