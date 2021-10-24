@@ -20,8 +20,7 @@
     <div class="text-center" style="display: flex; flex-direction: column; height: 100%">
       <div class="row full-width" style="justify-content: center">
         <q-btn
-          v-if="$q.platform.is.desktop && !camera_scanning"
-          class="q-mx-md q-mt-md"
+          v-if="$q.platform.is.desktop && false === screen_scanning"
           @click="handleStartScreenScan()"
           icon="monitor"
           icon-right="qr_code_scanner"
@@ -29,50 +28,29 @@
           label="Screen Scan"
         />
         <q-btn
-          v-if="has_camera && !camera_scanning"
-          class="q-mx-md q-mt-md"
-          @click="handleStartCamScan()"
-          icon="photo_camera"
-          icon-right="qr_code_scanner"
-          size="xl"
-          label="Camera Scan"
-        />
-        <q-btn
-          v-else-if="camera_scanning"
-          @click="handleStopCamScan()"
+          v-else-if="true === screen_scanning"
+          @click="handleStopScreenScan()"
           icon-right="stop"
           size="xl"
           label="Stop"
           color="red"
         />
       </div>
-      <div v-if="camera_scanning" style="text-align: left" class="q-my-md">
+      <div v-if="true === screen_scanning" style="text-align: left" class="q-my-md">
         <q-icon size="xl" :name="!last ? 'search' : 'qr_code'" style="display: inline-block" class="q-mr-sm" />
         <div style="display: inline-block">
           {{ !last ? "Searching for QR Code..." : "QR Code found! Keep scanning..." }}
         </div>
       </div>
       <q-responsive v-if="$q.screen.lt.sm" style="height: 50vh; max-width: 100%">
-        <video
-          id="camera-video"
-          autoplay
-          style="display: flex; flex-direction: row"
-          class="q-pa-md neu-convex"
-          :style="camera_scanning ? '' : 'display: none'"
-        ></video>
+        <video id="captured-screen" autoplay :style="screen_scanning ? '' : 'display: none'"></video>
       </q-responsive>
       <q-responsive v-else :ratio="16 / 9" style="max-height: 50vh">
-        <video
-          id="camera-video"
-          autoplay
-          style="display: flex; flex-direction: row"
-          class="q-pa-md neu-convex"
-          :style="camera_scanning ? '' : 'display: none'"
-        ></video>
+        <video id="captured-screen" autoplay :style="screen_scanning ? '' : 'display: none'"></video>
       </q-responsive>
     </div>
     <ApolloSubscribeToMore
-      v-if="user && camera_scanning"
+      v-if="user && screen_scanning"
       :document="
         (gql) =>
           gql`
@@ -101,11 +79,10 @@ export default {
   },
   data() {
     return {
+      screen_scanning: false,
+      screen_stream: null,
+      screen_scanner: null,
       last: "",
-      has_camera: false,
-      camera_scanning: false,
-      camera_stream: null,
-      camera_scanner: null,
       user: null,
       needsEmail: true,
       email: "",
@@ -126,17 +103,13 @@ export default {
 
     var self = this;
 
-    QrScanner.hasCamera().then((res) => {
-      self.has_camera = true;
-    });
-
     this.canvas = document.createElement("canvas");
   },
   mounted() {
-    this.video_el = document.getElementById("camera-video");
+    this.video_el = document.getElementById("captured-screen");
   },
   beforeDestroy() {
-    this.handleStopCamScan();
+    this.handleStopScreenScan();
   },
   methods: {
     isValidEmail(val) {
@@ -189,25 +162,38 @@ export default {
     async handleDecodeError() {
       this.last = "";
     },
-    async handleStartCamScan() {
-      this.camera_scanning = null;
+    async createIntervalScanner() {
+      this.screen_scanning = true;
+      this.video_el.srcObject = this.screen_stream;
+      this.screen_scanner = setInterval(() => {
+        if (this.screen_stream) {
+          QrScanner.scanImage(this.video_el, undefined, this.engine, this.canvas)
+            .then((result) => this.handleDecodeQR(result))
+            .catch((error) => this.handleDecodeError());
+        } else {
+          this.handleStopScreenScan();
+        }
+      }, 200);
+    },
+    async handleStartScreenScan() {
+      this.screen_scanning = null;
       let self = this;
-      if (navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      if (navigator && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
         navigator.mediaDevices
-          .getUserMedia({ video: true, audio: false, frameRate: 24 })
+          .getDisplayMedia({ video: true, audio: false, frameRate: 24 })
           .then((res) => {
             if (res) {
-              self.camera_stream = res;
+              self.screen_stream = res;
               QrScanner.createQrEngine(QrScanner.WORKER_PATH)
                 .then((engine) => {
                   self.engine = engine;
                   self.createIntervalScanner();
                 })
                 .catch((err) => {
-                  self.handleStopCamScan();
+                  self.handleStopScreenScan();
                 });
             } else {
-              self.handleStopCamScan();
+              self.handleStopScreenScan();
             }
           })
           .catch((err) => {
@@ -215,15 +201,15 @@ export default {
           });
       }
     },
-    async handleStopCamScan() {
-      this.camera_scanning = false;
-      if (this.camera_scanner) {
-        clearInterval(this.camera_scanner);
-        this.camera_scanner = null;
+    async handleStopScreenScan() {
+      this.screen_scanning = false;
+      if (this.screen_scanner) {
+        clearInterval(this.screen_scanner);
+        this.screen_scanner = null;
       }
-      if (this.camera_stream) {
-        this.camera_stream.getTracks().forEach((track) => track.stop());
-        this.camera_stream = null;
+      if (this.screen_stream) {
+        this.screen_stream.getTracks().forEach((track) => track.stop());
+        this.screen_stream = null;
       }
       this.video_el.srcObject = null;
       if (this.engine) {
@@ -232,22 +218,6 @@ export default {
       }
       this.last = "";
       this.previous = [];
-    },
-    async createIntervalScanner() {
-      this.camera_scanning = true;
-      this.video_el.srcObject = this.camera_stream;
-      this.camera_scanner = setInterval(() => {
-        if (this.camera_stream) {
-          QrScanner.scanImage(this.video_el, undefined, this.engine, this.canvas)
-            .then((result) => this.handleDecodeQR(result))
-            .catch((error) => this.handleDecodeError());
-        } else {
-          this.handleStopCamScan();
-        }
-      }, 200);
-    },
-    async handleStartScreenScan() {
-      window.open("/checkin/scan/desktop", "_blank", "location=yes,height=480,width=640,scrollbars=yes,status=yes");
     },
     async sendClaim(code, checkin) {
       this.$apollo.mutate({
@@ -293,16 +263,19 @@ export default {
         },
       }
     ) {
+      window.focus();
       this.$q.notify({
         progress: true,
         message: "Your attendance has been recorded",
         icon: "event_seat",
         color: "primary",
       });
-      window.focus();
-      if (this.camera_scanning) {
-        this.handleStopCamScan();
+      if (this.screen_scanning) {
+        this.handleStopScreenScan();
       }
+      setTimeout(function () {
+        window.close();
+      }, 5000);
     },
   },
 };

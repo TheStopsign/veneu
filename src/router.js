@@ -25,6 +25,7 @@ const Settings = () => import("./components/Settings.vue");
 
 const CheckinShow = () => import("./pages/CheckinShow.vue");
 const CheckinScan = () => import("./pages/CheckinScan.vue");
+const DesktopScan = () => import("./pages/DesktopScan.vue");
 
 const Watch = () => import("./pages/Watch.vue");
 
@@ -132,6 +133,11 @@ const router = new VueRouter({
       path: "/checkin/scan",
       name: "CheckinScan",
       component: CheckinScan,
+    },
+    {
+      path: "/checkin/scan/desktop",
+      name: "DesktopScan",
+      component: DesktopScan,
     },
     {
       path: "/firstlogin/:access_code",
