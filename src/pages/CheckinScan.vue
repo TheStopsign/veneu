@@ -162,17 +162,20 @@ export default {
             });
             if (this.previous.length > 5) {
               this.previous.splice(0, 1);
-              this.sendReservation(host, this.previous);
+              await this.sendReservation(host, this.previous);
             }
-            this.sendClaim(code, checkin);
+            await this.sendClaim(code, checkin);
           }
 
           this.last = code;
+          return code;
         } else {
           this.last = "";
+          return null;
         }
       } catch (error) {
         this.last = "";
+        return null;
       }
     },
     async handleDecodeError() {
@@ -195,6 +198,8 @@ export default {
           .then((res) => {
             if (res) {
               self.camera_stream = res;
+              self.canvas.height = res.getVideoTracks()[0].getSettings().height;
+              self.canvas.width = res.getVideoTracks()[0].getSettings().width;
               QrScanner.createQrEngine(QrScanner.WORKER_PATH)
                 .then((engine) => {
                   self.engine = engine;
@@ -233,15 +238,16 @@ export default {
     async createIntervalScanner() {
       this.camera_scanning = true;
       this.video_el.srcObject = this.camera_stream;
-      this.camera_scanner = setInterval(() => {
-        if (this.camera_stream) {
-          QrScanner.scanImage(this.video_el, undefined, this.engine, this.canvas)
-            .then((result) => this.handleDecodeQR(result))
-            .catch((error) => this.handleDecodeError());
-        } else {
-          this.handleStopCamScan();
-        }
-      }, 200);
+      setTimeout(this.cycle, 500);
+    },
+    async cycle() {
+      let self = this;
+      if (self.camera_scanning) {
+        await QrScanner.scanImage(self.video_el, undefined, self.engine, self.canvas)
+          .then((result) => self.handleDecodeQR(result))
+          .catch((error) => self.handleDecodeError());
+        self.cycle();
+      }
     },
     async handleStartScreenScan() {
       window.open("/checkin/scan/desktop", "_blank", "location=yes,height=480,width=640,scrollbars=yes,status=yes");

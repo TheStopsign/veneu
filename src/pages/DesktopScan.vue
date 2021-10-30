@@ -146,17 +146,20 @@ export default {
             });
             if (this.previous.length > 5) {
               this.previous.splice(0, 1);
-              this.sendReservation(host, this.previous);
+              await this.sendReservation(host, this.previous);
             }
-            this.sendClaim(code, checkin);
+            await this.sendClaim(code, checkin);
           }
 
           this.last = code;
+          return code;
         } else {
           this.last = "";
+          return null;
         }
       } catch (error) {
         this.last = "";
+        return null;
       }
     },
     async handleDecodeError() {
@@ -165,15 +168,16 @@ export default {
     async createIntervalScanner() {
       this.screen_scanning = true;
       this.video_el.srcObject = this.screen_stream;
-      this.screen_scanner = setInterval(() => {
-        if (this.screen_stream) {
-          QrScanner.scanImage(this.video_el, undefined, this.engine, this.canvas)
-            .then((result) => this.handleDecodeQR(result))
-            .catch((error) => this.handleDecodeError());
-        } else {
-          this.handleStopScreenScan();
-        }
-      }, 200);
+      setTimeout(this.cycle, 500);
+    },
+    async cycle() {
+      let self = this;
+      if (self.screen_scanning) {
+        await QrScanner.scanImage(self.video_el, undefined, self.engine, self.canvas)
+          .then((result) => self.handleDecodeQR(result))
+          .catch((error) => self.handleDecodeError());
+        self.cycle();
+      }
     },
     async handleStartScreenScan() {
       this.screen_scanning = null;
@@ -184,6 +188,8 @@ export default {
           .then((res) => {
             if (res) {
               self.screen_stream = res;
+              self.canvas.height = res.getVideoTracks()[0].getSettings().height;
+              self.canvas.width = res.getVideoTracks()[0].getSettings().width;
               QrScanner.createQrEngine(QrScanner.WORKER_PATH)
                 .then((engine) => {
                   self.engine = engine;
