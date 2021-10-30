@@ -10,7 +10,7 @@
     <div v-if="checkinQuery.error">Error...</div>
     <div v-if="checkinQuery.data && checkinQuery.data.checkin" id="checkinloaded">
       <div class="row full-width justify-center">
-        <q-responsive class="neu-convex" style="width: 50vh" :ratio="1">
+        <q-responsive style="width: 50vh" :ratio="1">
           <vue-qr
             :key="current.code"
             :text="getBaseUrl() + '/checkin/scan?code=' + current.code + '&checkin=' + $route.params._id"
@@ -18,7 +18,7 @@
             backgroundColor="#fff"
             colorLight="#fff"
             colorDark="#1a4974"
-            :margin="12"
+            :margin="24"
             style="height: 100%; width: 100%; border-radius: 1.5rem"
             class="q-pa-md"
           />
