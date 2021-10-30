@@ -13,9 +13,7 @@
         <q-responsive class="neu-convex" style="width: 50vh" :ratio="1">
           <vue-qr
             :key="current.code"
-            :text="
-              getBaseUrl() + '/checkin/scan?host=' + me._id + '&code=' + current.code + '&checkin=' + $route.params._id
-            "
+            :text="getBaseUrl() + '/checkin/scan?code=' + current.code + '&checkin=' + $route.params._id"
             :size="512"
             backgroundColor="#fff"
             colorLight="#fff"
@@ -23,9 +21,6 @@
             :margin="12"
             style="height: 100%; width: 100%; border-radius: 1.5rem"
             class="q-pa-md"
-            logoSrc="/img/icons/android-chrome-512x512.png"
-            :logoScale="0.125"
-            :logoCornerRadius="20"
           />
         </q-responsive>
       </div>
@@ -98,8 +93,8 @@
         :document="
           (gql) =>
             gql`
-              subscription reservedTicket($host: ID!) {
-                reservedTicket(host: $host) {
+              subscription reservedTicket($checkin: ID!) {
+                reservedTicket(checkin: $checkin) {
                   code
                   user
                   email
@@ -107,7 +102,7 @@
               }
             `
         "
-        :variables="{ host: me._id }"
+        :variables="{ checkin: $route.params._id }"
         :updateQuery="onReserved"
       />
       <q-dialog v-model="deleteModal" persistent>

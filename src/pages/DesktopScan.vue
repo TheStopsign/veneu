@@ -135,7 +135,6 @@ export default {
         let url = new URL(result);
         let code = url.searchParams.get("code");
         let checkin = url.searchParams.get("checkin");
-        let host = url.searchParams.get("host");
         if (code && code.length == 24) {
           if (this.previous[this.previous.length - 1] != code) {
             this.previous.push({
@@ -146,7 +145,7 @@ export default {
             });
             if (this.previous.length > 5) {
               this.previous.splice(0, 1);
-              await this.sendReservation(host, this.previous);
+              await this.sendReservation(checkin, this.previous);
             }
             await this.sendClaim(code, checkin);
           }
@@ -244,11 +243,11 @@ export default {
         },
       });
     },
-    async sendReservation(host, tickets) {
+    async sendReservation(checkin, tickets) {
       this.$apollo.mutate({
         mutation: gql`
-          mutation reserveTicket($host: ID!, $tickets: [TicketInput!]!) {
-            reserveTicket(host: $host, tickets: $tickets) {
+          mutation reserveTicket($checkin: ID!, $tickets: [TicketInput!]!) {
+            reserveTicket(checkin: $checkin, tickets: $tickets) {
               code
               user
               email
@@ -256,7 +255,7 @@ export default {
           }
         `,
         variables: {
-          host,
+          checkin,
           tickets,
         },
       });

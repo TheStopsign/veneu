@@ -25,12 +25,12 @@ module.exports = gql`
   extend type Mutation {
     claimTicket(code: String!, user: ID!, email: String!, checkin: ID!): Ticket!
     approveTicket(code: String!, user: ID!, email: String!, checkin: ID!): Ticket!
-    reserveTicket(host: ID!, tickets: [TicketInput!]!): [Ticket!]!
+    reserveTicket(checkin: ID!, tickets: [TicketInput!]!): [Ticket!]!
   }
 
   extend type Subscription {
     claimedTicket(code: String!): Ticket!
     approvedTicket(user: ID!): Ticket!
-    reservedTicket(host: ID!): [Ticket!]!
+    reservedTicket(checkin: ID!): [Ticket!]!
   }
 `;

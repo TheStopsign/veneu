@@ -53,10 +53,20 @@
         </div>
       </div>
       <q-responsive v-if="$q.screen.lt.sm" style="height: 50vh; max-width: 100%">
-        <video id="captured-camera" autoplay :style="camera_scanning ? '' : 'display: none'"></video>
+        <video
+          id="captured-camera"
+          v-if="camera_scanning"
+          autoplay
+          :style="camera_scanning ? '' : 'display: none'"
+        ></video>
       </q-responsive>
       <q-responsive v-else :ratio="16 / 9" style="max-height: 50vh">
-        <video id="captured-camera" autoplay :style="camera_scanning ? '' : 'display: none'"></video>
+        <video
+          id="captured-camera"
+          v-if="camera_scanning"
+          autoplay
+          :style="camera_scanning ? '' : 'display: none'"
+        ></video>
       </q-responsive>
     </div>
     <ApolloSubscribeToMore
@@ -82,7 +92,6 @@
 <script>
 import QrScanner from "qr-scanner";
 QrScanner.WORKER_PATH = "../../qr-scanner-worker.min.js";
-console.log(QrScanner);
 import gql from "graphql-tag";
 export default {
   props: {
@@ -121,9 +130,7 @@ export default {
 
     this.canvas = document.createElement("canvas");
   },
-  mounted() {
-    this.video_el = document.getElementById("captured-camera");
-  },
+  mounted() {},
   beforeDestroy() {
     this.handleStopCamScan();
   },
@@ -151,7 +158,6 @@ export default {
         let url = new URL(result);
         let code = url.searchParams.get("code");
         let checkin = url.searchParams.get("checkin");
-        let host = url.searchParams.get("host");
         if (code && code.length == 24) {
           if (this.previous[this.previous.length - 1] != code) {
             this.previous.push({
@@ -162,7 +168,7 @@ export default {
             });
             if (this.previous.length > 5) {
               this.previous.splice(0, 1);
-              await this.sendReservation(host, this.previous);
+              await this.sendReservation(checkin, this.previous);
             }
             await this.sendClaim(code, checkin);
           }
@@ -182,52 +188,30 @@ export default {
       this.last = "";
     },
     async handleStartCamScan() {
-      this.camera_scanning = false;
+      this.camera_scanning = true;
       let self = this;
-      if (navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        this.video_el.setAttribute("autoplay", "");
-        this.video_el.setAttribute("muted", "");
-        this.video_el.setAttribute("playsinline", "");
-        navigator.mediaDevices
-          .getUserMedia({
-            audio: false,
-            video: {
-              facingMode: "environment",
-            },
-          })
-          .then((res) => {
-            if (res) {
-              self.camera_stream = res;
-              self.canvas.height = res.getVideoTracks()[0].getSettings().height;
-              self.canvas.width = res.getVideoTracks()[0].getSettings().width;
-              QrScanner.createQrEngine(QrScanner.WORKER_PATH)
-                .then((engine) => {
-                  self.engine = engine;
-                  self.createIntervalScanner();
-                })
-                .catch((err) => {
-                  self.handleStopCamScan();
-                });
-            } else {
-              self.handleStopCamScan();
-            }
-          })
-          .catch((err) => {
-            self.handleStopCamScan();
-          });
-      }
+      this.$nextTick(() => {
+        var video = document.getElementById("captured-camera");
+        self.camera_scanner = new QrScanner(
+          video,
+          (result) => this.handleDecodeQR(result),
+          (error) => this.handleDecodeError()
+        );
+        self.camera_scanner.setGrayscaleWeights(26, 73, 116, { useIntegerApproximation: true });
+        self.camera_scanner.start();
+      });
     },
     async handleStopCamScan() {
       this.camera_scanning = false;
       if (this.camera_scanner) {
-        clearInterval(this.camera_scanner);
+        this.camera_scanner.stop();
+        this.camera_scanner.destroy();
         this.camera_scanner = null;
       }
       if (this.camera_stream) {
         this.camera_stream.getTracks().forEach((track) => track.stop());
         this.camera_stream = null;
       }
-      this.video_el.srcObject = null;
       if (this.engine) {
         this.engine.terminate();
         this.engine = null;
@@ -271,11 +255,11 @@ export default {
         },
       });
     },
-    async sendReservation(host, tickets) {
+    async sendReservation(checkin, tickets) {
       this.$apollo.mutate({
         mutation: gql`
-          mutation reserveTicket($host: ID!, $tickets: [TicketInput!]!) {
-            reserveTicket(host: $host, tickets: $tickets) {
+          mutation reserveTicket($checkin: ID!, $tickets: [TicketInput!]!) {
+            reserveTicket(checkin: $checkin, tickets: $tickets) {
               code
               user
               email
@@ -283,7 +267,7 @@ export default {
           }
         `,
         variables: {
-          host,
+          checkin,
           tickets,
         },
       });

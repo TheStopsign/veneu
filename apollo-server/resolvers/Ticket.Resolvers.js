@@ -21,8 +21,8 @@ module.exports = (pubsub) => ({
         .then((ticket) => pubsub.publish("APPROVED_TICKET", { approvedTicket: { ticket } }))
         .then((done) => ticket);
     },
-    reserveTicket: (parent, { host, tickets }, { requester, models, loaders, pubsub }, info) => {
-      return pubsub.publish("RESERVED_TICKET", { reservedTicket: { host, tickets } }).then((done) => tickets);
+    reserveTicket: (parent, { checkin, tickets }, { requester, models, loaders, pubsub }, info) => {
+      return pubsub.publish("RESERVED_TICKET", { reservedTicket: { checkin, tickets } }).then((done) => tickets);
     },
   },
   Subscription: {
@@ -57,7 +57,7 @@ module.exports = (pubsub) => ({
     reservedTicket: {
       subscribe: withFilter(
         () => pubsub.asyncIterator(["RESERVED_TICKET"]),
-        ({ reservedTicket: { host } }, variables) => host == variables.host
+        ({ reservedTicket: { checkin } }, variables) => checkin == variables.checkin
       ),
       resolve: ({ reservedTicket: { tickets } }) => tickets,
     },
