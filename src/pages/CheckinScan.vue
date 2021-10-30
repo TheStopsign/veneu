@@ -135,6 +135,14 @@ export default {
     this.handleStopCamScan();
   },
   methods: {
+    errorMsg(error) {
+      this.$q.notify({
+        progress: true,
+        message: error,
+        icon: "error",
+        color: "negative",
+      });
+    },
     isValidEmail(val) {
       const emailPattern =
         /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
@@ -176,15 +184,18 @@ export default {
           this.last = code;
           return code;
         } else {
+          this.errorMsg("Failed to find code");
           this.last = "";
           return null;
         }
       } catch (error) {
         this.last = "";
+        this.errorMsg("catch" + error);
         return null;
       }
     },
-    async handleDecodeError() {
+    async handleDecodeError(error) {
+      this.errorMsg("hde" + error);
       this.last = "";
     },
     async handleStartCamScan() {
@@ -195,7 +206,7 @@ export default {
         self.camera_scanner = new QrScanner(
           video,
           (result) => this.handleDecodeQR(result),
-          (error) => this.handleDecodeError()
+          (error) => this.handleDecodeError(error)
         );
         self.camera_scanner.setGrayscaleWeights(26, 73, 116, { useIntegerApproximation: true });
         self.camera_scanner.start();
