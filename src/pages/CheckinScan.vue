@@ -52,19 +52,30 @@
           {{ !last ? "Searching for QR Code..." : "QR Code found! Keep scanning..." }}
         </div>
       </div>
-      <q-responsive v-if="$q.screen.lt.sm" style="height: 50vh; max-width: 100%">
+      <q-responsive
+        v-if="$q.platform.is.mobile"
+        :ratio="video_el && video_el.scrObject ? video_el.scrObject.width / video_el.scrObject.height : undefined"
+        :style="video_el && video_el.scrObject ? 'max-height: 50vh' : 'height: 50vh; max-width: 100%'"
+      >
         <video
           id="captured-camera"
+          class="neu-convex"
           v-if="camera_scanning"
           autoplay
           :style="camera_scanning ? '' : 'display: none'"
         ></video>
       </q-responsive>
-      <q-responsive v-else :ratio="16 / 9" style="max-height: 50vh">
+      <q-responsive
+        v-else
+        :ratio="video_el && video_el.scrObject ? video_el.scrObject.width / video_el.scrObject.height : 16 / 9"
+        style="max-height: 50vh"
+      >
         <video
           id="captured-camera"
+          class="neu-convex"
           v-if="camera_scanning"
           autoplay
+          style="width: unset"
           :style="camera_scanning ? '' : 'display: none'"
         ></video>
       </q-responsive>
@@ -306,5 +317,9 @@ export default {
 }
 .scanning.no-qr {
   background: var(--veneu-red) !important;
+}
+
+.q-responsive__content > * {
+  width: unset !important;
 }
 </style>
