@@ -21,7 +21,22 @@
             :margin="24"
             style="height: 100%; width: 100%; border-radius: inherit"
           />
+          <div
+            class="absolute-full items-center justify-center row anim"
+            :class="qr_hidden ? 'lockview' : ''"
+            style="z-index: 999; border-radius: inherit"
+          >
+            <q-icon v-if="qr_hidden" name="visibility_off" size="4rem" style="cursor: unset" />
+          </div>
         </q-responsive>
+      </div>
+      <div class="row full-width justify-center q-mt-xl">
+        <q-btn
+          :label="qr_hidden ? 'Show QR' : 'Hide QR'"
+          size="md"
+          icon-right="qr_code_2"
+          @click="qr_hidden = !qr_hidden"
+        />
       </div>
       <div class="row full-width justify-center q-mt-xl">
         <div v-if="$q.platform.is.mobile">
@@ -67,7 +82,7 @@
           </div>
         </div>
       </div>
-      <div class="row full-width justify-center">
+      <div class="row full-width justify-center q-mt-lg">
         <div class="dangerzone">
           <q-btn label="Delete" size="md" icon-right="delete" class="bg-red text-white" @click="deleteModal = true" />
         </div>
@@ -133,6 +148,7 @@ export default {
   components: { VueQr },
   data() {
     return {
+      qr_hidden: true,
       tickets: null,
       current: null,
       next: null,
@@ -339,5 +355,8 @@ export default {
 #seatsiconscroll {
   overflow-y: auto;
   max-height: 20rem;
+}
+.q-icon {
+  width: unset;
 }
 </style>

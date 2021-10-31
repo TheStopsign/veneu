@@ -1,7 +1,7 @@
 <template>
-  <q-page id="me-page">
+  <q-page id="me-page" style="max-width: 60rem; margin: auto">
     <h1 class="q-mt-lg q-mx-md">{{ me.first_name }} {{ me.last_name }}</h1>
-    <p class="q-mt-md q-mx-md">{{ me.email }}</p>
+    <h3 class="q-mt-md q-mx-md">{{ me.email }}</h3>
   </q-page>
 </template>
 

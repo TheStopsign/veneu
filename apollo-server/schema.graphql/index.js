@@ -22,6 +22,16 @@ const linkSchema = gql`
     UNKNOWN
   }
 
+  enum PhotoType {
+    DATAURL
+    BOTS
+  }
+
+  type Photo {
+    photoType: PhotoType
+    value: String
+  }
+
   enum WeekDay {
     MONDAY
     TUESDAY
