@@ -25,7 +25,7 @@
           @click="handleStartScreenScan()"
           icon="monitor"
           icon-right="qr_code_scanner"
-          size="xl"
+          size="lg"
           label="Screen Scan"
         />
         <q-btn
@@ -34,14 +34,14 @@
           @click="handleStartCamScan()"
           icon="photo_camera"
           icon-right="qr_code_scanner"
-          size="xl"
+          size="lg"
           label="Camera Scan"
         />
         <q-btn
           v-else-if="camera_scanning"
           @click="handleStopCamScan()"
           icon-right="stop"
-          size="xl"
+          size="lg"
           label="Stop"
           color="red"
         />

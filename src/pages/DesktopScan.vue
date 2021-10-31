@@ -24,14 +24,14 @@
           @click="handleStartScreenScan()"
           icon="monitor"
           icon-right="qr_code_scanner"
-          size="xl"
+          size="lg"
           label="Screen Scan"
         />
         <q-btn
           v-else-if="true === screen_scanning"
           @click="handleStopScreenScan()"
           icon-right="stop"
-          size="xl"
+          size="lg"
           label="Stop"
           color="red"
         />
