@@ -1,8 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
-const AdminOverview = () => import("./components/AdminOverview");
-const AdminUsers = () => import("./components/AdminUsers");
 const Landing = () => import("./pages/Landing");
 const NotFound = () => import("./pages/NotFound");
 const Signup = () => import("./pages/Signup");
@@ -33,22 +31,6 @@ Vue.use(VueRouter);
 
 const router = new VueRouter({
   routes: [
-    {
-      path: "/admin",
-      name: "AdminOverview",
-      component: AdminOverview,
-      meta: {
-        auth: true,
-      },
-    },
-    {
-      path: "/admin/users",
-      name: "AdminUsers",
-      component: AdminUsers,
-      meta: {
-        auth: true,
-      },
-    },
     {
       path: "/calendar",
       name: "Calendar",
