@@ -8,6 +8,7 @@ module.exports = gql`
     user: ID!
     email: String!
     checkin: Checkin!
+    created_at: Date!
   }
 
   input TicketInput {

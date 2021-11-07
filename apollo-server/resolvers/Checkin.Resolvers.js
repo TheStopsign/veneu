@@ -15,13 +15,27 @@ module.exports = (pubsub) => ({
     },
     checkins: async (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readMany({ creator: requester._id, type: "Checkin" }, { requester, models, loaders, pubsub });
+      return readMany(
+        {
+          $or: [{ creator: requester._id }, { auths: { $in: requester.auths.map((a) => a._id) } }],
+          type: "Checkin",
+        },
+        { requester, models, loaders, pubsub }
+      );
     },
   },
   Mutation: {
     createCheckin: async (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return createOne({ creator: requester._id, type: "Checkin" }, { requester, models, loaders, pubsub });
+      return createOne(
+        {
+          creator: requester._id,
+          parent_resource: requester._id,
+          parent_resource_type: "User",
+          type: "Checkin",
+        },
+        { requester, models, loaders, pubsub }
+      );
     },
     deleteCheckin: async (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");

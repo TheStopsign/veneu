@@ -56,14 +56,6 @@ module.exports = (pubsub) => {
     .post("save", function () {
       if (this.wasNew) {
         Promise.all([
-          mongoose.model("User").updateOne(
-            {
-              _id: this.creator,
-            },
-            {
-              $addToSet: { checkins: this._id },
-            }
-          ),
           mongoose
             .model("Auth")
             .create({

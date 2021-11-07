@@ -57,11 +57,22 @@ module.exports = (pubsub) => ({
         (requester && !requester.auths.find((a) => ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)))
       )
         throw new ForbiddenError("Not allowed");
-      return updateOne(
-        { _id, type: "Lecture" },
-        { $addToSet: { checkins: { $each: newcheckins } } },
-        { requester, models, loaders, pubsub }
-      );
+
+      return [
+        updateOne(
+          { _id, type: "Lecture" },
+          { $addToSet: { checkins: { $each: newcheckins } } },
+          { requester, models, loaders, pubsub }
+        ),
+        updateOne(
+          { _id: { $in: newcheckins }, type: "Checkin" },
+          {
+            parent_resource: _id,
+            parent_resource_type: "Lecture",
+          },
+          { requester, models, loaders, pubsub }
+        ),
+      ][0];
     },
     deleteLecture: async (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");

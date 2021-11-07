@@ -5,7 +5,7 @@ module.exports = gql`
     _id: ID!
     first_name: String!
     last_name: String!
-    name: String
+    name: String!
     email: String!
     password: String
     auths: [Auth!]!

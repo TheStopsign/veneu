@@ -79,7 +79,16 @@ export default {
       expanded: [],
       error: "",
       scopeRef: null,
-      flatTree: [...this.me.auths],
+      flatTree: [{
+        _id: -1,
+        shared_resource: {
+          ...this.me,
+          parent_resource: null,
+          parent_resource_type: null
+        },
+        shared_resource_type: "User",
+        children: [],
+      }, ...this.me.auths],
       filter: "",
     };
   },
@@ -178,6 +187,10 @@ export default {
     handleNav(selected_auth) {
       if (selected_auth.shared_resource_type == "YTVideoStream") {
         location.href = "/watch/" + selected_auth.shared_resource._id;
+      } else if (selected_auth.shared_resource_type == "User") {
+        this.$router.push({
+          name: "Me"
+        });
       } else if (selected_auth.shared_resource_type == "Checkin") {
         this.$router.push({
           name: "CheckinShow",
@@ -216,6 +229,8 @@ export default {
         ? "smart_display"
         : shared_resource_type == "Checkin"
         ? "qr_code_2"
+        : shared_resource_type == "User"
+        ? "face"
         : "error",
     buildTree(auths) {
       const data = [...auths];
@@ -225,30 +240,24 @@ export default {
       }, {});
 
       const root = [];
+      let self = this;
+      data.forEach((auth) => {
+        auth.treeid = auth.shared_resource._id;
+        auth.children = [];
+        auth.label = auth.shared_resource.name;
+        auth.icon = self.getAuthIcon(auth.shared_resource_type);
+        if (self.scope && auth.shared_resource._id == self.scope) {
+          self.scopeRef = auth;
+        }
+      });
       data.forEach((auth) => {
         // Handle the root element
         if (auth.shared_resource.parent_resource === null) {
-          auth.children = [];
-          auth.treeid = auth.shared_resource._id;
-          auth.label = auth.shared_resource.name;
-          auth.icon = this.getAuthIcon(auth.shared_resource_type);
-          if (this.scope && auth.shared_resource._id == this.scope) {
-            this.scopeRef = auth;
-          }
           root.push(auth);
           return;
         }
         // Use our mapping to locate the parent element in our data array
         const parentEl = data[idMapping[auth.shared_resource.parent_resource._id]];
-
-        // Add our current auth to its parent's `children` array
-        auth.treeid = auth.shared_resource._id;
-        auth.children = [];
-        auth.label = auth.shared_resource.name;
-        auth.icon = this.getAuthIcon(auth.shared_resource_type);
-        if (this.scope && auth.shared_resource._id == this.scope) {
-          this.scopeRef = auth;
-        }
         parentEl.children.push(auth);
       });
       this.tree = root;

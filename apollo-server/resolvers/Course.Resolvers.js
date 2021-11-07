@@ -29,8 +29,8 @@ module.exports = (pubsub) => ({
       return createOne(
         {
           creator: requester._id,
-          parent_resource: null,
-          parent_resource_type: null,
+          parent_resource: requester._id,
+          parent_resource_type: "User",
           ...args,
           type: "Course",
         },

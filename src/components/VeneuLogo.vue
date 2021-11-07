@@ -24,11 +24,6 @@ export default {
       self.theme = event.detail.value;
     });
   },
-  computed: {
-    getURL() {
-      return window.location.protocol + "//" + window.location.host;
-    },
-  }
 };
 </script>
 

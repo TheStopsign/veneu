@@ -285,7 +285,7 @@
                   <div v-if="$apollo.queries.tickets.loading">Loading...</div>
                   <q-list v-else-if="tickets">
                     <q-item class="row items-center justify-center" v-for="ticket in tickets" :key="ticket._id">
-                      {{ getFormattedDate(ticket.checkin.created_at) }}
+                      {{ getFormattedDate(ticket.created_at) }}
                     </q-item>
                     <q-item v-if="!tickets.length" class="row items-center justify-center"> None </q-item>
                   </q-list>

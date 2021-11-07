@@ -6,5 +6,6 @@ query tickets {
       _id
       created_at
     }
+    created_at
   }
 }

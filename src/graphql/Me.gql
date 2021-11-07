@@ -3,6 +3,7 @@ query me {
     _id
     first_name
     last_name
+    name
     email
     created_at
     updated_at
@@ -19,22 +20,12 @@ query me {
         name
         type
         parent_resource {
-          ... on Course {
+          ... on SharedResource {
             _id
             name
             type
           }
-          ... on UserGroup {
-            _id
-            name
-            type
-          }
-          ... on RegistrationSection {
-            _id
-            name
-            type
-          }
-          ... on Lecture {
+          ... on User {
             _id
             name
             type
