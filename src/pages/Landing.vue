@@ -1,7 +1,7 @@
 <template>
   <q-page id="landing-page">
-    <div class="vertical-center spinner-stage">
-      <VeneuLogo class="spinner" />
+    <div class="vertical-center">
+      <VeneuLogo />
       <!-- <img alt="Veneu Logo" src="../assets/veneu-logo.svg" /> -->
       <div>
         <h1>veneu</h1>

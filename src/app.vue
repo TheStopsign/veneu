@@ -151,7 +151,7 @@
                 @click="handleMe"
               >
                 <q-item-section avatar class="q-my-xs">
-                  <q-avatar class="spinner" id="avatar">
+                  <q-avatar id="avatar">
                     {{ getAvatar(data.me._id) }}
                   </q-avatar>
                 </q-item-section>
@@ -374,7 +374,6 @@ export default {
   watch: {
     theme: function (val, oldVal) {
       setPalette(document.documentElement, String(val));
-      localStorage.setItem("theme", val);
     },
     $route: function (from, to) {},
   },
@@ -387,7 +386,7 @@ export default {
     };
   },
   created() {
-    setPalette(document.documentElement, this.theme);
+    setPalette(document.documentElement, String(this.theme));
     if (this.theme === "true") {
       this.theme = true;
     }

@@ -1,7 +1,7 @@
 <template>
   <q-page id="first-login">
-    <div class="q-pa-md spinner-stage">
-      <VeneuLogo class="spinner" />
+    <div class="q-pa-md">
+      <VeneuLogo />
       <ApolloMutation
         :mutation="require('../graphql/FirstLogin.gql')"
         :variables="{ access_code, first_name, last_name, password }"

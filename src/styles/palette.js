@@ -1,4 +1,9 @@
 const setDark = function (root) {
+  window.dispatchEvent(
+    new CustomEvent("theme-change", {
+      detail: { value: "dark" },
+    })
+  );
   root.style.setProperty("--veneu-background", "var(--veneu-dark)");
   root.style.setProperty("--veneu-background-backdrop", "var(--veneu-dark-backdrop)");
   root.style.setProperty("--veneu-background-highlight", "var(--veneu-dark-highlight)");
@@ -9,6 +14,11 @@ const setDark = function (root) {
   root.style.setProperty("--veneu-text-alternate", "var(--veneu-light)");
 };
 const setLight = function (root) {
+  window.dispatchEvent(
+    new CustomEvent("theme-change", {
+      detail: { value: "light" },
+    })
+  );
   root.style.setProperty("--veneu-background", "var(--veneu-light)");
   root.style.setProperty("--veneu-background-backdrop", "var(--veneu-light-backdrop)");
   root.style.setProperty("--veneu-background-highlight", "var(--veneu-light-highlight)");
@@ -21,6 +31,7 @@ const setLight = function (root) {
 
 module.exports = {
   setPalette(root, mode) {
+    localStorage.setItem("theme", mode);
     if (mode === "null" && window.matchMedia) {
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
         setDark(root);

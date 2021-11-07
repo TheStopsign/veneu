@@ -1,7 +1,7 @@
 <template>
   <q-page id="login-page" class="container">
     <div class="vertical-center">
-      <VeneuLogo class="spinner" />
+      <VeneuLogo />
       <ApolloMutation
         :mutation="require('../graphql/Login.gql')"
         :variables="{ email, password }"

@@ -1,7 +1,7 @@
 <template>
   <q-page id="notfound-page">
-    <div class="vertical-center spinner-stage">
-      <VeneuLogo class="spinner" />
+    <div class="vertical-center">
+      <VeneuLogo />
       <div class="col">
         <h1>veneu</h1>
         <h2>404 - Content not found</h2>

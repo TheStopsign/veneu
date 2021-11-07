@@ -9,6 +9,10 @@ body {
   height: 100% !important;
 }
 
+* {
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
+}
+
 .text-primary,
 .q-field * {
   color: var(--veneu-text-primary) !important;
