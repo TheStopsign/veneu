@@ -78,14 +78,12 @@ body,
 .q-calendar {
   background: unset !important;
   background-color: var(--veneu-background) !important;
-  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
   // background-size: calc(100% / 2);
   /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
 }
 
 .q-dialog__backdrop {
   background-color: var(--veneu-background-backdrop) !important;
-  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
 }
 
 .q-stepper__step-inner {
@@ -200,7 +198,6 @@ body,
     box-shadow: none !important;
     border-radius: 0.25rem !important;
     background: var(--veneu-background);
-    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
 
     &:first-child {
       border-top-left-radius: 1rem !important;
@@ -282,7 +279,6 @@ h1 {
 
 .q-btn.bg-primary {
   background-color: var(--veneu-background) !important;
-  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
   animation: grow-in-button 0.5s forwards !important;
   * {
     color: var(--veneu-text-alternate) !important;
@@ -298,7 +294,6 @@ h1 {
   background-color: var(--veneu-red) !important;
   &.q-btn {
     background-color: var(--veneu-background) !important;
-    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
     animation: grow-in-button 0.5s forwards !important;
     * {
       color: var(--veneu-text-alternate) !important;
@@ -506,7 +501,6 @@ h1 {
   .q-dialog__inner .q-card,
   .lockview {
     background-color: var(--veneu-background) !important;
-    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
     border: none;
   }
 }
