@@ -7,10 +7,10 @@ body {
   -webkit-overflow-scrolling: touch !important;
   overflow: auto !important;
   height: 100% !important;
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
 }
 
-.veneu-logo,
-.veneu-logo * {
+.veneu-logo {
   transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
 }
 
@@ -497,10 +497,12 @@ h1 {
   .glassmorphism {
     background-color: var(--veneu-firefox-glass) !important;
     border: none;
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
   }
   .q-dialog__inner .q-card,
   .lockview {
     background-color: var(--veneu-background) !important;
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
     border: none;
   }
 }

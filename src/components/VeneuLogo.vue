@@ -22,9 +22,13 @@ export default {
     let self = this;
     window.addEventListener("theme-change", function (event) {
       self.theme = event.detail.value;
-      console.log(self.theme);
     });
   },
+  computed: {
+    getURL() {
+      return window.location.protocol + "//" + window.location.host;
+    },
+  }
 };
 </script>
 
