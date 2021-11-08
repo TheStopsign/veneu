@@ -88,8 +88,18 @@ export default {
         },
         shared_resource_type: "User",
         children: [],
+      },{
+        _id: -2,
+        shared_resource: {
+          
+          parent_resource: null,
+          parent_resource_type: null
+        },
+        shared_resource_type: "Shared",
+        children: [],
       }, ...this.me.auths],
       filter: "",
+      shared_with_me: null
     };
   },
   beforeDestroy() {
@@ -97,6 +107,19 @@ export default {
     this.flatTree = [];
     this.scopeRef = [];
     this.selected_resource = [];
+  },
+  created() {
+    this.shared_with_me = this.flatTree[1];
+    this.tree = [];
+    this.buildTree(this.flatTree);
+    this.selected_resource = this.selected
+      ? this.selected
+      : this.nav && this.$route.params._id
+      ? this.$route.params._id
+      : null;
+    if (this.scopeRef) {
+      this.tree = this.scopeRef.children;
+    }
   },
   mounted() {
     this.$refs.scrollContents.$el.parentElement.parentElement.parentElement.style.height =
@@ -165,18 +188,6 @@ export default {
       this.$emit("change", val);
     },
   },
-  created() {
-    this.tree = [];
-    this.buildTree(this.flatTree);
-    this.selected_resource = this.selected
-      ? this.selected
-      : this.nav && this.$route.params._id
-      ? this.$route.params._id
-      : null;
-    if (this.scopeRef) {
-      this.tree = this.scopeRef.children;
-    }
-  },
   methods: {
     filterFn(node, filter) {
       return (
@@ -231,6 +242,8 @@ export default {
         ? "qr_code_2"
         : shared_resource_type == "User"
         ? "face"
+        : shared_resource_type == "Shared"
+        ? "share"
         : "error",
     buildTree(auths) {
       const data = [...auths];
@@ -250,6 +263,9 @@ export default {
           self.scopeRef = auth;
         }
       });
+      this.shared_with_me.label = "Shared with me"
+      this.shared_with_me.selectable = false;
+      this.expanded.push(this.shared_with_me);
       data.forEach((auth) => {
         // Handle the root element
         if (auth.shared_resource.parent_resource === null) {
@@ -258,7 +274,12 @@ export default {
         }
         // Use our mapping to locate the parent element in our data array
         const parentEl = data[idMapping[auth.shared_resource.parent_resource._id]];
-        parentEl.children.push(auth);
+        if(typeof parentEl == "undefined") {
+          // Add to shared with me
+          self.shared_with_me.children.push(auth)
+        } else {
+          parentEl.children.push(auth);
+        }
       });
       this.tree = root;
     },

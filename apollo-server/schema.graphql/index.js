@@ -23,7 +23,7 @@ const linkSchema = gql`
   }
 
   enum PhotoType {
-    DATAURL
+    URL
     BOTS
   }
 

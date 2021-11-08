@@ -31,11 +31,18 @@
         </q-responsive>
       </div>
       <div class="row full-width justify-center q-mt-xl">
+        <ShareResourceModal
+          :resourceid="$route.params._id"
+          resourcetype="Checkin"
+          :me="me"
+          v-if="hasPermissions()"
+        />
         <q-btn
           :label="qr_hidden ? 'Show QR' : 'Hide QR'"
           size="md"
           icon-right="qr_code_2"
           @click="qr_hidden = !qr_hidden"
+          class="q-ml-md"
         />
       </div>
       <div class="row full-width justify-center q-mt-xl">
@@ -141,11 +148,12 @@
 import VueQr from "vue-qr";
 import gql from "graphql-tag";
 import logoSrc from "../assets/logo.png";
+import ShareResourceModal from "../components/ShareResourceModal.vue"
 export default {
   props: {
     me: Object,
   },
-  components: { VueQr },
+  components: { VueQr, ShareResourceModal },
   data() {
     return {
       qr_hidden: true,
@@ -169,6 +177,15 @@ export default {
     this.startNewSession();
   },
   methods: {
+    hasPermissions() {
+      return (
+        this.me &&
+        this.me.auths.find(
+          (a) =>
+            a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
+        )
+      );
+    },
     startNewSession() {
       this.tickets = {};
       this.current = this.generateTicket();
