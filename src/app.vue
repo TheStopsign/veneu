@@ -256,15 +256,6 @@
                 ref="nav"
                 :me="data.me"
                 label="Navigation"
-                :selectable="
-                  data.me.auths
-                    .filter((a) =>
-                      ['Course', 'RegistrationSection', 'UserGroup', 'Lecture', 'YTVideoStream'].includes(
-                        a.shared_resource_type
-                      )
-                    )
-                    .map((a) => a._id)
-                "
                 class="q-pl-md"
                 :class="$q.screen.lt.md ? 'q-pr-md' : 'q-pr-xs'"
                 nav

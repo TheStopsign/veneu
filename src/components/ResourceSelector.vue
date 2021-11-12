@@ -79,27 +79,31 @@ export default {
       expanded: [],
       error: "",
       scopeRef: null,
-      flatTree: [{
-        _id: -1,
-        shared_resource: {
-          ...this.me,
-          parent_resource: null,
-          parent_resource_type: null
+      flatTree: [
+        {
+          _id: -1,
+          shared_resource: {
+            ...this.me,
+            parent_resource: -1,
+            parent_resource_type: null,
+          },
+          shared_resource_type: "User",
+          children: [],
         },
-        shared_resource_type: "User",
-        children: [],
-      },{
-        _id: -2,
-        shared_resource: {
-          
-          parent_resource: null,
-          parent_resource_type: null
+        {
+          _id: -2,
+          shared_resource: {
+            _id: -2,
+            parent_resource: -2,
+            parent_resource_type: null,
+          },
+          shared_resource_type: "Shared",
+          children: [],
         },
-        shared_resource_type: "Shared",
-        children: [],
-      }, ...this.me.auths],
+        ...this.me.auths,
+      ],
       filter: "",
-      shared_with_me: null
+      shared_with_me: null,
     };
   },
   beforeDestroy() {
@@ -139,49 +143,14 @@ export default {
     },
     selected_resource: function (val, oldVal) {
       let selected_auth = this.flatTree.find((a) => a.shared_resource._id == val);
-      let old_auth = this.flatTree.find((a) => a.shared_resource._id == oldVal);
       let route_auth = this.flatTree.find((a) => a.shared_resource._id == this.$route.params._id);
       if (this.nav) {
-        if (selected_auth && ((route_auth && route_auth._id != selected_auth._id) || !route_auth)) {
-          this.handleNav(selected_auth);
-          return;
+        if (!val && route_auth) {
+          this.selected_resource = oldVal;
         }
-        if (!val) {
-          if (route_auth) {
-            this.selected_resource = oldVal;
-            return;
-          }
-          if (!selected_auth && old_auth && route_auth) {
-            this.selected_resource = oldVal;
-            return;
-          }
-          if (route_auth) {
-            this.selected_resource = oldVal;
-            return;
-          } else {
-            return;
-          }
-        }
-        if (
-          ((selected_auth && this.selectable.includes(selected_auth._id) && oldVal != null) || old_auth != null) &&
-          ((route_auth && route_auth._id != selected_auth._id) || !route_auth)
-        ) {
-          this.handleNav(selected_auth);
-          return;
-        }
+        this.handleNav(selected_auth);
       } else {
-        if (val === oldVal) {
-          return;
-        } else if (!val) {
-          this.$emit("change", val);
-        } else {
-          if (this.selectable && !this.selectable.includes(selected_auth._id)) {
-            this.selected_resource = oldVal;
-            this.errorMsg('Resource is not marked as "selectable"');
-          } else {
-            this.$emit("change", val);
-          }
-        }
+        this.$emit("change", val);
       }
     },
     ticked: function (val, oldVal) {
@@ -196,22 +165,24 @@ export default {
       );
     },
     handleNav(selected_auth) {
-      if (selected_auth.shared_resource_type == "YTVideoStream") {
-        location.href = "/watch/" + selected_auth.shared_resource._id;
-      } else if (selected_auth.shared_resource_type == "User") {
-        this.$router.push({
-          name: "Me"
-        });
-      } else if (selected_auth.shared_resource_type == "Checkin") {
-        this.$router.push({
-          name: "CheckinShow",
-          params: { _id: selected_auth.shared_resource._id },
-        });
-      } else {
-        this.$router.push({
-          name: selected_auth.shared_resource_type,
-          params: { _id: selected_auth.shared_resource._id },
-        });
+      if (selected_auth) {
+        if (selected_auth.shared_resource_type == "YTVideoStream") {
+          location.href = "/watch/" + selected_auth.shared_resource._id;
+        } else if (selected_auth.shared_resource_type == "User") {
+          this.$router.push({
+            name: "Me",
+          });
+        } else if (selected_auth.shared_resource_type == "Checkin") {
+          this.$router.push({
+            name: "CheckinShow",
+            params: { _id: selected_auth.shared_resource._id },
+          });
+        } else {
+          this.$router.push({
+            name: selected_auth.shared_resource_type,
+            params: { _id: selected_auth.shared_resource._id },
+          });
+        }
       }
     },
     errorMsg(error) {
@@ -254,29 +225,36 @@ export default {
 
       const root = [];
       let self = this;
+      console.log(this.selectable);
       data.forEach((auth) => {
         auth.treeid = auth.shared_resource._id;
         auth.children = [];
         auth.label = auth.shared_resource.name;
         auth.icon = self.getAuthIcon(auth.shared_resource_type);
+        if (
+          self.selectable &&
+          self.selectable.length &&
+          !(self.selectable.includes(auth._id) || self.selectable.includes(auth.treeid))
+        ) {
+          auth.selectable = false;
+        }
         if (self.scope && auth.shared_resource._id == self.scope) {
           self.scopeRef = auth;
         }
       });
-      this.shared_with_me.label = "Shared with me"
+      this.shared_with_me.label = "Shared with me";
       this.shared_with_me.selectable = false;
-      this.expanded.push(this.shared_with_me);
       data.forEach((auth) => {
         // Handle the root element
-        if (auth.shared_resource.parent_resource === null) {
+        if (auth.shared_resource.parent_resource === null || auth.shared_resource.parent_resource < 0) {
           root.push(auth);
           return;
         }
         // Use our mapping to locate the parent element in our data array
         const parentEl = data[idMapping[auth.shared_resource.parent_resource._id]];
-        if(typeof parentEl == "undefined") {
+        if (typeof parentEl == "undefined") {
           // Add to shared with me
-          self.shared_with_me.children.push(auth)
+          self.shared_with_me.children.push(auth);
         } else {
           parentEl.children.push(auth);
         }

@@ -21,7 +21,6 @@
                   :me="me"
                   label="Additional Resources"
                   :scope="data.userGroup._id"
-                  :selectable="me.auths.map((a) => a._id)"
                   class="col-12 col-sm q-mt-md q-pr-md"
                   style="overflow: visible"
                   nav
