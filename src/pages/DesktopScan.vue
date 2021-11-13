@@ -25,7 +25,7 @@
           icon="monitor"
           icon-right="qr_code_scanner"
           size="lg"
-          label="Screen Scan"
+          label="Select a region"
         />
         <q-btn
           v-else-if="true === screen_scanning"

@@ -1,9 +1,7 @@
 <template>
   <q-responsive :ratio="1" style="max-width: 20rem; margin: auto">
     <img
-      :src="
-        theme == 'light' || theme == 'true' ? '/veneu-offset-colorized.svg' : '/veneu-offset-colorized-dark-sticker.svg'
-      "
+      :src="theme == 'light' || theme == 'true' ? '/veneu-offset-colorized.svg' : '/veneu-offset-colorized-dark.svg'"
       class="veneu-logo"
     />
   </q-responsive>

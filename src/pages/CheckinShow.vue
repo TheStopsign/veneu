@@ -24,19 +24,14 @@
           <div
             class="absolute-full items-center justify-center row anim"
             :class="qr_hidden ? 'lockview' : ''"
-            style="z-index: 999; border-radius: inherit"
+            style="z-index: 999; border-radius: 0.75rem"
           >
             <q-icon v-if="qr_hidden" name="visibility_off" size="4rem" style="cursor: unset" />
           </div>
         </q-responsive>
       </div>
       <div class="row full-width justify-center q-mt-xl">
-        <ShareResourceModal
-          :resourceid="$route.params._id"
-          resourcetype="Checkin"
-          :me="me"
-          v-if="hasPermissions()"
-        />
+        <ShareResourceModal :resourceid="$route.params._id" resourcetype="Checkin" :me="me" v-if="hasPermissions()" />
         <q-btn
           :label="qr_hidden ? 'Show QR' : 'Hide QR'"
           size="md"
@@ -148,7 +143,7 @@
 import VueQr from "vue-qr";
 import gql from "graphql-tag";
 import logoSrc from "../assets/logo.png";
-import ShareResourceModal from "../components/ShareResourceModal.vue"
+import ShareResourceModal from "../components/ShareResourceModal.vue";
 export default {
   props: {
     me: Object,

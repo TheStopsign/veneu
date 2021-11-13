@@ -259,6 +259,7 @@
                 class="q-pl-md"
                 :class="$q.screen.lt.md ? 'q-pr-md' : 'q-pr-xs'"
                 nav
+                :key="$route.name + $route.params._id"
               />
               <!-- <q-list class="text-primary neu-convex q-ma-md q-pa-xs">
               <course-list :me="data.me" />
@@ -331,7 +332,7 @@
             }"
           >
             <q-page-container class="text-primary">
-              <router-view :me="data.me" style="overflow: hidden" :key="$route.params._id" />
+              <router-view :me="data.me" style="overflow: hidden" :key="$route.name + $route.params._id" />
             </q-page-container>
           </q-scroll-area>
         </div>

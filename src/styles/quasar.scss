@@ -259,7 +259,7 @@ body,
 }
 
 .q-page-container {
-  padding-bottom: 0 !important;
+  padding-bottom: env(safe-area-inset-bottom) !important;
 }
 
 h1 {
