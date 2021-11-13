@@ -252,6 +252,7 @@ export default {
       }, this);
       this.shared_with_me.label = "Shared with me";
       this.shared_with_me.selectable = false;
+      this.shared_with_me.handler = () => this.errorMsg('"Shared with me" page coming soon');
       this.tree = root;
     },
   },
