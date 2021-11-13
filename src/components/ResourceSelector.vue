@@ -36,7 +36,19 @@
           :expanded.sync="expanded"
           :filter="filter"
           :filter-method="filterFn"
-        />
+        >
+          <template v-slot:default-header="prop">
+            <q-icon
+              :name="prop.node.icon"
+              class="q-mr-sm"
+              :style="prop.node.selectable === false ? 'opacity: 0.5' : ''"
+              :title="prop.node.label"
+            />
+            <div :style="prop.node.selectable === false ? 'opacity: 0.5' : ''" :title="prop.node.label">
+              {{ prop.node.label }}
+            </div>
+          </template>
+        </q-tree>
       </q-scroll-area>
     </div>
   </div>
@@ -120,6 +132,8 @@ export default {
       ? this.selected
       : this.nav && this.$route.params._id
       ? this.$route.params._id
+      : this.nav && this.$route.name == "Me"
+      ? this.me._id
       : null;
     if (this.scopeRef) {
       this.tree = this.scopeRef.children;
@@ -136,6 +150,8 @@ export default {
         let selected_auth = this.flatTree.find((a) => a.shared_resource._id == val.params._id);
         if (selected_auth) {
           this.selected_resource = selected_auth.shared_resource._id;
+        } else if (val.name == "Me") {
+          this.selected_resource = this.me._id;
         } else {
           this.selected_resource = null;
         }
@@ -225,7 +241,6 @@ export default {
 
       const root = [];
       let self = this;
-      console.log(this.selectable);
       data.forEach((auth) => {
         auth.treeid = auth.shared_resource._id;
         auth.children = [];

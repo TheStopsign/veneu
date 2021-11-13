@@ -591,6 +591,17 @@ h1 {
   padding-bottom: 0px;
 }
 
+.q-tree__node-header:hover,
+.q-tree__node-header:hover *,
+.q-tree__node-header:hover > .q-focus-helper,
+.q-tree__node-header > .q-focus-helper {
+  &,
+  &::before,
+  &::after {
+    background: unset !important;
+  }
+}
+
 .q-card {
   background: unset;
 }
