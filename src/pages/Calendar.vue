@@ -1,7 +1,7 @@
 <template>
-  <q-page id="calendar" class="q-pb-md" style="height: 100%">
+  <q-page id="calendar" style="height: 100%">
     <div v-if="events" style="position: absolute; height: 100%; width: 100%; display: flex; flex-direction: column">
-      <div class="q-pa-md" style="display: flex; flex-direction: column; height: 100%; width: 100%">
+      <div class="q-pa-md q-pb-phone" style="display: flex; flex-direction: column; height: 100%; width: 100%">
         <!-- <div> -->
         <div class="row full-width justify-end">
           <q-btn flat @click="calendarPrev" class="q-mr-md" icon="navigate_before" />

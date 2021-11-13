@@ -259,7 +259,7 @@ body,
 }
 
 .q-page-container {
-  padding-bottom: env(safe-area-inset-bottom) !important;
+  padding-bottom: 0px !important;
 }
 
 h1 {
@@ -613,4 +613,12 @@ h1 {
 .q-date__main {
   overflow-x: auto;
   overflow-y: hidden;
+}
+
+.q-pb-phone {
+  padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+}
+
+.q-mb-phone {
+  margin-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
 }
