@@ -20,11 +20,12 @@
             colorDark="#1a4974"
             :margin="24"
             style="height: 100%; width: 100%; border-radius: inherit"
+            class="q-pa-xs"
           />
           <div
             class="absolute-full items-center justify-center row anim"
             :class="qr_hidden ? 'lockview' : ''"
-            style="z-index: 999; border-radius: 0.75rem"
+            style="z-index: 999; border-radius: inherit"
           >
             <q-icon v-if="qr_hidden" name="visibility_off" size="4rem" style="cursor: unset" />
           </div>

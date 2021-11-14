@@ -14,7 +14,7 @@
           <q-calendar
             ref="calendar"
             v-model="selectedDate"
-            view="week"
+            :view="$q.screen.lt.lg ? '3day' : 'week'"
             locale="en-us"
             color="primary"
             short-interval-label
