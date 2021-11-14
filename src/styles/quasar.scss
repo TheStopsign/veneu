@@ -618,7 +618,6 @@ h1 {
 .q-pb-phone {
   padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
 }
-
 .q-mb-phone {
-  margin-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+  margin-bottom: env(safe-area-inset-bottom) !important;
 }
