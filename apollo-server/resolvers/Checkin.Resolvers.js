@@ -23,6 +23,17 @@ module.exports = (pubsub) => ({
         { requester, models, loaders, pubsub }
       );
     },
+    receipt: async (parent, { _id, email }, { requester, models, loaders, pubsub }, info) => {
+      if (!requester) throw new ForbiddenError("Not allowed");
+      if (
+        requester.email != email &&
+        !requester.auths.find(
+          (a) => a.shared_resource._id == _id && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
+        )
+      )
+        throw new ForbiddenError("Not allowed");
+      return readOne({ checkin: _id, email, type: "Ticket" }, { requester, models, loaders, pubsub });
+    },
   },
   Mutation: {
     createCheckin: async (parent, args, { requester, models, loaders, pubsub }, info) => {

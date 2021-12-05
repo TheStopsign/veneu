@@ -19,6 +19,7 @@ module.exports = gql`
   extend type Query {
     checkin(_id: ID!): Checkin!
     checkins: [Checkin!]!
+    receipt(_id: ID!, email: String!): Ticket
   }
 
   extend type Mutation {

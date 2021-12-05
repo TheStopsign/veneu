@@ -22,6 +22,7 @@ const CreateVideo = () => import("./pages/CreateVideo.vue");
 const Settings = () => import("./components/Settings.vue");
 
 const CheckinShow = () => import("./pages/CheckinShow.vue");
+const CheckinReceipt = () => import("./pages/CheckinReceipt.vue");
 const CheckinScan = () => import("./pages/CheckinScan.vue");
 const DesktopScan = () => import("./pages/DesktopScan.vue");
 
@@ -107,6 +108,14 @@ const router = new VueRouter({
       path: "/checkin/:_id/show",
       name: "CheckinShow",
       component: CheckinShow,
+      meta: {
+        auth: true,
+      },
+    },
+    {
+      path: "/checkin/:_id/receipt",
+      name: "CheckinReceipt",
+      component: CheckinReceipt,
       meta: {
         auth: true,
       },

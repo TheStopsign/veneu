@@ -559,7 +559,8 @@ export default {
           `,
         })
         .then(({ data }) => {
-          this.$router.push({ name: "CheckinShow", params: { _id: data.createCheckin._id } });
+          location.href = "/checkin/" + data.createCheckin._id + "/show";
+          // this.$router.push({ name: "CheckinShow", params: { _id: data.createCheckin._id } });
         })
         .catch((e) => {
           this.$q.notify({
@@ -572,7 +573,8 @@ export default {
     },
     handleHosted(_id) {
       if (this.$route.name != "CheckinShow" || this.$route.params._id != _id) {
-        this.$router.push({ name: "CheckinShow", params: { _id } });
+        location.href = "/checkin/" + _id + "/show";
+        // this.$router.push({ name: "CheckinShow", params: { _id } });
       }
     },
     tryLogout() {

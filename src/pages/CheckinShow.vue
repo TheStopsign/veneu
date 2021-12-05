@@ -7,7 +7,17 @@
       height="50vh"
       style="margin: auto"
     />
-    <div v-if="checkinQuery.error">Error...</div>
+    <div v-if="receiptQuery.error">Error fetching receipt data...</div>
+    <div v-if="receiptQuery.data" class="col">
+      <div class="q-mt-xl row full-width justify-center">You are not allowed to host this checkin</div>
+      <div v-if="receiptQuery.data.receipt" class="q-mt-xl col full-width">
+        <div class="row full-width justify-center">However, you have a receipt available.</div>
+        <div class="q-mt-md row full-width justify-center">
+          <q-btn class="q-mx-auto" @click="handleReceipt">View Receipt</q-btn>
+        </div>
+      </div>
+    </div>
+    <div v-if="checkinQuery.error">Error fetching checkin data...</div>
     <div v-if="checkinQuery.data && checkinQuery.data.checkin" id="checkinloaded">
       <div class="row full-width justify-center">
         <q-responsive class="neu-convex q-mt-md" style="width: 50vh" :ratio="1">
@@ -25,7 +35,7 @@
           <div
             class="absolute-full items-center justify-center row anim"
             :class="qr_hidden ? 'lockview' : ''"
-            style="z-index: 999; border-radius: inherit"
+            style="z-index: 2; border-radius: inherit"
           >
             <q-icon v-if="qr_hidden" name="visibility_off" size="4rem" style="cursor: unset" />
           </div>
@@ -162,15 +172,23 @@ export default {
         loading: null,
         data: null,
       },
+      receiptQuery: {
+        error: null,
+        loading: null,
+        data: null,
+      },
     };
   },
-  watch: {
-    $route() {
-      this.startNewSession();
-    },
-  },
   created() {
-    this.startNewSession();
+    let self = this;
+    let currAuth = this.me.auths.find(
+      (a) => a.shared_resource._id == self.$route.params._id && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
+    );
+    if (currAuth) {
+      this.startNewSession();
+    } else {
+      this.getReceipt();
+    }
   },
   methods: {
     hasPermissions() {
@@ -181,6 +199,35 @@ export default {
             a.shared_resource._id == this.$route.params._id && ["INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
         )
       );
+    },
+    getReceipt() {
+      let self = this;
+      this.$apollo
+        .query({
+          query: gql`
+            query receipt($_id: ID!, $email: String!) {
+              receipt(_id: $_id, email: $email) {
+                _id
+                email
+                code
+                checkin {
+                  _id
+                }
+              }
+            }
+          `,
+          variables: { _id: this.$route.params._id, email: this.me.email },
+        })
+        .then((data) => {
+          this.receiptQuery.loading = false;
+          this.receiptQuery.data = data.data;
+        })
+        .catch((e) => {
+          this.receiptQuery.error = e;
+        });
+    },
+    handleReceipt() {
+      this.$router.push({ name: "CheckinReceipt", params: { _id: this.$route.params._id } });
     },
     startNewSession() {
       this.tickets = {};
