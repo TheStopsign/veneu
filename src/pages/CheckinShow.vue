@@ -7,16 +7,6 @@
       height="50vh"
       style="margin: auto"
     />
-    <div v-if="receiptQuery.error">Error fetching receipt data...</div>
-    <div v-if="receiptQuery.data" class="col">
-      <div class="q-mt-xl row full-width justify-center">You are not allowed to host this checkin</div>
-      <div v-if="receiptQuery.data.receipt" class="q-mt-xl col full-width">
-        <div class="row full-width justify-center">However, you have a receipt available.</div>
-        <div class="q-mt-md row full-width justify-center">
-          <q-btn class="q-mx-auto" @click="handleReceipt">View Receipt</q-btn>
-        </div>
-      </div>
-    </div>
     <div v-if="checkinQuery.error">Error fetching checkin data...</div>
     <div v-if="checkinQuery.data && checkinQuery.data.checkin" id="checkinloaded">
       <div class="row full-width justify-center">
@@ -147,6 +137,19 @@
         </q-card>
       </q-dialog>
     </div>
+
+    <div v-else-if="!checkinQuery.loading" class="q-mt-xl row full-width justify-center">
+      You are not allowed to host this checkin
+    </div>
+    <div v-if="receiptQuery.error">Error fetching receipt data...</div>
+    <div v-if="receiptQuery.data" class="col">
+      <div v-if="receiptQuery.data.receipt" class="q-mt-xl col full-width">
+        <div class="row full-width justify-center">You have a receipt available.</div>
+        <div class="q-mt-md row full-width justify-center">
+          <q-btn class="q-mx-auto" @click="handleReceipt">View Receipt</q-btn>
+        </div>
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -186,9 +189,8 @@ export default {
     );
     if (currAuth) {
       this.startNewSession();
-    } else {
-      this.getReceipt();
     }
+    this.getReceipt();
   },
   methods: {
     hasPermissions() {
