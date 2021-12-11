@@ -1,5 +1,5 @@
 <template>
-  <div class="nav-tree q-mt-sm" :class="flat ? '' : nav ? '' : ''" style="overflow-x: auto">
+  <div :ref="randomID" class="nav-tree q-mt-sm" :class="flat ? '' : nav ? '' : ''" style="overflow-x: auto">
     <div class="q-mt-md">
       <q-icon size="xs" name="account_tree" class="q-mr-sm q-pb-xs" />{{ label || "Select a resource" }}
     </div>
@@ -55,6 +55,8 @@
 </template>
 
 <script>
+import { scroll } from "quasar";
+const { getScrollTarget, setScrollPosition, animScrollTo } = scroll;
 export default {
   props: {
     me: {
@@ -94,9 +96,11 @@ export default {
       flatTree: [],
       filter: "",
       shared_with_me: null,
+      randomID: "",
     };
   },
   created() {
+    this.getRandomID();
     this.flatTree = [
       {
         _id: -1,
@@ -142,6 +146,8 @@ export default {
     this.$refs.scrollContents.$el.parentElement.parentElement.parentElement.style.height =
       this.$refs.scrollContents.$el.offsetHeight + "px";
     this.$refs.scrollContents.$el.parentElement.style.position = "absolute";
+    let self = this;
+    this.scrollToSelected();
   },
   watch: {
     selected_resource: function (val, oldVal) {
@@ -152,6 +158,27 @@ export default {
     },
   },
   methods: {
+    getRandomID() {
+      function dec2hex(dec) {
+        return dec.toString(16).padStart(2, "0");
+      }
+
+      // generateId :: Integer -> String
+      function generateId(len) {
+        var arr = new Uint8Array((len || 40) / 2);
+        window.crypto.getRandomValues(arr);
+        return Array.from(arr, dec2hex).join("");
+      }
+      this.randomID = generateId(16);
+    },
+    scrollToSelected() {
+      this.$refs[this.randomID].getElementsByClassName("q-tree__node--selected").forEach((a) => {
+        let target = getScrollTarget(a),
+          offset = a.getBoundingClientRect().top - target.scrollHeight + a.scrollHeight,
+          duration = 0;
+        setScrollPosition(target, offset, duration);
+      });
+    },
     filterFn(node, filter) {
       return (
         (node.label && node.label.toLowerCase().indexOf(filter.toLowerCase()) > -1) ||
@@ -246,14 +273,24 @@ export default {
         const parentEl = data[idMapping[auth.shared_resource.parent_resource._id]];
         if (typeof parentEl == "undefined") {
           this.shared_with_me.children.push(auth);
+          this.sortChildren(this.shared_with_me.children);
         } else {
           parentEl.children.push(auth);
+          this.sortChildren(parentEl.children);
         }
       }, this);
       this.shared_with_me.label = "Shared with me";
       this.shared_with_me.selectable = false;
       this.shared_with_me.handler = () => this.errorMsg('"Shared with me" page coming soon');
       this.tree = root;
+    },
+    sortChildren(arr) {
+      arr.sort((a, b) => {
+        if (a.shared_resource_type == b.shared_resource_type) {
+          return a.label > b.label;
+        }
+        return a.shared_resource_type > b.shared_resource_type;
+      });
     },
   },
 };
