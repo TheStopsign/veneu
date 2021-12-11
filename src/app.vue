@@ -440,8 +440,8 @@ export default {
             var keyboardHeight = naturalHeight - window.innerHeight;
             window.scrollTo(sx, sy);
             let target = getScrollTarget(element),
-              offset = element.getBoundingClientRect().top - target.scrollHeight + element.scrollHeight,
-              duration = 0;
+              offset = element.getBoundingClientRect().top + window.scrollY - element.offsetHeight,
+              duration = 200;
             setScrollPosition(target, offset, duration);
             return keyboardHeight;
           };
