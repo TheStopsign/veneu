@@ -1,14 +1,20 @@
 import Vue from "vue";
 import VueApollo from "vue-apollo";
 import { createApolloClient, restartWebsockets } from "vue-cli-plugin-apollo/graphql-client";
-import { InMemoryCache } from "apollo-cache-inmemory";
+import { InMemoryCache, IntrospectionFragmentMatcher } from "apollo-cache-inmemory";
+import SCHEMA from "../node_modules/.temp/graphql/schema.json";
 
 // Install the vue plugin
 Vue.use(VueApollo);
 
 // Name of the localStorage item
+
 const AUTH_TOKEN = "token",
-  cache = new InMemoryCache();
+  cache = new InMemoryCache({
+    fragmentMatcher: new IntrospectionFragmentMatcher({
+      introspectionQueryResultData: SCHEMA.data,
+    }),
+  });
 
 // Http endpoint
 const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || "http://localhost:4000/graphql";

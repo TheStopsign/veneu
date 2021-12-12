@@ -28,6 +28,14 @@ const DesktopScan = () => import("./pages/DesktopScan.vue");
 
 const Watch = () => import("./pages/Watch.vue");
 
+const SILENTERRORS = ["NavigationDuplicated"];
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch((err) => {
+    if (!SILENTERRORS.includes(err.name)) throw err;
+  });
+};
+
 Vue.use(VueRouter);
 
 const router = new VueRouter({
