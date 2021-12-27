@@ -248,40 +248,66 @@ export default {
       window.open("/checkin/scan/desktop", "_blank", "location=yes,height=480,width=640,scrollbars=yes,status=yes");
     },
     async sendClaim(code, checkin) {
-      this.$apollo.mutate({
-        mutation: gql`
-          mutation claimTicket($code: String!, $user: ID!, $email: String!, $checkin: ID!) {
-            claimTicket(code: $code, user: $user, email: $email, checkin: $checkin) {
-              code
-              user
-              email
+      let self = this;
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation claimTicket($code: String!, $user: ID!, $email: String!, $checkin: ID!) {
+              claimTicket(code: $code, user: $user, email: $email, checkin: $checkin) {
+                code
+                user
+                email
+              }
             }
+          `,
+          variables: {
+            code,
+            user: this.user,
+            email: this.email,
+            checkin,
+          },
+        })
+        .catch((e) => {
+          this.$q.notify({
+            progress: true,
+            message: e,
+            icon: "error",
+            color: "negative",
+          });
+          if (self.camera_scanning) {
+            self.handleStopCamScan();
           }
-        `,
-        variables: {
-          code,
-          user: this.user,
-          email: this.email,
-          checkin,
-        },
-      });
+        });
     },
     async sendReservation(checkin, tickets) {
-      this.$apollo.mutate({
-        mutation: gql`
-          mutation reserveTicket($checkin: ID!, $tickets: [TicketInput!]!) {
-            reserveTicket(checkin: $checkin, tickets: $tickets) {
-              code
-              user
-              email
+      let self = this;
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation reserveTicket($checkin: ID!, $tickets: [TicketInput!]!) {
+              reserveTicket(checkin: $checkin, tickets: $tickets) {
+                code
+                user
+                email
+              }
             }
+          `,
+          variables: {
+            checkin,
+            tickets,
+          },
+        })
+        .catch((e) => {
+          this.$q.notify({
+            progress: true,
+            message: e,
+            icon: "error",
+            color: "negative",
+          });
+          if (self.camera_scanning) {
+            self.handleStopCamScan();
           }
-        `,
-        variables: {
-          checkin,
-          tickets,
-        },
-      });
+        });
     },
     onApproved(
       previousResult,
