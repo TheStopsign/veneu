@@ -25,13 +25,16 @@ module.exports = (pubsub) => ({
         CheckinCache.set(ticket.checkin + "", checkin);
       }
       if (checkin.ticketing_requires_authentication && !requester) {
+        console.log("~~~~~HERE1");
         throw new ForbiddenError("Must be logged in to claim a Ticket from this Checkin");
       }
       if (checkin.ticketing_requires_authorization) {
         if (!requester) {
+          console.log("~~~~~HERE2");
           throw new ForbiddenError("Must be logged in to claim a Ticket from this Checkin");
         }
         if (!requester.auths.find((a) => a.shared_resource == checkin._id)) {
+          console.log("~~~~~HERE3");
           throw new ForbiddenError("Must be authorized to claim a Ticket from this Checkin");
         }
       }
