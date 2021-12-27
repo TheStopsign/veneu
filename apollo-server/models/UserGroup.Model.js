@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { flatten } = require("../generics");
 
-module.exports = (pubsub) => {
+module.exports = (pubsub, caches) => {
   const UserGroup = new mongoose.Schema(
     {
       name: {
@@ -48,16 +48,20 @@ module.exports = (pubsub) => {
     }
   )
     .pre("deleteOne", { document: true }, function (next) {
+      let deleted = this;
       Promise.all([
-        mongoose.model("Auth").deleteMany({ shared_resource: this._id }),
-        mongoose.model("Course").updateOne({ _id: this.parent_resource }, { $pull: { user_groups: this._id } }),
-        mongoose.model("UserGroup").updateOne({ _id: this.parent_resource }, { $pull: { user_groups: this._id } }),
+        mongoose.model("Auth").deleteMany({ shared_resource: deleted._id }),
+        mongoose.model("Course").updateOne({ _id: deleted.parent_resource }, { $pull: { user_groups: deleted._id } }),
+        mongoose
+          .model("UserGroup")
+          .updateOne({ _id: deleted.parent_resource }, { $pull: { user_groups: deleted._id } }),
         mongoose
           .model("RegistrationSection")
-          .updateOne({ _id: this.parent_resource }, { $pull: { user_groups: this._id } }),
-        mongoose.model("UserGroup").deleteMany({ _id: { $in: this.user_groups } }),
-        mongoose.model("Lecture").deleteMany({ parent_resource: this._id }),
+          .updateOne({ _id: deleted.parent_resource }, { $pull: { user_groups: deleted._id } }),
+        mongoose.model("UserGroup").deleteMany({ _id: { $in: deleted.user_groups } }),
+        mongoose.model("Lecture").deleteMany({ parent_resource: deleted._id }),
       ]).then((resolved) => {
+        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
@@ -79,12 +83,16 @@ module.exports = (pubsub) => {
             mongoose.model("UserGroup").deleteMany({ _id: { $in: groupsgroups } }),
             mongoose.model("Lecture").deleteMany({ _id: { $in: groupslectures } }),
           ]).then((resolved) => {
+            userGroups.forEach(function (deleted) {
+              caches[deleted.type].del(deleted._id + "");
+            });
             next();
           });
         } else next();
       });
     })
     .pre("save", function (next) {
+      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })

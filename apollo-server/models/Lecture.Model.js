@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-module.exports = (pubsub) => {
+module.exports = (pubsub, caches) => {
   const Lecture = new mongoose.Schema(
     {
       name: {
@@ -55,14 +55,16 @@ module.exports = (pubsub) => {
     }
   )
     .pre("deleteOne", { document: true }, function (next) {
+      let deleted = this;
       Promise.all([
-        mongoose.model("Auth").deleteMany({ shared_resource: this._id }),
+        mongoose.model("Auth").deleteMany({ shared_resource: deleted._id }),
         mongoose
-          .model(this.parent_resource_type)
-          .updateOne({ _id: this.parent_resource }, { $pull: { lectures: this._id } }),
-        mongoose.model("YTVideoStream").deleteOne({ parent_resource: this._id }),
-        mongoose.model("Checkin").deleteMany({ _id: { $in: this.checkins } }),
+          .model(deleted.parent_resource_type)
+          .updateOne({ _id: deleted.parent_resource }, { $pull: { lectures: deleted._id } }),
+        mongoose.model("YTVideoStream").deleteOne({ parent_resource: deleted._id }),
+        mongoose.model("Checkin").deleteMany({ _id: { $in: deleted.checkins } }),
       ]).then((resolved) => {
+        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
@@ -86,6 +88,9 @@ module.exports = (pubsub) => {
               .model("UserGroup")
               .updateMany({ _id: { $in: lecturesparents } }, { $pullAll: { lectures: lecturesids } }),
           ]).then((resolved) => {
+            lectures.forEach(function (deleted) {
+              caches[deleted.type].del(deleted._id + "");
+            });
             next();
           });
         } else {
@@ -94,6 +99,7 @@ module.exports = (pubsub) => {
       });
     })
     .pre("save", function (next) {
+      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-module.exports = (pubsub) => {
+module.exports = (pubsub, caches) => {
   const VideoStreamPlayback = new mongoose.Schema(
     {
       type: {
@@ -37,7 +37,9 @@ module.exports = (pubsub) => {
     }
   )
     .pre("deleteOne", { document: true }, function (next) {
-      Promise.all([mongoose.model("Submission").deleteOne({ submittable: this._id })]).then((resolved) => {
+      let deleted = this;
+      Promise.all([mongoose.model("Submission").deleteOne({ submittable: deleted._id })]).then((resolved) => {
+        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
@@ -49,6 +51,9 @@ module.exports = (pubsub) => {
           Promise.all([
             mongoose.model("Submission").deleteMany({ submittable: { $in: videostreamplaybacksids } }),
           ]).then((resolved) => {
+            videostreamplaybacks.forEach(function (deleted) {
+              caches[deleted.type].del(deleted._id + "");
+            });
             next();
           });
         } else {
@@ -57,6 +62,7 @@ module.exports = (pubsub) => {
       });
     })
     .pre("save", function (next) {
+      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })

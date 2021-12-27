@@ -83,6 +83,7 @@ module.exports = (pubsub) => {
       });
     })
     .pre("save", function (next) {
+      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })

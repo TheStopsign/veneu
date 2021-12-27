@@ -65,18 +65,17 @@ module.exports = (pubsub, caches) => {
         deleted.model("Auth").deleteMany({ user: deleted._id }),
         deleted.model("Notification").deleteMany({ user: deleted._id }),
       ]).then((resolved) => {
-        caches["Users"].del(deleted._id + "");
+        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
     .pre("deleteMany", function (next) {
       this.model.find(this.getFilter()).then((users) => {
         if (users.length) {
-          const usersids = users.map((a) => a._id);
           const usersauths = flatten(users.map((a) => a.auths));
           Promise.all([mongoose.model("Auth").deleteMany({ _id: { $in: usersauths } })]).then((resolved) => {
-            usersids.forEach(function (userid) {
-              caches["Users"].del(userid + "");
+            users.forEach(function (deleted) {
+              caches[deleted.type].del(deleted._id + "");
             });
             next();
           });
@@ -84,6 +83,7 @@ module.exports = (pubsub, caches) => {
       });
     })
     .pre("save", function (next) {
+      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       if (this.isNew) {
         this.access_code = "";

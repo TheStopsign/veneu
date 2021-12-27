@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-module.exports = (pubsub) => {
+module.exports = (pubsub, caches) => {
   const Submission = new mongoose.Schema(
     {
       type: {
@@ -42,10 +42,12 @@ module.exports = (pubsub) => {
     }
   )
     .pre("deleteOne", { document: true }, function (next) {
+      let deleted = this;
       Promise.all([
-        mongoose.model("Assignment").updateOne({ _id: this.assignment }, { $pull: { submissions: this._id } }),
-        mongoose.model(this.submittable_type).updateOne({ _id: this.submittable }, { submission: null }),
+        mongoose.model("Assignment").updateOne({ _id: deleted.assignment }, { $pull: { submissions: deleted._id } }),
+        mongoose.model(deleted.submittable_type).updateOne({ _id: deleted.submittable }, { submission: null }),
       ]).then((resolved) => {
+        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
@@ -61,6 +63,9 @@ module.exports = (pubsub) => {
               .model("VideoStreamPlayback")
               .updateMany({ submission: { $in: submissionsids } }, { submission: null }),
           ]).then((resolved) => {
+            submissions.forEach(function (deleted) {
+              caches[deleted.type].del(deleted._id + "");
+            });
             next();
           });
         } else {
@@ -69,6 +74,7 @@ module.exports = (pubsub) => {
       });
     })
     .pre("save", function (next) {
+      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })

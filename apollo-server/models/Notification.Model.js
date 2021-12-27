@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-module.exports = (pubsub) => {
+module.exports = (pubsub, caches) => {
   const Notification = new mongoose.Schema(
     {
       text: {
@@ -30,9 +30,16 @@ module.exports = (pubsub) => {
     }
   )
     .pre("deleteOne", { document: true }, function (next) {
-      this.model("User").findByIdAndUpdate({ _id: this.user }, { $pull: { notifications: this._id } }, next);
+      let deleted = this;
+      Promise.all([
+        this.model("User").findByIdAndUpdate({ _id: this.user }, { $pull: { notifications: this._id } }),
+      ]).then((resolved) => {
+        caches[deleted.type].del(deleted._id + "");
+        next();
+      });
     })
     .pre("save", function (next) {
+      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })

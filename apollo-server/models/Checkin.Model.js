@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { flatten } = require("../generics");
+
 module.exports = (pubsub, caches) => {
   const Checkin = new mongoose.Schema(
     {
@@ -54,12 +55,12 @@ module.exports = (pubsub, caches) => {
     .pre("deleteOne", { document: true }, function (next) {
       let deleted = this;
       Promise.all([
-        deleted.model("Auth").deleteMany({ shared_resource: deleted._id }),
-        deleted.model("UserGroup").deleteMany({ parent_resource: deleted._id }),
-        deleted.model("Lecture").deleteMany({ parent_resource: deleted._id }),
-        deleted.model("Course").updateOne({ _id: deleted.course }, { $pull: { registration_sections: deleted._id } }),
+        mongoose.model("Auth").deleteMany({ shared_resource: deleted._id }),
+        mongoose.model("Ticket").deleteMany({ _id: { $in: deleted.tickets } }),
+        mongoose.model("User").updateOne({ _id: deleted.creator }, { $pull: { checkins: deleted._id } }),
+        mongoose.model("Lecture").updateOne({ _id: deleted.parent_resource }, { $pull: { checkins: deleted._id } }),
       ]).then(() => {
-        caches["Checkin"].del(deleted._id + "");
+        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
@@ -67,27 +68,18 @@ module.exports = (pubsub, caches) => {
       this.model.find(this.getFilter()).then((checkins) => {
         if (checkins.length) {
           const checkinsids = checkins.map((a) => a._id);
-          const sectionsauths = flatten(checkins.map((a) => a.auths));
-          Promise.all([mongoose.model("Auth").deleteMany({ _id: { $in: sectionsauths } })]).then((resolved) => {
-            checkinsids.forEach(function (checkinid) {
-              caches["Checkin"].del(checkinid + "");
+          const checkinsauths = flatten(checkins.map((a) => a.auths));
+          Promise.all([mongoose.model("Auth").deleteMany({ _id: { $in: checkinsauths } })]).then((resolved) => {
+            checkins.forEach(function (deleted) {
+              caches[deleted.type].del(deleted._id + "");
             });
             next();
           });
         } else next();
       });
     })
-    .pre("deleteOne", { document: true }, function (next) {
-      Promise.all([
-        mongoose.model("Auth").deleteMany({ shared_resource: this._id }),
-        mongoose.model("Ticket").deleteMany({ _id: { $in: this.tickets } }),
-        mongoose.model("User").updateOne({ _id: this.creator }, { $pull: { checkins: this._id } }),
-        mongoose.model("Lecture").updateOne({ _id: this.parent_resource }, { $pull: { checkins: this._id } }),
-      ]).then((resolved) => {
-        next();
-      });
-    })
     .pre("save", function (next) {
+      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })

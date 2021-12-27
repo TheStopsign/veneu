@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-module.exports = (pubsub) => {
+module.exports = (pubsub, caches) => {
   const Ticket = new mongoose.Schema(
     {
       email: {
@@ -32,13 +32,16 @@ module.exports = (pubsub) => {
     }
   )
     .pre("deleteOne", { document: true }, function (next) {
-      Promise.all([mongoose.model("Checkin").updateOne({ _id: this.checkin }, { $pull: { tickets: this._id } })]).then(
-        (resolved) => {
-          next();
-        }
-      );
+      let deleted = this;
+      Promise.all([
+        mongoose.model("Checkin").updateOne({ _id: deleted.checkin }, { $pull: { tickets: deleted._id } }),
+      ]).then((resolved) => {
+        caches[deleted.type].del(deleted._id + "");
+        next();
+      });
     })
     .pre("save", function (next) {
+      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })

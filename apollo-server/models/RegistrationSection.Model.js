@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { flatten } = require("../generics");
 
-module.exports = (pubsub) => {
+module.exports = (pubsub, caches) => {
   const RegistrationSection = new mongoose.Schema(
     {
       name: {
@@ -57,12 +57,14 @@ module.exports = (pubsub) => {
     }
   )
     .pre("deleteOne", { document: true }, function (next) {
+      let deleted = this;
       Promise.all([
-        this.model("Auth").deleteMany({ shared_resource: this._id }),
-        this.model("UserGroup").deleteMany({ parent_resource: this._id }),
-        this.model("Lecture").deleteMany({ parent_resource: this._id }),
-        this.model("Course").updateOne({ _id: this.course }, { $pull: { registration_sections: this._id } }),
+        mongoose.model("Auth").deleteMany({ shared_resource: deleted._id }),
+        mongoose.model("UserGroup").deleteMany({ parent_resource: deleted._id }),
+        mongoose.model("Lecture").deleteMany({ parent_resource: deleted._id }),
+        mongoose.model("Course").updateOne({ _id: deleted.course }, { $pull: { registration_sections: deleted._id } }),
       ]).then(() => {
+        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
@@ -82,12 +84,16 @@ module.exports = (pubsub) => {
             mongoose.model("UserGroup").deleteMany({ _id: { $in: sectionsgroups } }),
             mongoose.model("Lecture").deleteMany({ _id: { $in: sectionslectures } }),
           ]).then((resolved) => {
+            registrationSections.forEach(function (deleted) {
+              caches[deleted.type].del(deleted._id + "");
+            });
             next();
           });
         } else next();
       });
     })
     .pre("save", function (next) {
+      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })
