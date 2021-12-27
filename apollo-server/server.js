@@ -9,7 +9,7 @@ const cors = require("cors");
 const voyagerMiddleware = require("graphql-voyager/middleware");
 const typeDefs = require("./schema.graphql");
 const getResolvers = require("./resolvers");
-const getModels = require("./models");
+const getModelSchemas = require("./models");
 const getContext = require("./context");
 const schemaDirectives = require("./directives");
 const LRU = require("lru-cache");
@@ -30,11 +30,31 @@ const LRU_OPTIONS = {
 
 const pubsub = new PubSub();
 
-const models = getModels(pubsub);
-const modelNames = Object.keys(models);
+const modelNames = [
+  "Assignment",
+  "Auth",
+  "Checkin",
+  "Course",
+  "Lecture",
+  "Notification",
+  "RegistrationSection",
+  "Submission",
+  "Ticket",
+  "User",
+  "UserGroup",
+  "VideoStreamPlayback",
+  "YTVideoStream",
+];
+
 const caches = {};
 modelNames.forEach(function (modelName) {
   caches[modelName] = new LRU(LRU_OPTIONS);
+});
+
+const modelSchemas = getModelSchemas(pubsub, caches);
+const models = {};
+modelNames.forEach(function (modelName) {
+  models[modelName] = mongoose.model(modelName, modelSchemas[modelName]);
 });
 
 const server = new ApolloServer({

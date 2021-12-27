@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const { flatten } = require("../generics");
 
-module.exports = (pubsub) => {
+module.exports = (pubsub, caches) => {
   const User = new mongoose.Schema(
     {
       first_name: {
@@ -59,11 +60,27 @@ module.exports = (pubsub) => {
     }
   )
     .pre("deleteOne", function (next) {
+      let deleted = this;
       Promise.all([
-        this.model("Auth").deleteMany({ user: this._id }),
-        this.model("Notification").deleteMany({ user: this._id }),
+        deleted.model("Auth").deleteMany({ user: deleted._id }),
+        deleted.model("Notification").deleteMany({ user: deleted._id }),
       ]).then((resolved) => {
+        caches["Users"].del(deleted._id + "");
         next();
+      });
+    })
+    .pre("deleteMany", function (next) {
+      this.model.find(this.getFilter()).then((users) => {
+        if (users.length) {
+          const usersids = users.map((a) => a._id);
+          const usersauths = flatten(users.map((a) => a.auths));
+          Promise.all([mongoose.model("Auth").deleteMany({ _id: { $in: usersauths } })]).then((resolved) => {
+            usersids.forEach(function (userid) {
+              caches["Users"].del(userid + "");
+            });
+            next();
+          });
+        } else next();
       });
     })
     .pre("save", function (next) {
@@ -84,5 +101,5 @@ module.exports = (pubsub) => {
       }
     });
 
-  return mongoose.model("User", User);
+  return User;
 };

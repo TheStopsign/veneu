@@ -120,5 +120,5 @@ module.exports = (pubsub) => {
       }
     });
 
-  return mongoose.model("Lecture", Lecture);
+  return Lecture;
 };

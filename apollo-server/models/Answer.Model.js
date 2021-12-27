@@ -62,5 +62,5 @@ module.exports = (pubsub) => {
       // }
     });
 
-  module.exports = mongoose.model("Answer", Answer);
+  return Answer;
 };

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-module.exports = (pubsub) => {
+const { flatten } = require("../generics");
+module.exports = (pubsub, caches) => {
   const Checkin = new mongoose.Schema(
     {
       name: {
@@ -51,6 +52,32 @@ module.exports = (pubsub) => {
     }
   )
     .pre("deleteOne", { document: true }, function (next) {
+      let deleted = this;
+      Promise.all([
+        deleted.model("Auth").deleteMany({ shared_resource: deleted._id }),
+        deleted.model("UserGroup").deleteMany({ parent_resource: deleted._id }),
+        deleted.model("Lecture").deleteMany({ parent_resource: deleted._id }),
+        deleted.model("Course").updateOne({ _id: deleted.course }, { $pull: { registration_sections: deleted._id } }),
+      ]).then(() => {
+        caches["Checkin"].del(deleted._id + "");
+        next();
+      });
+    })
+    .pre("deleteMany", function (next) {
+      this.model.find(this.getFilter()).then((checkins) => {
+        if (checkins.length) {
+          const checkinsids = checkins.map((a) => a._id);
+          const sectionsauths = flatten(checkins.map((a) => a.auths));
+          Promise.all([mongoose.model("Auth").deleteMany({ _id: { $in: sectionsauths } })]).then((resolved) => {
+            checkinsids.forEach(function (checkinid) {
+              caches["Checkin"].del(checkinid + "");
+            });
+            next();
+          });
+        } else next();
+      });
+    })
+    .pre("deleteOne", { document: true }, function (next) {
       Promise.all([
         mongoose.model("Auth").deleteMany({ shared_resource: this._id }),
         mongoose.model("Ticket").deleteMany({ _id: { $in: this.tickets } }),
@@ -86,5 +113,5 @@ module.exports = (pubsub) => {
       }
     });
 
-  return mongoose.model("Checkin", Checkin);
+  return Checkin;
 };

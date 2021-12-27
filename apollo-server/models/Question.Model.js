@@ -78,5 +78,5 @@ module.exports = (pubsub) => {
       }
     });
 
-  return mongoose.model("RegistrationSection", RegistrationSection);
+  return RegistrationSection;
 };

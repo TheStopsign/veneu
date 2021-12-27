@@ -108,5 +108,5 @@ module.exports = (pubsub) => {
       }
     });
 
-  return mongoose.model("FreeResponse", FreeResponse);
+  return FreeResponse;
 };

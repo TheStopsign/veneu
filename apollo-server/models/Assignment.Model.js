@@ -80,5 +80,5 @@ module.exports = (pubsub) => {
       }
     });
 
-  return mongoose.model("Assignment", Assignment);
+  return Assignment;
 };

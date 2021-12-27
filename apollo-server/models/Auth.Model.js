@@ -59,5 +59,5 @@ module.exports = (pubsub) => {
       }
     });
 
-  return mongoose.model("Auth", Auth);
+  return Auth;
 };

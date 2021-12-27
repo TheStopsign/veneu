@@ -114,5 +114,5 @@ module.exports = (pubsub) => {
       }
     });
 
-  return mongoose.model("MultipleChoice", MultipleChoice);
+  return MultipleChoice;
 };

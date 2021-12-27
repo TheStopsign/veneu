@@ -42,5 +42,5 @@ module.exports = (pubsub) => {
       }
     });
 
-  return mongoose.model("Notification", Notification);
+  return Notification;
 };

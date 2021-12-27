@@ -117,5 +117,5 @@ module.exports = (pubsub) => {
       }
     });
 
-  return mongoose.model("UserGroup", UserGroup);
+  return UserGroup;
 };

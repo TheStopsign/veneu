@@ -112,5 +112,5 @@ module.exports = (pubsub) => {
       }
     });
 
-  return mongoose.model("YTVideoStream", YTVideoStream);
+  return YTVideoStream;
 };

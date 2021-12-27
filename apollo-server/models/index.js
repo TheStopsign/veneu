@@ -1,8 +1,8 @@
-module.exports = (pubsub) => ({
+module.exports = (pubsub, caches) => ({
   Answer: require("./Answer.Model")(pubsub),
   Assignment: require("./Assignment.Model")(pubsub),
   Auth: require("./Auth.Model")(pubsub),
-  Checkin: require("./Checkin.Model")(pubsub),
+  Checkin: require("./Checkin.Model")(pubsub, caches),
   Course: require("./Course.Model")(pubsub),
   FreeResponse: require("./FreeResponse.Model")(pubsub),
   Lecture: require("./Lecture.Model")(pubsub),
@@ -11,7 +11,7 @@ module.exports = (pubsub) => ({
   RegistrationSection: require("./RegistrationSection.Model")(pubsub),
   Submission: require("./Submission.Model")(pubsub),
   Ticket: require("./Ticket.Model")(pubsub),
-  User: require("./User.Model")(pubsub),
+  User: require("./User.Model")(pubsub, caches),
   UserGroup: require("./UserGroup.Model")(pubsub),
   VideoStreamPlayback: require("./VideoStreamPlayback.Model")(pubsub),
   YTVideoStream: require("./YTVideoStream.Model")(pubsub),

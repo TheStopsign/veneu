@@ -90,5 +90,5 @@ module.exports = (pubsub) => {
       }
     });
 
-  return mongoose.model("Submission", Submission);
+  return Submission;
 };

@@ -65,5 +65,5 @@ module.exports = (pubsub) => {
       // }
     });
 
-  module.exports = mongoose.model("VideoStreamPlayback", VideoStreamPlayback);
+  return VideoStreamPlayback;
 };
