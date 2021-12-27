@@ -270,7 +270,7 @@ export default {
         .catch((e) => {
           this.$q.notify({
             progress: true,
-            message: e,
+            message: "e: " + typeof e + " " + Object.getOwnPropertyNames(e),
             icon: "error",
             color: "negative",
           });
@@ -300,7 +300,7 @@ export default {
         .catch((e) => {
           this.$q.notify({
             progress: true,
-            message: e,
+            message: "e: " + typeof e + " " + Object.getOwnPropertyNames(e),
             icon: "error",
             color: "negative",
           });
