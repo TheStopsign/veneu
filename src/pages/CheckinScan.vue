@@ -268,14 +268,18 @@ export default {
           },
         })
         .catch((e) => {
-          this.$q.notify({
-            progress: true,
-            message: "e: " + typeof e + " " + Object.getOwnPropertyNames(e),
-            icon: "error",
-            color: "negative",
-          });
-          if (self.camera_scanning) {
-            self.handleStopCamScan();
+          if (e.graphQLErrors && e.graphQLErrors.length) {
+            e.graphQLErrors.forEach((er) => {
+              this.$q.notify({
+                progress: true,
+                message: er.message,
+                icon: "error",
+                color: "negative",
+              });
+            });
+            if (self.camera_scanning) {
+              self.handleStopCamScan();
+            }
           }
         });
     },
@@ -298,14 +302,18 @@ export default {
           },
         })
         .catch((e) => {
-          this.$q.notify({
-            progress: true,
-            message: "e: " + typeof e + " " + Object.getOwnPropertyNames(e),
-            icon: "error",
-            color: "negative",
-          });
-          if (self.camera_scanning) {
-            self.handleStopCamScan();
+          if (e.graphQLErrors && e.graphQLErrors.length) {
+            e.graphQLErrors.forEach((er) => {
+              this.$q.notify({
+                progress: true,
+                message: er.message,
+                icon: "error",
+                color: "negative",
+              });
+            });
+            if (self.camera_scanning) {
+              self.handleStopCamScan();
+            }
           }
         });
     },
