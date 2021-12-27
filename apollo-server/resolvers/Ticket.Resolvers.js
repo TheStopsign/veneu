@@ -24,6 +24,7 @@ module.exports = (pubsub) => ({
         checkin = await readOne({ _id: ticket.checkin, type: "Checkin" }, { requester, models, loaders, pubsub });
         CheckinCache.set(ticket.checkin + "", checkin);
       }
+      console.log(checkin);
       console.log("~~~~~HERE4");
       if (checkin.ticketing_requires_authentication && !requester) {
         console.log("~~~~~HERE1");
