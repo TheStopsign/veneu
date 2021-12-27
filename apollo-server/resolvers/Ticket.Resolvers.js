@@ -24,25 +24,17 @@ module.exports = (pubsub) => ({
         checkin = await readOne({ _id: ticket.checkin, type: "Checkin" }, { requester, models, loaders, pubsub });
         CheckinCache.set(ticket.checkin + "", checkin);
       }
-      console.log(checkin);
-      console.log("~~~~~HERE4");
       if (checkin.ticketing_requires_authentication && !requester) {
-        console.log("~~~~~HERE1");
         throw new ForbiddenError("Must be logged in to claim a Ticket from this Checkin");
       }
-      console.log("~~~~~HERE5");
       if (checkin.ticketing_requires_authorization) {
-        console.log("~~~~~HERE6");
         if (!requester) {
-          console.log("~~~~~HERE2");
           throw new ForbiddenError("Must be logged in to claim a Ticket from this Checkin");
         }
         if (!requester.auths.find((a) => a.shared_resource == checkin._id)) {
-          console.log("~~~~~HERE3");
           throw new ForbiddenError("Must be authorized to claim a Ticket from this Checkin");
         }
       }
-      console.log("~~~~~HERE7");
       return pubsub.publish("CLAIMED_TICKET", { claimedTicket: { ticket } }).then((done) => ticket);
     },
     approveTicket: async (parent, ticket, { requester, models, loaders, pubsub }, info) => {

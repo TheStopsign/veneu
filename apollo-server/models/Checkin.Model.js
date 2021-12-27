@@ -35,6 +35,16 @@ module.exports = (pubsub) => {
           required: true,
         },
       ],
+      ticketing_requires_authentication: {
+        type: Boolean,
+        required: true,
+        default: false,
+      },
+      ticketing_requires_authorization: {
+        type: Boolean,
+        required: true,
+        default: false,
+      },
     },
     {
       timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
