@@ -60,7 +60,6 @@ export default {
   mounted() {
     this.$nextTick(function () {
       this.$nextTick(function () {
-        console.log(this.$refs.checkinSelectorScrollContents);
         this.$refs.checkinSelectorScrollContents.$el.parentElement.parentElement.parentElement.style.height =
           this.$refs.checkinSelectorScrollContents.$el.offsetHeight + "px";
         this.$refs.checkinSelectorScrollContents.$el.parentElement.style.position = "absolute";

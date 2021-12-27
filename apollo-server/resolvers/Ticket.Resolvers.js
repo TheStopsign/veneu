@@ -31,7 +31,7 @@ module.exports = (pubsub) => ({
         if (!requester) {
           throw new ForbiddenError("Must be logged in to claim a Ticket from this Checkin");
         }
-        if (!requester.auths.find((a) => a.shared_resource == checkin._id)) {
+        if (!requester.auths.find((a) => a.shared_resource == ticket.checkin)) {
           throw new ForbiddenError("Must be authorized to claim a Ticket from this Checkin");
         }
       }

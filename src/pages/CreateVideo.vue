@@ -152,7 +152,6 @@ export default {
               });
               self.vjs.pause();
               self.duration = self.vjs.duration();
-              console.log("CHANGE - " + self.duration);
             } else {
               videojs(
                 "video_player",
@@ -168,7 +167,6 @@ export default {
                   self.vjs.one("loadedmetadata", function () {
                     self.vjs.pause();
                     self.duration = self.vjs.duration();
-                    console.log("START - " + self.duration);
                   });
                 }
               );
