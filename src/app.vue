@@ -548,34 +548,7 @@ export default {
       return result;
     },
     handleHost() {
-      this.$apollo
-        .mutate({
-          mutation: gql`
-            mutation createCheckin {
-              createCheckin {
-                _id
-              }
-            }
-          `,
-        })
-        .then(({ data }) => {
-          location.href = "/checkin/" + data.createCheckin._id + "/show";
-          // this.$router.push({ name: "CheckinShow", params: { _id: data.createCheckin._id } });
-        })
-        .catch((e) => {
-          this.$q.notify({
-            progress: true,
-            message: "Issue creating a checkin, try again " + e,
-            icon: "error",
-            color: "negative",
-          });
-        });
-    },
-    handleHosted(_id) {
-      if (this.$route.name != "CheckinShow" || this.$route.params._id != _id) {
-        location.href = "/checkin/" + _id + "/show";
-        // this.$router.push({ name: "CheckinShow", params: { _id } });
-      }
+      this.$router.push({ name: "CreateCheckin" });
     },
     tryLogout() {
       if (localStorage.getItem("token")) {

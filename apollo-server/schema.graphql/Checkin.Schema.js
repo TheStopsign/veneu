@@ -9,6 +9,21 @@ module.exports = gql`
     type: String!
     parent_resource: ParentResource
     parent_resource_type: String
+
+    """
+    Whether users who aren't logged-in can be given Tickets
+    """
+    ticketing_requires_authentication: Boolean
+
+    """
+    Whether users without explicit permission can be given Tickets
+    """
+    ticketing_requires_authorization: Boolean
+
+    """
+    Whether the same user can be given multiple Tickets
+    """
+    ticketing_allows_duplicates: Boolean
   }
 
   extend type Checkin {
@@ -23,7 +38,12 @@ module.exports = gql`
   }
 
   extend type Mutation {
-    createCheckin: Checkin!
+    createCheckin(
+      name: String!
+      ticketing_requires_authentication: Boolean
+      ticketing_requires_authorization: Boolean
+      ticketing_allows_duplicates: Boolean
+    ): Checkin!
     deleteCheckin(_id: ID!): Checkin!
   }
 

@@ -1,9 +1,9 @@
 <template>
-  <q-page id="create-course">
+  <q-page id="create-lecture">
     <div class="q-pt-md q-pb-xl q-px-md">
       <q-form class="q-gutter-y-md q-ma-md q-py-md neu-convex">
         <div>
-          <i><h1>Create a New Lecture</h1></i>
+          <i><h1>New Lecture...</h1></i>
         </div>
         <q-input
           standout="bg-primary text-white q-ma-none"
@@ -106,7 +106,7 @@
 import gql from "graphql-tag";
 import ResourceSelector from "../components/ResourceSelector";
 export default {
-  name: "CreateRegistrationSection",
+  name: "CreateLecture",
   props: {
     me: Object,
   },

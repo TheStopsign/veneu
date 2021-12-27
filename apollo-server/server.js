@@ -1,15 +1,20 @@
 require("dotenv").config({ path: __dirname + "/../variables.env" });
 
+const { ApolloServer, PubSub, makeExecutableSchema } = require("apollo-server-express");
+const mongoose = require("mongoose");
 const http = require("http");
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const voyagerMiddleware = require("graphql-voyager/middleware");
+const typeDefs = require("./schema.graphql");
+const getResolvers = require("./resolvers");
+const getModels = require("./models");
+const getContext = require("./context");
+const schemaDirectives = require("./directives");
+const LRU = require("lru-cache");
+const { approximateBytes } = require("./generics");
 
-const { ApolloServer, PubSub, makeExecutableSchema } = require("apollo-server-express");
-const pubsub = new PubSub();
-
-const mongoose = require("mongoose");
 mongoose.connect(process.env.DB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -17,10 +22,20 @@ mongoose.connect(process.env.DB_URL, {
   useFindAndModify: false,
 });
 
-const typeDefs = require("./schema.graphql");
-const getResolvers = require("./resolvers");
-const getContext = require("./context");
-const schemaDirectives = require("./directives");
+const LRU_OPTIONS = {
+  max: 1048576 /* 1MB */,
+  length: (obj, key) => approximateBytes(obj) + approximateBytes(key),
+  maxAge: 1000 * 60 * 60,
+};
+
+const pubsub = new PubSub();
+
+const models = getModels(pubsub);
+const modelNames = Object.keys(models);
+const caches = {};
+modelNames.forEach(function (modelName) {
+  caches[modelName] = new LRU(LRU_OPTIONS);
+});
 
 const server = new ApolloServer({
   schema: makeExecutableSchema({
@@ -29,7 +44,7 @@ const server = new ApolloServer({
     schemaDirectives,
     inheritResolversFromInterfaces: true,
   }),
-  context: getContext(pubsub),
+  context: getContext(pubsub, modelNames, models, caches),
   introspection: process.env.NODE_ENV === "production" ? true : true,
   playground: process.env.NODE_ENV === "production" ? false : true,
   tracing: process.env.NODE_ENV === "production" ? false : true,

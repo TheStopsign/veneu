@@ -3,25 +3,46 @@ const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudH
 
 module.exports = (pubsub) => ({
   Query: {
-    ticket: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    ticket: async (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return readOne({ _id, type: "Ticket" }, { requester, models, loaders, pubsub });
     },
-    tickets: (parent, args, { requester, models, loaders, pubsub }, info) => {
+    tickets: async (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return readMany({ user: requester._id, type: "Ticket" }, { requester, models, loaders, pubsub });
     },
   },
   Mutation: {
-    claimTicket: (parent, ticket, { requester, models, loaders, pubsub }, info) => {
+    claimTicket: async (
+      parent,
+      ticket,
+      { requester, models, loaders, pubsub, caches: { Checkin: CheckinCache } },
+      info
+    ) => {
+      let checkin = CheckinCache.get(ticket.checkin + "");
+      if (!checkin) {
+        checkin = await readOne({ _id: ticket.checkin, type: "Checkin" }, { requester, models, loaders, pubsub });
+        CheckinCache.set(ticket.checkin + "", checkin);
+      }
+      if (checkin.ticketing_requires_authentication && !requester) {
+        throw new ForbiddenError("Must be logged in to claim a Ticket from this Checkin");
+      }
+      if (checkin.ticketing_requires_authorization) {
+        if (!requester) {
+          throw new ForbiddenError("Must be logged in to claim a Ticket from this Checkin");
+        }
+        if (!requester.auths.find((a) => a.shared_resource == checkin._id)) {
+          throw new ForbiddenError("Must be authorized to claim a Ticket from this Checkin");
+        }
+      }
       return pubsub.publish("CLAIMED_TICKET", { claimedTicket: { ticket } }).then((done) => ticket);
     },
-    approveTicket: (parent, ticket, { requester, models, loaders, pubsub }, info) => {
+    approveTicket: async (parent, ticket, { requester, models, loaders, pubsub }, info) => {
       return createOne({ ...ticket, type: "Ticket" }, { requester, models, loaders, pubsub })
         .then((ticket) => pubsub.publish("APPROVED_TICKET", { approvedTicket: { ticket } }))
         .then((done) => ticket);
     },
-    reserveTicket: (parent, { checkin, tickets }, { requester, models, loaders, pubsub }, info) => {
+    reserveTicket: async (parent, { checkin, tickets }, { requester, models, loaders, pubsub }, info) => {
       return pubsub.publish("RESERVED_TICKET", { reservedTicket: { checkin, tickets } }).then((done) => tickets);
     },
   },

@@ -1,4 +1,4 @@
-const { ForbiddenError, withFilter } = require("apollo-server-express");
+const { ForbiddenError, withFilter, ValidationError } = require("apollo-server-express");
 const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
 
 const eventName = {
@@ -36,14 +36,18 @@ module.exports = (pubsub) => ({
     },
   },
   Mutation: {
-    createCheckin: async (parent, args, { requester, models, loaders, pubsub }, info) => {
+    createCheckin: async (parent, { ...options }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
+      if (options.ticketing_requires_authorization && !options.ticketing_requires_authentication) {
+        throw new ValidationError("Authorization also requires Authentication");
+      }
       return createOne(
         {
           creator: requester._id,
           parent_resource: requester._id,
           parent_resource_type: "User",
           type: "Checkin",
+          ...options,
         },
         { requester, models, loaders, pubsub }
       );

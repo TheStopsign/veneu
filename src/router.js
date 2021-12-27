@@ -21,6 +21,7 @@ const CreateLecture = () => import("./pages/CreateLecture.vue");
 const CreateVideo = () => import("./pages/CreateVideo.vue");
 const Settings = () => import("./components/Settings.vue");
 
+const CreateCheckin = () => import("./pages/CreateCheckin.vue");
 const CheckinShow = () => import("./pages/CheckinShow.vue");
 const CheckinReceipt = () => import("./pages/CheckinReceipt.vue");
 const CheckinScan = () => import("./pages/CheckinScan.vue");
@@ -108,6 +109,14 @@ const router = new VueRouter({
       path: "/course/:_id",
       name: "Course",
       component: Course,
+      meta: {
+        auth: true,
+      },
+    },
+    {
+      path: "/create-checkin",
+      name: "CreateCheckin",
+      component: CreateCheckin,
       meta: {
         auth: true,
       },
