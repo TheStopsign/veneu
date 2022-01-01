@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { flatten } = require("../generics");
+const { crudFunnel } = require("../crudHandlers");
 
 module.exports = (pubsub, caches) => {
   const Checkin = new mongoose.Schema(
@@ -55,10 +56,38 @@ module.exports = (pubsub, caches) => {
     .pre("deleteOne", { document: true }, function (next) {
       let deleted = this;
       Promise.all([
-        mongoose.model("Auth").deleteMany({ shared_resource: deleted._id }),
-        mongoose.model("Ticket").deleteMany({ _id: { $in: deleted.tickets } }),
-        mongoose.model("User").updateOne({ _id: deleted.creator }, { $pull: { checkins: deleted._id } }),
-        mongoose.model("Lecture").updateOne({ _id: deleted.parent_resource }, { $pull: { checkins: deleted._id } }),
+        crudFunnel("Auth", "deleteMany", { _id: { $in: deleted.auths } }, deleted.auths, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel("Ticket", "deleteMany", { _id: { $in: deleted.tickets } }, deleted.tickets, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel(
+          "User",
+          "updateOne",
+          [{ _id: deleted.creator }, { $pull: { checkins: deleted._id } }],
+          deleted.creator,
+          {
+            models: mongoose.models,
+            pubsub,
+            caches,
+          }
+        ),
+        crudFunnel(
+          deleted.parent_resource_type,
+          "updateOne",
+          [{ _id: deleted.parent_resource }, { $pull: { checkins: deleted._id } }],
+          deleted.parent_resource,
+          {
+            models: mongoose.models,
+            pubsub,
+            caches,
+          }
+        ),
       ]).then(() => {
         caches[deleted.type].del(deleted._id + "");
         next();
@@ -69,36 +98,61 @@ module.exports = (pubsub, caches) => {
         if (checkins.length) {
           const checkinsids = checkins.map((a) => a._id);
           const checkinsauths = flatten(checkins.map((a) => a.auths));
-          Promise.all([mongoose.model("Auth").deleteMany({ _id: { $in: checkinsauths } })]).then((resolved) => {
-            checkins.forEach(function (deleted) {
-              caches[deleted.type].del(deleted._id + "");
-            });
+          const checkinparents = checkins.map((a) => a.parent_resource);
+          const checkinparenttypes = [...new Set(checkins.map((a) => a.parent_resource_type))];
+          Promise.all([
+            crudFunnel("Auth", "deleteMany", { _id: { $in: checkinsauths } }, checkinsauths, {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }),
+            ...checkinparenttypes.map((checkinparenttype) =>
+              crudFunnel(
+                checkinparenttype,
+                "updateMany",
+                [{ _id: { $in: checkinparents } }, { $pullAll: { checkins: checkinsids } }],
+                checkinparents,
+                {
+                  models: mongoose.models,
+                  pubsub,
+                  caches,
+                }
+              )
+            ),
+          ]).then((resolved) => {
             next();
           });
         } else next();
       });
     })
     .pre("save", function (next) {
-      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })
     .post("save", function () {
+      let saved = this;
       if (this.wasNew) {
         Promise.all([
-          mongoose
-            .model("Auth")
-            .create({
-              shared_resource: this._id,
+          crudFunnel(
+            "Auth",
+            "create",
+            {
+              shared_resource: saved._id,
               shared_resource_type: "Checkin",
-              user: this.creator._id,
+              user: saved.creator,
               role: "INSTRUCTOR",
-            })
-            .then((auth) => {
-              pubsub.publish("AUTH_CREATED", {
-                authCreated: auth,
-              });
-            }),
+            },
+            null,
+            {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }
+          ).then((auth) => {
+            pubsub.publish("AUTH_CREATED", {
+              authCreated: auth,
+            });
+          }),
         ]).then((res) => {
           return;
         });

@@ -21,7 +21,17 @@ const getUser = async (models, { Auth: AuthsCache, User: UsersCache }, token) =>
     }
     return { ...user._doc, auths };
   });
-const findForModel = (models, keys, modelName) => models[modelName].find({ _id: { $in: keys } });
+const findForModel = async (models, keys, modelName) => {
+  let res = await models[modelName].find({ _id: { $in: keys } });
+  if (keys.length > res.length) {
+    let i = 0,
+      len = keys.length - res.length;
+    for (; i < len; i++) {
+      res.push(null);
+    }
+  }
+  return res;
+};
 const cacheKeyFn = (key) => key.toString();
 const getLoaders = (models, modelNames) => {
   var i = 0,

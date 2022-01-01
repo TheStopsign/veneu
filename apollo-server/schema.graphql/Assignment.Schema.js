@@ -1,22 +1,28 @@
 const { gql } = require("apollo-server-express");
 
 module.exports = gql`
-  type Assignment {
+  type Assignment implements SharedResource {
     _id: ID!
+    creator: User!
+    auths: [Auth]!
+    name: String!
     type: String!
+    parent_resource: ParentResource
+    parent_resource_type: String
+  }
+
+  extend type Assignment {
     assignable: Assignable!
     assignable_type: String!
-    submissions: [Submission!]!
+    submissions: [Submission]!
     points: Float
     hidden_until: Date
     due: Date!
-    created_at: Date!
-    updated_at: Date!
   }
 
   extend type Query {
     assignment(_id: ID!): Assignment!
-    assignments: [Assignment!]!
+    assignments: [Assignment]!
   }
 
   extend type Mutation {

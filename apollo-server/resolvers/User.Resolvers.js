@@ -1,5 +1,5 @@
 const { AuthenticationError, ForbiddenError } = require("apollo-server-express");
-const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
+const { readOne, readMany, updateOne, crudFunnel } = require("../crudHandlers");
 
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -20,29 +20,31 @@ const eventName = {
   USER_DELETED: "USER_DELETED",
 };
 
-module.exports = (pubsub) => ({
+module.exports = (pubsub, caches) => ({
   Query: {
-    user: (parent, { _id }, { requester, models, loaders, pubsub }, info) =>
+    user: (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) =>
       !requester
         ? new ForbiddenError("Not allowed")
-        : readOne({ _id, type: "User" }, { requester, models, loaders, pubsub }),
-    users: (parent, args, { requester, models, loaders, pubsub }, info) =>
+        : crudFunnel("User", "findOne", { _id }, _id, { models, loaders, pubsub, caches }),
+    users: (parent, args, { requester, models, loaders, pubsub, caches }, info) =>
       !requester
         ? new ForbiddenError("Not allowed")
-        : readMany({ type: "User" }, { requester, models, loaders, pubsub }),
-    me: (parent, args, { requester, models, loaders, pubsub }, info) =>
+        : readMany({ type: "User" }, { requester, models, loaders, pubsub, caches }),
+    me: (parent, args, { requester, models, loaders, pubsub, caches }, info) =>
       !requester
         ? new ForbiddenError("Not allowed")
-        : readOne({ _id: requester._id, type: "User" }, { requester, models, loaders, pubsub }),
+        : crudFunnel("User", "findOne", { _id: requester._id }, requester._id, { models, loaders, pubsub, caches }),
   },
   Mutation: {
-    createUser: (parent, { email }, { requester, models, loaders, pubsub }, info) => {
-      return createOne(
+    createUser: (parent, { email }, { requester, models, loaders, pubsub, caches }, info) => {
+      return crudFunnel(
+        "User",
+        "create",
         {
           email,
-          type: "User",
         },
-        { requester, models, loaders, pubsub }
+        null,
+        { models, loaders, pubsub, caches }
       ).then((user) => {
         if (user) {
           oauth2Client.setCredentials({
@@ -52,8 +54,11 @@ module.exports = (pubsub) => ({
             oauth2Client.getAccessToken((err, accessToken) => {
               if (err) {
                 console.log("OATH2CLIENT GETACCESSTOKEN ERROR:", err);
-                deleteOne({ email, type: "User" }, { requester, models, loaders, pubsub });
-                reject(null);
+                crudFunnel("User", "deleteOne", { _id: user._id }, user._id, { models, loaders, pubsub, caches }).then(
+                  (a) => {
+                    reject(null);
+                  }
+                );
               } else {
                 var transporter = nodemailer.createTransport({
                   service: "gmail",
@@ -101,16 +106,28 @@ module.exports = (pubsub) => ({
                   transporter.sendMail(mailOptions, function (error, info) {
                     if (error || info == null) {
                       console.log(error);
-                      deleteOne({ email, type: "User" }, { requester, models, loaders, pubsub });
-                      reject(null);
+                      crudFunnel("User", "deleteOne", { _id: user._id }, user._id, {
+                        models,
+                        loaders,
+                        pubsub,
+                        caches,
+                      }).then((a) => {
+                        reject(null);
+                      });
                     } else {
                       resolve(user);
                     }
                   });
                 } else {
                   console.log("MAILER FAILED");
-                  deleteOne({ email, type: "User" }, { requester, models, loaders, pubsub });
-                  reject(null);
+                  crudFunnel("User", "deleteOne", { _id: user._id }, user._id, {
+                    models,
+                    loaders,
+                    pubsub,
+                    caches,
+                  }).then((a) => {
+                    reject(null);
+                  });
                 }
               }
             });
@@ -121,16 +138,16 @@ module.exports = (pubsub) => ({
         }
       });
     },
-    updateUser(parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) {
+    updateUser(parent, { _id, ...patch }, { requester, models, loaders, pubsub, caches }, info) {
       if (!requester || requester._id != _id) throw new ForbiddenError("Not allowed");
-      return updateOne({ _id, type: "User" }, patch, { requester, models, loaders, pubsub });
+      return crudFunnel("User", "updateOne", [{ _id }, patch], _id, { models, loaders, pubsub, caches });
     },
-    deleteUser: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    deleteUser: (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester || requester._id != _id) throw new ForbiddenError("Not allowed");
-      return deleteOne({ _id, type: "User" }, { requester, models, loaders, pubsub });
+      return crudFunnel("User", "deleteOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
-    login(parent, { email, password }, { requester, models, loaders, pubsub }, info) {
-      return readOne({ email, type: "User" }, { requester, models, loaders, pubsub }).then((user) => {
+    login(parent, { email, password }, { requester, models, loaders, pubsub, caches }, info) {
+      return readOne({ email, type: "User" }, { requester, models, loaders, pubsub, caches }).then((user) => {
         if (!user) throw new AuthenticationError("Bad credentials");
         return bcrypt.compare(password, user.password).then((hash) => {
           if (!hash) throw new AuthenticationError("Bad credentials");
@@ -138,7 +155,12 @@ module.exports = (pubsub) => ({
         });
       });
     },
-    firstLogin(parent, { access_code, password, first_name, last_name }, { requester, models, loaders, pubsub }, info) {
+    firstLogin(
+      parent,
+      { access_code, password, first_name, last_name },
+      { requester, models, loaders, pubsub, caches },
+      info
+    ) {
       return bcrypt.hash(password, saltRounds).then((hash) => {
         return updateOne(
           { access_code, type: "User" },
@@ -149,7 +171,7 @@ module.exports = (pubsub) => ({
             access_code: null,
             active: true,
           },
-          { requester, models, loaders, pubsub }
+          { requester, models, loaders, pubsub, caches }
         ).then((user) => {
           if (user) {
             return true;
@@ -171,8 +193,20 @@ module.exports = (pubsub) => ({
     },
   },
   User: {
-    notifications: (parent, args, { loaders: { Notification } }, info) => Notification.loadMany(parent.notifications),
-    auths: (parent, args, { loaders: { Auth } }, info) => Auth.loadMany(parent.auths),
+    notifications: (parent, args, { requester, models, loaders, pubsub, caches }, info) =>
+      crudFunnel("Notification", "find", { _id: { $in: parent.notifications } }, parent.notifications, {
+        models,
+        loaders,
+        pubsub,
+        caches,
+      }),
+    auths: (parent, args, { requester, models, loaders, pubsub, caches }, info) =>
+      crudFunnel("Auth", "find", { _id: { $in: parent.auths } }, parent.auths, {
+        models,
+        loaders,
+        pubsub,
+        caches,
+      }),
     name: (parent, args, context, info) => parent.first_name + " " + parent.last_name,
   },
 });

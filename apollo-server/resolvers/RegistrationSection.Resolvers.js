@@ -1,5 +1,5 @@
-const { AuthenticationError, ForbiddenError } = require("apollo-server-express");
-const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
+const { ForbiddenError } = require("apollo-server-express");
+const { crudFunnel } = require("../crudHandlers");
 
 const eventName = {
   REGISTRATIONSECTION_CREATED: "REGISTRATIONSECTION_CREATED",
@@ -7,24 +7,34 @@ const eventName = {
   REGISTRATIONSECTION_DELETED: "REGISTRATIONSECTION_DELETED",
 };
 
-module.exports = (pubsub) => ({
+module.exports = (pubsub, caches) => ({
   Query: {
-    registrationSection: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    registrationSection: (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readOne({ _id, type: "RegistrationSection" }, { requester, models, loaders, pubsub });
+      return crudFunnel("RegistrationSection", "findOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
-    registrationSections: (parent, args, { requester, models, loaders, pubsub }, info) => {
+    registrationSections: (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readMany(
-        { auths: { $in: requester.auths.map((a) => a._id) }, type: "RegistrationSection" },
-        { requester, models, loaders, pubsub }
-      );
+      let ids = requester.auths.filter((a) => a.shared_resource_type == "RegistrationSection").map((a) => a._id);
+      return crudFunnel("RegistrationSection", "find", { _id: { $in: ids } }, ids, {
+        models,
+        loaders,
+        pubsub,
+        caches,
+      });
     },
   },
   Mutation: {
-    createRegistrationSection: (parent, { name, course, ...args }, { requester, models, loaders, pubsub }, info) => {
+    createRegistrationSection: (
+      parent,
+      { name, course, ...args },
+      { requester, models, loaders, pubsub, caches },
+      info
+    ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return createOne(
+      return crudFunnel(
+        "RegistrationSection",
+        "create",
         {
           name,
           creator: requester._id,
@@ -32,18 +42,23 @@ module.exports = (pubsub) => ({
           parent_resource: course,
           parent_resource_type: "Course",
           ...args,
-          type: "RegistrationSection",
         },
-        { requester, models, loaders, pubsub }
+        null,
+        { models, loaders, pubsub, caches }
       );
     },
-    updateRegistrationSection(parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) {
+    updateRegistrationSection(parent, { _id, ...patch }, { requester, models, loaders, pubsub, caches }, info) {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return updateOne({ _id, type: "RegistrationSection" }, patch, { requester, models, loaders, pubsub });
+      return crudFunnel("RegistrationSection", "updateOne", [{ _id }, patch], _id, {
+        models,
+        loaders,
+        pubsub,
+        caches,
+      });
     },
-    deleteRegistrationSection: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    deleteRegistrationSection: (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return deleteOne({ _id, type: "RegistrationSection" }, { requester, models, loaders, pubsub });
+      return crudFunnel("RegistrationSection", "deleteOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
   },
   Subscription: {
@@ -58,12 +73,17 @@ module.exports = (pubsub) => ({
     },
   },
   RegistrationSection: {
-    course: async ({ course }, args, { loaders: { Course } }, info) => Course.load(course),
-    user_groups: async ({ user_groups }, args, { requester: { auths }, loaders: { UserGroup } }, info) =>
-      UserGroup.loadMany(
-        user_groups.filter((a) => auths.map((b) => b.shared_resource.toString()).includes(a.toString()))
-      ),
-    lectures: async ({ lectures }, args, { requester: { auths }, loaders: { Lecture } }, info) =>
-      Lecture.loadMany(lectures.filter((a) => auths.map((b) => b.shared_resource.toString()).includes(a.toString()))),
+    course: async ({ course }, args, { models, loaders, pubsub, caches }, info) =>
+      crudFunnel("Course", "findOne", { _id: course }, course, { models, loaders, pubsub, caches }),
+    user_groups: async ({ user_groups }, args, { requester, models, loaders, pubsub, caches }, info) => {
+      let ids = user_groups.filter((a) =>
+        requester.auths.map((b) => b.shared_resource.toString()).includes(a.toString())
+      );
+      return crudFunnel("UserGroup", "find", { _id: { $in: ids } }, ids, { models, loaders, pubsub, caches });
+    },
+    lectures: async ({ lectures }, args, { requester: { auths }, models, loaders, pubsub, caches }, info) => {
+      let ids = lectures.filter((a) => auths.map((b) => b.shared_resource.toString()).includes(a.toString()));
+      return crudFunnel("Lectures", "find", { _id: { $in: ids } }, ids, { models, loaders, pubsub, caches });
+    },
   },
 });

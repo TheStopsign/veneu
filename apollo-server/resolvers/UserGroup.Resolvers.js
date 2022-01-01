@@ -1,6 +1,5 @@
-const { AuthenticationError, ForbiddenError } = require("apollo-server-express");
-const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
-const mongoose = require("mongoose");
+const { ForbiddenError } = require("apollo-server-express");
+const { createOne, updateOne, deleteOne, crudFunnel } = require("../crudHandlers");
 
 const eventName = {
   USERGROUP_CREATED: "USERGROUP_CREATED",
@@ -8,59 +7,62 @@ const eventName = {
   USERGROUP_DELETED: "USERGROUP_DELETED",
 };
 
-module.exports = (pubsub) => ({
+module.exports = (pubsub, caches) => ({
   Query: {
-    userGroup: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    userGroup: (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readOne({ _id, type: "UserGroup" }, { requester, models, loaders, pubsub });
+      return crudFunnel("UserGroup", "findOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
-    userGroups: (parent, args, { requester, models, loaders, pubsub }, info) => {
+    userGroups: (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readMany(
-        { auths: { $in: requester.auths.map((a) => a._id) }, type: "UserGroup" },
-        { requester, models, loaders, pubsub }
-      );
+      let ids = requester.auths.filter((a) => a.shared_resource_type == "UserGroup").map((a) => a._id);
+      return crudFunnel("UserGroup", "find", { _id: { $in: ids } }, ids, { models, loaders, pubsub, caches });
     },
   },
   Mutation: {
     createUserGroup: (
       parent,
       { name, parent_resource, parent_resource_type },
-      { requester, models, loaders, pubsub },
+      { requester, models, loaders, pubsub, caches },
       info
     ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       if (parent_resource_type == "User" && parent_resource == requester._id) {
-        return createOne(
-          { name, creator: requester._id, parent_resource, parent_resource_type, type: "UserGroup" },
-          { requester, models, loaders, pubsub }
+        return crudFunnel(
+          "UserGroup",
+          "create",
+          { name, creator: requester._id, parent_resource, parent_resource_type },
+          null,
+          { models, loaders, pubsub, caches }
         );
       } else if (
         requester.auths.find(
           (a) => a.shared_resource == parent_resource && ["ADMIN", "INSTRUCTOR", "TEACHING_ASSISTANT"].includes(a.role)
         )
       ) {
-        return createOne(
+        return crudFunnel(
+          "UserGroup",
+          "create",
           {
             name,
             creator: requester._id,
             parent_resource,
             parent_resource_type,
-            type: "UserGroup",
           },
-          { requester, models, loaders, pubsub }
+          null,
+          { models, loaders, pubsub, caches }
         );
       } else {
         throw new Error("Resource does not exist for your scope");
       }
     },
-    updateUserGroup(parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) {
+    updateUserGroup(parent, { _id, ...patch }, { requester, models, loaders, pubsub, caches }, info) {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return updateOne({ _id, type: "UserGroup" }, patch, { requester, models, loaders, pubsub });
+      return crudFunnel("UserGroup", "updateOne", [{ _id }, patch], _id, { models, loaders, pubsub, caches });
     },
-    deleteUserGroup: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    deleteUserGroup: (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return deleteOne({ _id, type: "UserGroup" }, { requester, models, loaders, pubsub });
+      return crudFunnel("UserGroup", "deleteOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
   },
   Subscription: {
@@ -75,11 +77,13 @@ module.exports = (pubsub) => ({
     },
   },
   UserGroup: {
-    user_groups: async ({ user_groups }, args, { requester: { auths }, loaders: { UserGroup } }, info) =>
-      UserGroup.loadMany(
-        user_groups.filter((a) => auths.map((b) => b.shared_resource.toString()).includes(a.toString()))
-      ),
-    lectures: async ({ lectures }, args, { requester: { auths }, loaders: { Lecture } }, info) =>
-      Lecture.loadMany(lectures.filter((a) => auths.map((b) => b.shared_resource.toString()).includes(a.toString()))),
+    user_groups: async ({ user_groups }, args, { requester: { auths }, models, loaders, pubsub, caches }, info) => {
+      let ids = user_groups.filter((a) => auths.map((b) => b.shared_resource.toString()).includes(a.toString()));
+      return crudFunnel("UserGroup", "find", { _id: { $in: ids } }, ids, { models, loaders, pubsub, caches });
+    },
+    lectures: async ({ lectures }, args, { requester: { auths }, models, loaders, pubsub, caches }, info) => {
+      let ids = lectures.filter((a) => auths.map((b) => b.shared_resource.toString()).includes(a.toString()));
+      return crudFunnel("Lecture", "find", { _id: { $in: ids } }, ids, { models, loaders, pubsub, caches });
+    },
   },
 });

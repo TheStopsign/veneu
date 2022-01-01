@@ -16,7 +16,7 @@ module.exports = gql`
 
   extend type Query {
     submission(_id: ID!): Submission!
-    submissions: [Submission!]!
+    submissions: [Submission]!
   }
 
   extend type Mutation {

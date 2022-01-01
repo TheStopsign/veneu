@@ -6,7 +6,7 @@ module.exports = gql`
     name: String!
     creator: User!
     type: String!
-    auths: [Auth!]!
+    auths: [Auth]!
     start: Date!
     end: Date!
     parent_resource: ParentResource
@@ -17,14 +17,14 @@ module.exports = gql`
     description: String
     prefix: String
     suffix: Int
-    user_groups: [UserGroup!]!
-    registration_sections: [RegistrationSection!]!
-    lectures: [Lecture!]!
+    user_groups: [UserGroup]!
+    registration_sections: [RegistrationSection]!
+    lectures: [Lecture]!
   }
 
   extend type Query {
     course(_id: ID!): Course!
-    courses: [Course!]!
+    courses: [Course]!
   }
 
   extend type Mutation {

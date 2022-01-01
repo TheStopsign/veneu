@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { flatten } = require("../generics");
+const { crudFunnel } = require("../crudHandlers");
 
 module.exports = (pubsub, caches) => {
   const UserGroup = new mongoose.Schema(
@@ -50,18 +51,33 @@ module.exports = (pubsub, caches) => {
     .pre("deleteOne", { document: true }, function (next) {
       let deleted = this;
       Promise.all([
-        mongoose.model("Auth").deleteMany({ shared_resource: deleted._id }),
-        mongoose.model("Course").updateOne({ _id: deleted.parent_resource }, { $pull: { user_groups: deleted._id } }),
-        mongoose
-          .model("UserGroup")
-          .updateOne({ _id: deleted.parent_resource }, { $pull: { user_groups: deleted._id } }),
-        mongoose
-          .model("RegistrationSection")
-          .updateOne({ _id: deleted.parent_resource }, { $pull: { user_groups: deleted._id } }),
-        mongoose.model("UserGroup").deleteMany({ _id: { $in: deleted.user_groups } }),
-        mongoose.model("Lecture").deleteMany({ parent_resource: deleted._id }),
+        crudFunnel("Auth", "deleteMany", { _id: { $in: deleted.auths } }, deleted.auths, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel("UserGroup", "deleteMany", { _id: { $in: deleted.user_groups } }, deleted.user_groups, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel("Lecture", "deleteMany", { _id: { $in: deleted.lectures } }, deleted.lectures, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel(
+          deleted.parent_resource_type,
+          "updateOne",
+          [{ _id: deleted.parent_resource }, { $pull: { user_groups: deleted._id } }],
+          deleted.parent_resource,
+          {
+            models: mongoose.models,
+            pubsub,
+            caches,
+          }
+        ),
       ]).then((resolved) => {
-        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
@@ -69,58 +85,77 @@ module.exports = (pubsub, caches) => {
       this.model.find(this.getFilter()).then((userGroups) => {
         if (userGroups.length) {
           const groupsids = userGroups.map((a) => a._id);
+          const groupsauths = flatten(userGroups.map((a) => a.auths));
           const groupsparents = userGroups.map((a) => a.parent_resource);
+          const groupsparentstypes = userGroups.map((a) => a.parent_resource_type);
           const groupsgroups = flatten(userGroups.map((a) => a.user_groups));
           const groupslectures = flatten(userGroups.map((a) => a.lectures));
           Promise.all([
-            mongoose.model("Auth").deleteMany({ shared_resource: { $in: groupsids } }),
-            mongoose
-              .model("Course")
-              .updateMany({ _id: { $in: groupsparents } }, { $pullAll: { user_groups: groupsids } }),
-            mongoose
-              .model("RegistrationSection")
-              .updateMany({ _id: { $in: groupsparents } }, { $pullAll: { user_groups: groupsids } }),
-            mongoose.model("UserGroup").deleteMany({ _id: { $in: groupsgroups } }),
-            mongoose.model("Lecture").deleteMany({ _id: { $in: groupslectures } }),
+            crudFunnel("Auth", "deleteMany", { _id: { $in: groupsauths } }, groupsauths, {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }),
+            crudFunnel("UserGroup", "deleteMany", { _id: { $in: groupsgroups } }, groupsgroups, {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }),
+            crudFunnel("Lecture", "deleteMany", { _id: { $in: groupslectures } }, groupslectures, {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }),
+            ...groupsparentstypes.map((groupsparentstype) =>
+              crudFunnel(
+                groupsparentstype,
+                "updateMany",
+                [{ _id: { $in: groupsparents } }, { $pullAll: { user_groups: groupsids } }],
+                groupsparents,
+                {
+                  models: mongoose.models,
+                  pubsub,
+                  caches,
+                }
+              )
+            ),
           ]).then((resolved) => {
-            userGroups.forEach(function (deleted) {
-              caches[deleted.type].del(deleted._id + "");
-            });
             next();
           });
         } else next();
       });
     })
     .pre("save", function (next) {
-      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })
     .post("save", function () {
+      let saved = this;
       if (this.wasNew) {
         Promise.all([
-          mongoose
-            .model("Auth")
-            .create({
-              shared_resource: this._id,
+          crudFunnel(
+            "Auth",
+            "create",
+            {
+              shared_resource: saved._id,
               shared_resource_type: "UserGroup",
-              user: this.creator._id,
+              user: saved.creator,
               role: "INSTRUCTOR",
-            })
-            .then((auth) => {
-              pubsub.publish("AUTH_CREATED", {
-                authCreated: auth,
-              });
-            }),
-          mongoose
-            .model("Course")
-            .findByIdAndUpdate({ _id: this.parent_resource }, { $addToSet: { user_groups: this._id } }),
-          mongoose
-            .model("UserGroup")
-            .findByIdAndUpdate({ _id: this.parent_resource }, { $addToSet: { user_groups: this._id } }),
-          mongoose
-            .model("RegistrationSection")
-            .findByIdAndUpdate({ _id: this.parent_resource }, { $addToSet: { user_groups: this._id } }),
+            },
+            null,
+            { models: mongoose.models, pubsub, caches }
+          ).then((auth) => {
+            pubsub.publish("AUTH_CREATED", {
+              authCreated: auth,
+            });
+          }),
+          crudFunnel(
+            saved.parent_resource_type,
+            "updateOne",
+            [{ _id: saved.parent_resource }, { $addToSet: { user_groups: saved._id } }],
+            saved.parent_resource,
+            { models: mongoose.models, pubsub, caches }
+          ),
         ]);
       }
     });

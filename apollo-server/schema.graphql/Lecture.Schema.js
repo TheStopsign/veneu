@@ -6,7 +6,7 @@ module.exports = gql`
     name: String!
     creator: User!
     type: String!
-    auths: [Auth!]!
+    auths: [Auth]!
     start: Date!
     end: Date!
     parent_resource: ParentResource!
@@ -21,7 +21,7 @@ module.exports = gql`
 
   extend type Query {
     lecture(_id: ID!): Lecture!
-    lectures: [Lecture!]!
+    lectures: [Lecture]!
   }
 
   extend type Mutation {

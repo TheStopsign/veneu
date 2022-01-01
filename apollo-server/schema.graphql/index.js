@@ -42,8 +42,8 @@ const linkSchema = gql`
     SUNDAY
   }
 
-  union ParentResource = User | Course | RegistrationSection | UserGroup | Lecture
-  union SearchResult = User | Course | UserGroup | RegistrationSection | Lecture
+  union ParentResource = User | Course | RegistrationSection | UserGroup | Lecture | YTVideoStream
+  union SearchResult = User | Course | RegistrationSection | UserGroup | Lecture | YTVideoStream
 
   interface Assignable {
     _id: ID!
@@ -67,7 +67,7 @@ const linkSchema = gql`
     duration: Int!
     checkins: [Checkin!]
     creator: User!
-    auths: [Auth!]!
+    auths: [Auth]!
     name: String!
     parent_resource: ParentResource
     parent_resource_type: String
@@ -76,7 +76,7 @@ const linkSchema = gql`
   interface SharedResource {
     _id: ID!
     creator: User!
-    auths: [Auth!]!
+    auths: [Auth]!
     name: String!
     type: String!
     parent_resource: ParentResource
@@ -113,26 +113,10 @@ const linkSchema = gql`
     event: CalendarEvent!
   }
 
-  interface Question implements Assignable & SharedResource {
-    _id: ID!
-    type: String!
-    creator: User!
-    name: String!
-    auths: [Auth!]!
-    parent_resource: ParentResource
-    parent_resource_type: String
-    assignment: Assignment
-  }
-
-  extend interface Question {
-    question: String!
-    answers: [Answer]
-  }
-
   type Query {
     _: Boolean
-    calendarEvents: [CalendarizableEvent!]!
-    assignables: [Assignable!]!
+    calendarEvents: [CalendarizableEvent]!
+    assignables: [Assignable]!
   }
   type Mutation {
     _: Boolean
@@ -144,14 +128,11 @@ const linkSchema = gql`
 
 module.exports = [
   linkSchema,
-  require("./Answer.Schema"),
   require("./Assignment.Schema"),
   require("./Auth.Schema"),
   require("./Checkin.Schema"),
   require("./Course.Schema"),
-  require("./FreeResponse.Schema"),
   require("./Lecture.Schema"),
-  require("./MultipleChoice.Schema"),
   require("./Notification.Schema"),
   require("./RegistrationSection.Schema"),
   require("./Submission.Schema"),

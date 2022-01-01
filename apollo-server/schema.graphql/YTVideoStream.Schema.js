@@ -8,7 +8,7 @@ module.exports = gql`
     parent_resource: ParentResource!
     parent_resource_type: String!
     creator: User!
-    auths: [Auth!]!
+    auths: [Auth]!
     name: String!
     url: String!
     duration: Int!
@@ -17,7 +17,7 @@ module.exports = gql`
 
   extend type Query {
     YTVideoStream(_id: ID!): YTVideoStream!
-    YTVideoStreams: [YTVideoStream!]!
+    YTVideoStreams: [YTVideoStream]!
   }
 
   extend type Mutation {

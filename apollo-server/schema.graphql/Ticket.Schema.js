@@ -20,18 +20,18 @@ module.exports = gql`
 
   extend type Query {
     ticket(_id: ID!): Ticket!
-    tickets: [Ticket!]!
+    tickets: [Ticket]!
   }
 
   extend type Mutation {
     claimTicket(code: String!, user: ID!, email: String!, checkin: ID!): Ticket!
     approveTicket(code: String!, user: ID!, email: String!, checkin: ID!): Ticket!
-    reserveTicket(checkin: ID!, tickets: [TicketInput!]!): [Ticket!]!
+    reserveTicket(checkin: ID!, tickets: [TicketInput]!): [Ticket]!
   }
 
   extend type Subscription {
     claimedTicket(code: String!): Ticket!
     approvedTicket(user: ID!): Ticket!
-    reservedTicket(checkin: ID!): [Ticket!]!
+    reservedTicket(checkin: ID!): [Ticket]!
   }
 `;

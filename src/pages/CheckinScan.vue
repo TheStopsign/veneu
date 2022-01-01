@@ -288,7 +288,7 @@ export default {
       this.$apollo
         .mutate({
           mutation: gql`
-            mutation reserveTicket($checkin: ID!, $tickets: [TicketInput!]!) {
+            mutation reserveTicket($checkin: ID!, $tickets: [TicketInput]!) {
               reserveTicket(checkin: $checkin, tickets: $tickets) {
                 code
                 user

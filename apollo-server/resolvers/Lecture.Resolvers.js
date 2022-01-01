@@ -1,5 +1,5 @@
-const { AuthenticationError, ForbiddenError } = require("apollo-server-express");
-const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
+const { ForbiddenError } = require("apollo-server-express");
+const { crudFunnel } = require("../crudHandlers");
 
 const eventName = {
   LECTURE_CREATED: "LECTURE_CREATED",
@@ -7,29 +7,29 @@ const eventName = {
   LECTURE_DELETED: "LECTURE_DELETED",
 };
 
-module.exports = (pubsub) => ({
+module.exports = (pubsub, caches) => ({
   Query: {
-    lecture: async (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    lecture: async (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readOne({ _id, type: "Lecture" }, { requester, models, loaders, pubsub });
+      return crudFunnel("Lecture", "findOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
-    lectures: async (parent, args, { requester, models, loaders, pubsub }, info) => {
+    lectures: async (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readMany(
-        { auths: { $in: requester.auths.map((a) => a._id) }, type: "Lecture" },
-        { requester, models, loaders, pubsub }
-      );
+      let ids = requester.auths.filter((a) => a.shared_resource_type == "Lecture").map((a) => a.shared_resource);
+      return crudFunnel("Lecture", "find", { _id: { $in: ids } }, { models, loaders, pubsub, caches });
     },
   },
   Mutation: {
     createLecture: async (
       parent,
       { name, start, end, parent_resource, parent_resource_type },
-      { requester, models, loaders, pubsub },
+      { requester, models, loaders, pubsub, caches },
       info
     ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return createOne(
+      return crudFunnel(
+        "Lecture",
+        "create",
         {
           name,
           start,
@@ -37,19 +37,19 @@ module.exports = (pubsub) => ({
           parent_resource,
           parent_resource_type,
           creator: requester._id,
-          type: "Lecture",
         },
-        { requester, models, loaders, pubsub }
+        null,
+        { models, loaders, pubsub, caches }
       );
     },
-    updateLecture: async (parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) => {
+    updateLecture: async (parent, { _id, ...patch }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return updateOne({ _id, type: "Lecture" }, patch, { requester, models, loaders, pubsub });
+      return crudFunnel("Lecture", "updateOne", [{ _id }, patch], _id, { models, loaders, pubsub, caches });
     },
     setLectureCheckins: async (
       parent,
       { lecture: _id, checkins: newcheckins },
-      { requester, models, loaders, pubsub },
+      { requester, models, loaders, pubsub, caches },
       info
     ) => {
       if (
@@ -58,25 +58,31 @@ module.exports = (pubsub) => ({
       )
         throw new ForbiddenError("Not allowed");
 
-      return [
-        updateOne(
-          { _id, type: "Lecture" },
-          { $addToSet: { checkins: { $each: newcheckins } } },
-          { requester, models, loaders, pubsub }
+      return Promise.all([
+        crudFunnel("Lecture", "updateOne", [{ _id }, { $addToSet: { checkins: { $each: newcheckins } } }], _id, {
+          models,
+          loaders,
+          pubsub,
+          caches,
+        }),
+        crudFunnel(
+          "Checkin",
+          "updateOne",
+          [
+            { _id: { $in: newcheckins } },
+            {
+              parent_resource: _id,
+              parent_resource_type: "Lecture",
+            },
+          ],
+          newcheckins,
+          { models, loaders, pubsub, caches }
         ),
-        updateOne(
-          { _id: { $in: newcheckins }, type: "Checkin" },
-          {
-            parent_resource: _id,
-            parent_resource_type: "Lecture",
-          },
-          { requester, models, loaders, pubsub }
-        ),
-      ][0];
+      ]).then((res) => res[0]);
     },
     deleteLecture: async (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return deleteOne({ _id, type: "Lecture" }, { requester, models, loaders, pubsub });
+      return crudFunnel("Lecture", "deleteOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
   },
   Subscription: {
@@ -91,11 +97,30 @@ module.exports = (pubsub) => ({
     },
   },
   Lecture: {
-    recording: (parent, args, { loaders }, info) =>
-      parent.recording ? loaders[parent.recording_type].load(parent.recording) : null,
-    parent_resource: (parent, args, { loaders }, info) =>
-      loaders[parent.parent_resource_type].load(parent.parent_resource),
-    checkins: (parent, args, { loaders: { Checkin } }, info) =>
-      parent.checkins ? Checkin.loadMany(parent.checkins) : [],
+    recording: (parent, args, { models, loaders, pubsub, caches }, info) =>
+      parent.recording
+        ? crudFunnel(parent.recording_type, "findOne", { _id: parent.recording }, parent.recording, {
+            models,
+            loaders,
+            pubsub,
+            caches,
+          })
+        : null,
+    parent_resource: (parent, args, { models, loaders, pubsub, caches }, info) =>
+      crudFunnel(parent.parent_resource_type, "findOne", { _id: parent.parent_resource }, parent.recording, {
+        models,
+        loaders,
+        pubsub,
+        caches,
+      }),
+    checkins: (parent, args, { models, loaders, pubsub, caches }, info) =>
+      parent.checkins
+        ? crudFunnel("Checkin", "find", { _id: { $in: parent.checkins } }, parent.checkins, {
+            models,
+            loaders,
+            pubsub,
+            caches,
+          })
+        : [],
   },
 });

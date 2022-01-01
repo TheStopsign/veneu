@@ -60,7 +60,7 @@ modelNames.forEach(function (modelName) {
 const server = new ApolloServer({
   schema: makeExecutableSchema({
     typeDefs,
-    resolvers: getResolvers(pubsub),
+    resolvers: getResolvers(pubsub, caches),
     schemaDirectives,
     inheritResolversFromInterfaces: true,
   }),

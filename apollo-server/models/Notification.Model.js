@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { crudFunnel } = require("../crudHandlers");
 
 module.exports = (pubsub, caches) => {
   const Notification = new mongoose.Schema(
@@ -28,26 +29,7 @@ module.exports = (pubsub, caches) => {
     {
       timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
     }
-  )
-    .pre("deleteOne", { document: true }, function (next) {
-      let deleted = this;
-      Promise.all([
-        this.model("User").findByIdAndUpdate({ _id: this.user }, { $pull: { notifications: this._id } }),
-      ]).then((resolved) => {
-        caches[deleted.type].del(deleted._id + "");
-        next();
-      });
-    })
-    .pre("save", function (next) {
-      caches[this.type].del(this._id + "");
-      this.wasNew = this.isNew;
-      next();
-    })
-    .post("save", function () {
-      if (this.wasNew) {
-        this.model("User").findOneAndUpdate({ _id: this.user }, { $addToSet: { notifications: this._id } });
-      }
-    });
+  );
 
   return Notification;
 };

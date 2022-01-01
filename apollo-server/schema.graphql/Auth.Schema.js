@@ -11,7 +11,7 @@ module.exports = gql`
 
   extend type Query {
     auth(_id: ID!): Auth!
-    auths(shared_resource: ID): [Auth!]!
+    auths(shared_resource: ID): [Auth]!
   }
 
   extend type Mutation {

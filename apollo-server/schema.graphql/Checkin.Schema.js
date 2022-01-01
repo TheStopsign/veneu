@@ -3,7 +3,7 @@ const { gql } = require("apollo-server-express");
 module.exports = gql`
   type Checkin implements SharedResource {
     _id: ID!
-    auths: [Auth!]!
+    auths: [Auth]!
     creator: User!
     name: String!
     type: String!
@@ -27,13 +27,13 @@ module.exports = gql`
   }
 
   extend type Checkin {
-    tickets: [Ticket!]!
+    tickets: [Ticket]!
     created_at: Date
   }
 
   extend type Query {
     checkin(_id: ID!): Checkin!
-    checkins: [Checkin!]!
+    checkins: [Checkin]!
     receipt(_id: ID!, email: String!): Ticket
   }
 

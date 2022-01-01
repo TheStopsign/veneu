@@ -1,5 +1,5 @@
 const { ForbiddenError, withFilter } = require("apollo-server-express");
-const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
+const { readOne, crudFunnel } = require("../crudHandlers");
 
 const hbs = require("nodemailer-express-handlebars");
 
@@ -16,39 +16,51 @@ const eventName = {
   AUTH_DELETED: "AUTH_DELETED",
 };
 
-module.exports = (pubsub) => ({
+module.exports = (pubsub, caches) => ({
   Query: {
-    auth: async (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    auth: async (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readOne({ _id, type: "Auth" }, { requester, models, loaders, pubsub });
+      return crudFunnel("Auth", "findOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
-    auths: async (parent, args, { requester, models, loaders, pubsub }, info) => {
+    auths: async (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return args.shared_resource
-        ? readMany({ shared_resource: args.shared_resource, type: "Auth" }, { requester, models, loaders, pubsub })
-        : requester.auths;
+      let ids = args.shared_resource
+        ? requester.auths.filter((a) => a.shared_resource == args.shared_resource).map((a) => a._id)
+        : requester.auths.map((a) => a._id);
+      return crudFunnel("Auth", "find", { _id: { $in: ids } }, ids, { models, loaders, pubsub, caches });
     },
   },
   Mutation: {
     createAuth: async (
       parent,
       { role, user, shared_resource, shared_resource_type },
-      { requester, models, loaders, pubsub },
+      { requester, models, loaders, pubsub, caches },
       info
     ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       return readOne({ email: user, type: "User" }, { requester, models, loaders, pubsub }).then((x) => {
         if (x) {
-          return createOne(
+          return crudFunnel(
+            "Auth",
+            "create",
             { role, user: x._id, shared_resource, shared_resource_type, type: "Auth" },
-            { requester, models, loaders, pubsub }
+            null,
+            { models, loaders, pubsub, caches }
           );
         } else {
-          return createOne({ email: user, type: "User" }, { requester, models, loaders, pubsub }).then((y) => {
+          return crudFunnel("User", "create", { email: user, type: "User" }, null, {
+            models,
+            loaders,
+            pubsub,
+            caches,
+          }).then((y) => {
             if (y) {
-              return readOne(
+              return crudFunnel(
+                shared_resource_type,
+                "findOne",
                 { _id: shared_resource, type: shared_resource_type },
-                { requester, models, loaders, pubsub }
+                shared_resource,
+                { models, loaders, pubsub, caches }
               ).then((z) => {
                 oauth2Client.setCredentials({
                   refresh_token: GMAIL_OAUTH_REFRESH,
@@ -57,8 +69,11 @@ module.exports = (pubsub) => ({
                   oauth2Client.getAccessToken((err, accessToken) => {
                     if (err) {
                       console.log("OATH2CLIENT GETACCESSTOKEN ERROR:", err);
-                      deleteOne({ email: user, type: "User" }, { requester, models, loaders, pubsub });
-                      reject(null);
+                      crudFunnel("User", "deleteOne", { _id: y._id }, y._id, { models, loaders, pubsub, caches }).then(
+                        (a) => {
+                          reject(null);
+                        }
+                      );
                     } else {
                       var transporter = nodemailer.createTransport({
                         service: "gmail",
@@ -110,22 +125,34 @@ module.exports = (pubsub) => ({
                         transporter.sendMail(mailOptions, function (error, info) {
                           if (error || info == null) {
                             console.log(error);
-                            deleteOne({ email: user, type: "User" }, { requester, models, loaders, pubsub });
-                            reject(null);
+                            crudFunnel("User", "deleteOne", { _id: y._id }, y._id, {
+                              models,
+                              loaders,
+                              pubsub,
+                              caches,
+                            }).then((a) => {
+                              reject(null);
+                            });
                           } else {
                             resolve({ role, user: y._id, shared_resource, shared_resource_type, type: "Auth" });
                           }
                         });
                       } else {
                         console.log("MAILER FAILED");
-                        deleteOne({ email: user, type: "User" }, { requester, models, loaders, pubsub });
-                        reject(null);
+                        crudFunnel("User", "deleteOne", { _id: y._id }, y._id, {
+                          models,
+                          loaders,
+                          pubsub,
+                          caches,
+                        }).then((a) => {
+                          reject(null);
+                        });
                       }
                     }
                   });
                 });
                 return finishedEmail
-                  .then((authInfo) => createOne(authInfo, { requester, models, loaders, pubsub }))
+                  .then((authInfo) => crudFunnel("Auth", "create", authInfo, null, { models, loaders, pubsub, caches }))
                   .catch((e) => null);
               });
             } else {
@@ -135,27 +162,45 @@ module.exports = (pubsub) => ({
         }
       });
     },
-    updateAuth: async (parent, { _id, role }, { requester, models, loaders, pubsub }, info) => {
+    updateAuth: async (parent, { _id, role }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return updateOne({ _id, type: "Auth" }, { role }, { requester, models, loaders, pubsub });
+      return crudFunnel("Auth", "updateOne", [{ _id }, { role }], _id, {
+        models,
+        loaders,
+        pubsub,
+        caches,
+      });
     },
-    deleteAuth: async (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    deleteAuth: async (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return deleteOne({ _id, type: "Auth" }, { requester, models, loaders, pubsub });
+      return crudFunnel("Auth", "deleteOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
   },
   Subscription: {
     authCreated: {
       subscribe: withFilter(
         () => pubsub.asyncIterator([eventName.AUTH_CREATED]),
-        (payload, variables) => payload.authCreated.user == variables.user
+        (payload, variables) => payload.resource.user == variables.user
       ),
-      resolve: (payload, variables, context, info) => payload.authCreated,
+      resolve: (payload, variables, context, info) => payload.resource,
     },
   },
   Auth: {
-    user: async (parent, args, { loaders: { User } }, info) => User.load(parent.user),
-    shared_resource: async (parent, args, { loaders }, info) =>
-      loaders["" + parent.shared_resource_type].load(parent.shared_resource),
+    user: async (parent, args, { models, loaders, pubsub, caches }, info) =>
+      crudFunnel("User", "findOne", { _id: parent.user }, parent.user, { models, loaders, pubsub, caches }),
+    shared_resource: async (parent, args, { models, loaders, pubsub, caches }, info) => {
+      return crudFunnel(
+        parent.shared_resource_type,
+        "findOne",
+        { _id: parent.shared_resource },
+        parent.shared_resource,
+        {
+          models,
+          loaders,
+          pubsub,
+          caches,
+        }
+      );
+    },
   },
 });

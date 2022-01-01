@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { crudFunnel } = require("../crudHandlers");
 
 module.exports = (pubsub, caches) => {
   const Submission = new mongoose.Schema(
@@ -16,13 +17,11 @@ module.exports = (pubsub, caches) => {
         type: String,
         required: true,
       },
-      assignment: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Assignment",
-          required: true,
-        },
-      ],
+      assignment: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Assignment",
+        required: true,
+      },
       is_submitted: {
         type: Boolean,
         default: false,
@@ -44,10 +43,21 @@ module.exports = (pubsub, caches) => {
     .pre("deleteOne", { document: true }, function (next) {
       let deleted = this;
       Promise.all([
-        mongoose.model("Assignment").updateOne({ _id: deleted.assignment }, { $pull: { submissions: deleted._id } }),
-        mongoose.model(deleted.submittable_type).updateOne({ _id: deleted.submittable }, { submission: null }),
+        crudFunnel(
+          "Assignment",
+          "updateOne",
+          [{ _id: deleted.assignment }, { $pull: { submissions: deleted._id } }],
+          deleted.assignment,
+          { models: mongoose.models, pubsub, caches }
+        ),
+        crudFunnel(
+          deleted.submittable_type,
+          "updateOne",
+          [{ _id: deleted.submittable }, { submission: null }],
+          deleted.submittable,
+          { models: mongoose.models, pubsub, caches }
+        ),
       ]).then((resolved) => {
-        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
@@ -55,17 +65,27 @@ module.exports = (pubsub, caches) => {
       this.model.find(this.getFilter()).then((submissions) => {
         if (submissions.length) {
           const submissionsids = submissions.map((a) => a._id);
+          const submissionsassignments = submissions.map((a) => a.assignment);
+          const submissionssubmittables = submissions.map((a) => a.submittable);
+          const submissionssubmittablestypes = [...new Set(submissions.map((a) => a.submittable))];
           Promise.all([
-            mongoose
-              .model("Assignment")
-              .updateMany({ submissions: { $in: submissionsids } }, { $pullAll: { submissions: submissionsids } }),
-            mongoose
-              .model("VideoStreamPlayback")
-              .updateMany({ submission: { $in: submissionsids } }, { submission: null }),
+            crudFunnel(
+              "Assignment",
+              "updateMany",
+              [{ _id: { $in: submissionsassignments } }, { $pullAll: { submissions: submissionsids } }],
+              submissionsassignments,
+              { models: mongoose.models, pubsub, caches }
+            ),
+            ...submissionssubmittablestypes.map((submissionssubmittablestype) =>
+              crudFunnel(
+                submissionssubmittablestype,
+                "updateMany",
+                [{ _id: { $in: submissionssubmittables } }, { submission: null }],
+                submissionssubmittables,
+                { models: mongoose.models, pubsub, caches }
+              )
+            ),
           ]).then((resolved) => {
-            submissions.forEach(function (deleted) {
-              caches[deleted.type].del(deleted._id + "");
-            });
             next();
           });
         } else {
@@ -74,25 +94,28 @@ module.exports = (pubsub, caches) => {
       });
     })
     .pre("save", function (next) {
-      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })
     .post("save", function () {
+      let saved = this;
       if (this.wasNew) {
-        mongoose
-          .model(this.submittable_type)
-          .updateOne(
+        crudFunnel(
+          saved.submittable_type,
+          "updateOne",
+          [
             {
-              _id: this.submittable,
+              _id: saved.submittable,
             },
             {
-              $addToSet: { submissions: this._id },
-            }
-          )
-          .then((auth) => {
-            return;
-          });
+              $addToSet: { submissions: saved._id },
+            },
+          ],
+          saved.submittable,
+          { models: mongoose.models, pubsub, caches }
+        ).then((auth) => {
+          return;
+        });
       }
     });
 

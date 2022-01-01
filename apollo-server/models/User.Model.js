@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { flatten } = require("../generics");
+const { crudFunnel } = require("../crudHandlers");
 
 module.exports = (pubsub, caches) => {
   const User = new mongoose.Schema(
@@ -62,10 +63,17 @@ module.exports = (pubsub, caches) => {
     .pre("deleteOne", function (next) {
       let deleted = this;
       Promise.all([
-        deleted.model("Auth").deleteMany({ user: deleted._id }),
-        deleted.model("Notification").deleteMany({ user: deleted._id }),
+        crudFunnel("Auth", "deleteMany", { _id: { $in: deleted.auths } }, deleted.auths, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel("Notification", "deleteMany", { _id: { $in: deleted.notifications } }, deleted.notifications, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
       ]).then((resolved) => {
-        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
@@ -73,17 +81,19 @@ module.exports = (pubsub, caches) => {
       this.model.find(this.getFilter()).then((users) => {
         if (users.length) {
           const usersauths = flatten(users.map((a) => a.auths));
-          Promise.all([mongoose.model("Auth").deleteMany({ _id: { $in: usersauths } })]).then((resolved) => {
-            users.forEach(function (deleted) {
-              caches[deleted.type].del(deleted._id + "");
-            });
+          Promise.all([
+            crudFunnel("Auth", "deleteMany", { _id: { $in: usersauths } }, usersauths, {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }),
+          ]).then((resolved) => {
             next();
           });
         } else next();
       });
     })
     .pre("save", function (next) {
-      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       if (this.isNew) {
         this.access_code = "";

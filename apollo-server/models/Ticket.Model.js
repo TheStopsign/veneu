@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { crudFunnel } = require("../crudHandlers");
 
 module.exports = (pubsub, caches) => {
   const Ticket = new mongoose.Schema(
@@ -34,27 +35,38 @@ module.exports = (pubsub, caches) => {
     .pre("deleteOne", { document: true }, function (next) {
       let deleted = this;
       Promise.all([
-        mongoose.model("Checkin").updateOne({ _id: deleted.checkin }, { $pull: { tickets: deleted._id } }),
+        crudFunnel(
+          "Checkin",
+          "updateOne",
+          [{ _id: deleted.checkin }, { $pull: { tickets: deleted._id } }],
+          deleted.checkin,
+          { models: mongoose.models, pubsub, caches }
+        ),
       ]).then((resolved) => {
-        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
     .pre("save", function (next) {
-      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })
     .post("save", function () {
+      let saved = this;
       if (this.wasNew) {
         Promise.all([
-          mongoose.model("Checkin").updateOne(
-            {
-              _id: this.checkin,
-            },
-            {
-              $addToSet: { tickets: this._id },
-            }
+          crudFunnel(
+            "Checkin",
+            "updateOne",
+            [
+              {
+                _id: saved.checkin,
+              },
+              {
+                $addToSet: { tickets: saved._id },
+              },
+            ],
+            saved.checkin,
+            { models: mongoose.models, pubsub, caches }
           ),
         ]).then((res) => {
           return;

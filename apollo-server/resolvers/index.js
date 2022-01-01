@@ -1,5 +1,5 @@
 const { ForbiddenError, withFilter } = require("apollo-server-express");
-const { readOne, readMany } = require("../crudHandlers");
+const { readOne, readMany, crudFunnel } = require("../crudHandlers");
 const { flatten } = require("../generics");
 
 const ParentResourceResolvers = {
@@ -11,31 +11,36 @@ const ParentResourceResolvers = {
 const SharedResourceResolvers = {
   SharedResource: {
     __resolveType: async ({ type }) => type,
-    parent_resource: async (parent, args, { requester, models, loaders, pubsub }, info) => {
+    parent_resource: async (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       return parent.parent_resource
-        ? readOne(
-            { _id: parent.parent_resource, type: parent.parent_resource_type },
-            { requester, models, loaders, pubsub }
-          )
+        ? crudFunnel(parent.parent_resource_type, "findOne", { _id: parent.parent_resource }, parent.parent_resource, {
+            models,
+            loaders,
+            pubsub,
+            caches,
+          })
         : null;
     },
-    auths: async (parent, args, { requester, models, loaders, pubsub }, info) =>
-      readMany({ _id: { $in: parent.auths }, type: "Auth" }, { requester, models, loaders, pubsub }),
+    auths: async (parent, args, { requester, models, loaders, pubsub, caches }, info) =>
+      crudFunnel("Auth", "find", { _id: { $in: parent.auths } }, parent.auths, { models, loaders, pubsub, caches }),
   },
 };
 
 const CalendarizableEventResolvers = {
   Query: {
-    calendarEvents: async (parent, args, { requester, models, loaders, pubsub }, info) => {
+    calendarEvents: async (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readMany(
+      let ids = requester.auths.filter((a) => a.shared_resource_type == "Lecture").map((a) => a.shared_resource);
+      return crudFunnel(
+        "Lecture",
+        "find",
         {
           _id: {
-            $in: requester.auths.filter((a) => a.shared_resource_type == "Lecture").map((a) => a.shared_resource),
+            $in: ids,
           },
-          type: "Lecture",
         },
-        { requester, models, loaders, pubsub }
+        ids,
+        { models, loaders, pubsub, caches }
       );
     },
   },
@@ -46,31 +51,30 @@ const CalendarizableEventResolvers = {
 
 const AssignableResolvers = {
   Query: {
-    assignables: async (parent, args, { requester, models, loaders, pubsub }, info) => {
+    assignables: async (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       let ytvideostreamAuthIds = requester.auths
-          .filter((a) => a.shared_resource_type == "YTVideoStream")
-          .map((a) => a.shared_resource),
-        freeresponseAuthIds = requester.auths
-          .filter((a) => a.shared_resource_type == "FreeResponse")
-          .map((a) => a.shared_resource),
-        multiplechoiceAuthIds = requester.auths
-          .filter((a) => a.shared_resource_type == "MultipleChoice")
-          .map((a) => a.shared_resource);
+        .filter((a) => a.shared_resource_type == "YTVideoStream")
+        .map((a) => a.shared_resource);
       return Promise.all([
-        readOne({ _id: { $in: ytvideostreamAuthIds }, type: "YTVideoStream" }, { requester, models, loaders, pubsub }),
-        readOne({ _id: { $in: freeresponseAuthIds }, type: "FreeResponse" }, { requester, models, loaders, pubsub }),
-        readOne(
-          { _id: { $in: multiplechoiceAuthIds }, type: "MultipleChoice" },
-          { requester, models, loaders, pubsub }
-        ),
+        crudFunnel("YTVideoStream", "find", { _id: { $in: ytvideostreamAuthIds } }, ytvideostreamAuthIds, {
+          models,
+          loaders,
+          pubsub,
+          caches,
+        }),
       ]).then((resolved) => flatten(resolved));
     },
   },
   Assignable: {
-    assignment: async (parent, args, { requester, models, loaders, pubsub }, info) => {
+    assignment: async (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readOne({ _id: parent.assignment, type: "Assignment" }, { requester, models, loaders, pubsub });
+      return crudFunnel("Assignment", "find", { _id: parent.assignment }, parent.assignment, {
+        models,
+        loaders,
+        pubsub,
+        caches,
+      });
     },
     __resolveType: async ({ type }) => type,
   },
@@ -94,13 +98,7 @@ const VideoStreamResolvers = {
   },
 };
 
-const QuestionResolvers = {
-  Question: {
-    __resolveType: async ({ type }) => type,
-  },
-};
-
-const getResolvers = (pubsub) => [
+const getResolvers = (pubsub, caches) => [
   ParentResourceResolvers,
   SharedResourceResolvers,
   CalendarizableEventResolvers,
@@ -108,21 +106,18 @@ const getResolvers = (pubsub) => [
   SubmittableResolvers,
   SearchResultResolvers,
   VideoStreamResolvers,
-  QuestionResolvers,
-  require("./Answer.Resolvers")(pubsub),
-  require("./Assignment.Resolvers")(pubsub),
-  require("./Auth.Resolvers")(pubsub),
-  require("./Checkin.Resolvers")(pubsub),
-  require("./Course.Resolvers")(pubsub),
-  require("./Lecture.Resolvers")(pubsub),
-  require("./MultipleChoice.Resolvers")(pubsub),
-  require("./Notification.Resolvers")(pubsub),
-  require("./RegistrationSection.Resolvers")(pubsub),
-  require("./Ticket.Resolvers")(pubsub),
-  require("./User.Resolvers")(pubsub),
-  require("./UserGroup.Resolvers")(pubsub),
-  require("./VideoStreamPlayback.Resolvers")(pubsub),
-  require("./YTVideoStream.Resolvers")(pubsub),
+  require("./Assignment.Resolvers")(pubsub, caches),
+  require("./Auth.Resolvers")(pubsub, caches),
+  require("./Checkin.Resolvers")(pubsub, caches),
+  require("./Course.Resolvers")(pubsub, caches),
+  require("./Lecture.Resolvers")(pubsub, caches),
+  require("./Notification.Resolvers")(pubsub, caches),
+  require("./RegistrationSection.Resolvers")(pubsub, caches),
+  require("./Ticket.Resolvers")(pubsub, caches),
+  require("./User.Resolvers")(pubsub, caches),
+  require("./UserGroup.Resolvers")(pubsub, caches),
+  require("./VideoStreamPlayback.Resolvers")(pubsub, caches),
+  require("./YTVideoStream.Resolvers")(pubsub, caches),
 ];
 
 module.exports = getResolvers;

@@ -1,5 +1,5 @@
 const { ForbiddenError } = require("apollo-server-express");
-const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
+const { crudFunnel } = require("../crudHandlers");
 
 const eventName = {
   ASSIGNMENT_CREATED: "ASSIGNMENT_CREATED",
@@ -7,17 +7,16 @@ const eventName = {
   ASSIGNMENT_DELETED: "ASSIGNMENT_DELETED",
 };
 
-module.exports = (pubsub) => ({
+module.exports = (pubsub, caches) => ({
   Query: {
-    assignment: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    assignment: (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      // TODO assignment resolver
-      return readOne({ _id, type: "Assignment" }, { requester, models, loaders, pubsub });
+      return crudFunnel("Assignment", "findOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
-    assignments: (parent, args, { requester, models, loaders, pubsub }, info) => {
+    assignments: (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      // TODO assignments resolver
-      return readMany({ creator: requester._id, type: "Assignment" }, { requester, models, loaders, pubsub });
+      let ids = requester.auths.filter((a) => a.shared_resource_type == "Assignment").map((a) => a._id);
+      return crudFunnel("Assignment", "find", { _id: { $in: ids } }, ids, { models, loaders, pubsub, caches });
     },
   },
 });

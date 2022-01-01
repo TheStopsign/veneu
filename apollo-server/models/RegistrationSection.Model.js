@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { flatten } = require("../generics");
+const { crudFunnel } = require("../crudHandlers");
 
 module.exports = (pubsub, caches) => {
   const RegistrationSection = new mongoose.Schema(
@@ -59,12 +60,33 @@ module.exports = (pubsub, caches) => {
     .pre("deleteOne", { document: true }, function (next) {
       let deleted = this;
       Promise.all([
-        mongoose.model("Auth").deleteMany({ shared_resource: deleted._id }),
-        mongoose.model("UserGroup").deleteMany({ parent_resource: deleted._id }),
-        mongoose.model("Lecture").deleteMany({ parent_resource: deleted._id }),
-        mongoose.model("Course").updateOne({ _id: deleted.course }, { $pull: { registration_sections: deleted._id } }),
+        crudFunnel("Auth", "deleteMany", { _id: { $in: deleted.auths } }, deleted.auths, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel("UserGroup", "deleteMany", { _id: { $in: deleted.user_groups } }, deleted.user_groups, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel("Lecture", "deleteMany", { _id: { $in: deleted.lectures } }, deleted.lectures, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel(
+          "Course",
+          "updateOne",
+          [{ _id: deleted.course }, { $pull: { registration_sections: deleted._id } }],
+          deleted.course,
+          {
+            models: mongoose.models,
+            pubsub,
+            caches,
+          }
+        ),
       ]).then(() => {
-        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
@@ -77,16 +99,33 @@ module.exports = (pubsub, caches) => {
           const sectionsgroups = flatten(registrationSections.map((a) => a.user_groups));
           const sectionslectures = flatten(registrationSections.map((a) => a.lectures));
           Promise.all([
-            mongoose.model("Auth").deleteMany({ _id: { $in: sectionsauths } }),
-            mongoose
-              .model("Course")
-              .updateMany({ _id: { $in: sectionscourses } }, { $pullAll: { registration_sections: sectionsids } }),
-            mongoose.model("UserGroup").deleteMany({ _id: { $in: sectionsgroups } }),
-            mongoose.model("Lecture").deleteMany({ _id: { $in: sectionslectures } }),
+            crudFunnel("Auth", "deleteMany", { _id: { $in: sectionsauths } }, sectionsauths, {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }),
+            crudFunnel(
+              "Course",
+              "updateMany",
+              [{ _id: { $in: sectionscourses } }, { $pullAll: { registration_sections: sectionsids } }],
+              sectionscourses,
+              {
+                models: mongoose.models,
+                pubsub,
+                caches,
+              }
+            ),
+            crudFunnel("UserGroup", "deleteMany", { _id: { $in: sectionsgroups } }, sectionsgroups, {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }),
+            crudFunnel("Lecture", "deleteMany", { _id: { $in: sectionslectures } }, sectionslectures, {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }),
           ]).then((resolved) => {
-            registrationSections.forEach(function (deleted) {
-              caches[deleted.type].del(deleted._id + "");
-            });
             next();
           });
         } else next();
@@ -98,23 +137,35 @@ module.exports = (pubsub, caches) => {
       next();
     })
     .post("save", function () {
+      let saved = this;
       if (this.wasNew) {
         Promise.all([
-          this.model("Auth")
-            .create({
-              shared_resource: this._id,
+          crudFunnel(
+            "Auth",
+            "create",
+            {
+              shared_resource: saved._id,
               shared_resource_type: "RegistrationSection",
-              user: this.creator._id,
+              user: saved.creator,
               role: "INSTRUCTOR",
+            },
+            null,
+            {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }
+          ).then((auth) =>
+            pubsub.publish("AUTH_CREATED", {
+              authCreated: auth,
             })
-            .then((auth) =>
-              pubsub.publish("AUTH_CREATED", {
-                authCreated: auth,
-              })
-            ),
-          this.model("Course").findByIdAndUpdate(
-            { _id: this.course },
-            { $addToSet: { registration_sections: this._id } }
+          ),
+          crudFunnel(
+            "Course",
+            "updateOne",
+            [{ _id: saved.parent_resource }, { $addToSet: { registration_sections: saved._id } }],
+            saved.parent_resource,
+            { models: mongoose.models, pubsub, caches }
           ),
         ]);
       }

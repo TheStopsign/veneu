@@ -18,7 +18,6 @@ module.exports = gql`
 
   extend type Query {
     videoStreamPlayback(video_stream: ID!): VideoStreamPlayback
-    videoStreamPlaybacks: [VideoStreamPlayback!]!
   }
 
   extend type Mutation {

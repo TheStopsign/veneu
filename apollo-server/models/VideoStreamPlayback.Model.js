@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { crudFunnel } = require("../crudHandlers");
 
 module.exports = (pubsub, caches) => {
   const VideoStreamPlayback = new mongoose.Schema(
@@ -38,8 +39,13 @@ module.exports = (pubsub, caches) => {
   )
     .pre("deleteOne", { document: true }, function (next) {
       let deleted = this;
-      Promise.all([mongoose.model("Submission").deleteOne({ submittable: deleted._id })]).then((resolved) => {
-        caches[deleted.type].del(deleted._id + "");
+      Promise.all([
+        crudFunnel("Submission", "deleteOne", { _id: deleted.submission }, deleted.submission, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+      ]).then((resolved) => {
         next();
       });
     })
@@ -47,13 +53,22 @@ module.exports = (pubsub, caches) => {
       this.model.find(this.getFilter()).then((videostreamplaybacks) => {
         if (videostreamplaybacks.length) {
           const videostreamplaybacksids = videostreamplaybacks.map((a) => a._id);
+          const videostreamplaybackssubmissions = videostreamplaybacks.map((a) => a.submission);
           const videostreamplaybacksparents = videostreamplaybacks.map((a) => a.parent_resource);
+          const videostreamplaybacksparentstypes = videostreamplaybacks.map((a) => a.parent_resource_type);
           Promise.all([
-            mongoose.model("Submission").deleteMany({ submittable: { $in: videostreamplaybacksids } }),
+            crudFunnel(
+              "Submission",
+              "deleteMany",
+              { _id: { $in: videostreamplaybackssubmissions } },
+              videostreamplaybackssubmissions,
+              {
+                models: mongoose.models,
+                pubsub,
+                caches,
+              }
+            ),
           ]).then((resolved) => {
-            videostreamplaybacks.forEach(function (deleted) {
-              caches[deleted.type].del(deleted._id + "");
-            });
             next();
           });
         } else {
@@ -62,7 +77,6 @@ module.exports = (pubsub, caches) => {
       });
     })
     .pre("save", function (next) {
-      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })

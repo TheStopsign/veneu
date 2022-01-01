@@ -1,29 +1,25 @@
-const { PubSub, ForbiddenError, withFilter } = require("apollo-server-express");
-const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
+const { ForbiddenError, withFilter } = require("apollo-server-express");
+const { readMany, crudFunnel } = require("../crudHandlers");
 
-module.exports = (pubsub) => ({
+module.exports = (pubsub, caches) => ({
   Query: {
-    ticket: async (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    ticket: async (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readOne({ _id, type: "Ticket" }, { requester, models, loaders, pubsub });
+      return crudFunnel("Ticket", "findOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
-    tickets: async (parent, args, { requester, models, loaders, pubsub }, info) => {
+    tickets: async (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readMany({ user: requester._id, type: "Ticket" }, { requester, models, loaders, pubsub });
+      return readMany({ user: requester._id, type: "Ticket" }, { requester, models, loaders, pubsub, caches });
     },
   },
   Mutation: {
-    claimTicket: async (
-      parent,
-      ticket,
-      { requester, models, loaders, pubsub, caches: { Checkin: CheckinCache } },
-      info
-    ) => {
-      let checkin = CheckinCache.get(ticket.checkin + "");
-      if (!checkin) {
-        checkin = await readOne({ _id: ticket.checkin, type: "Checkin" }, { requester, models, loaders, pubsub });
-        CheckinCache.set(ticket.checkin + "", checkin);
-      }
+    claimTicket: async (parent, ticket, { requester, models, loaders, pubsub, caches }, info) => {
+      let checkin = await crudFunnel("Checkin", "findOne", { _id: ticket.checkin }, ticket.checkin, {
+        models,
+        loaders,
+        pubsub,
+        caches,
+      });
       if (checkin.ticketing_requires_authentication && !requester) {
         throw new ForbiddenError("Must be logged in to claim a Ticket from this Checkin");
       }
@@ -37,12 +33,12 @@ module.exports = (pubsub) => ({
       }
       return pubsub.publish("CLAIMED_TICKET", { claimedTicket: { ticket } }).then((done) => ticket);
     },
-    approveTicket: async (parent, ticket, { requester, models, loaders, pubsub }, info) => {
-      return createOne({ ...ticket, type: "Ticket" }, { requester, models, loaders, pubsub })
+    approveTicket: async (parent, ticket, { requester, models, loaders, pubsub, caches }, info) => {
+      return crudFunnel("Ticket", "createOne", ticket, null, { models, loaders, pubsub, caches })
         .then((ticket) => pubsub.publish("APPROVED_TICKET", { approvedTicket: { ticket } }))
         .then((done) => ticket);
     },
-    reserveTicket: async (parent, { checkin, tickets }, { requester, models, loaders, pubsub }, info) => {
+    reserveTicket: async (parent, { checkin, tickets }, { requester, models, loaders, pubsub, caches }, info) => {
       return pubsub.publish("RESERVED_TICKET", { reservedTicket: { checkin, tickets } }).then((done) => tickets);
     },
   },
@@ -84,6 +80,7 @@ module.exports = (pubsub) => ({
     },
   },
   Ticket: {
-    checkin: (parent, args, { loaders: { Checkin } }, info) => Checkin.load(parent.checkin),
+    checkin: (parent, args, { requester, models, loaders, pubsub, caches }, info) =>
+      crudFunnel("Checkin", "findOne", { _id: parent.checkin }, parent.checkin, { models, loaders, pubsub, caches }),
   },
 });

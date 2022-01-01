@@ -1,12 +1,9 @@
 module.exports = (pubsub, caches) => ({
-  Answer: require("./Answer.Model")(pubsub, caches),
   Assignment: require("./Assignment.Model")(pubsub, caches),
   Auth: require("./Auth.Model")(pubsub, caches),
   Checkin: require("./Checkin.Model")(pubsub, caches),
   Course: require("./Course.Model")(pubsub, caches),
-  FreeResponse: require("./FreeResponse.Model")(pubsub, caches),
   Lecture: require("./Lecture.Model")(pubsub, caches),
-  MultipleChoice: require("./MultipleChoice.Model")(pubsub, caches),
   Notification: require("./Notification.Model")(pubsub, caches),
   RegistrationSection: require("./RegistrationSection.Model")(pubsub, caches),
   Submission: require("./Submission.Model")(pubsub, caches),

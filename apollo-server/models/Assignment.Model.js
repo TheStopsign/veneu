@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const { crudFunnel } = require("../crudHandlers");
+
 module.exports = (pubsub, caches) => {
   const Assignment = new mongoose.Schema(
     {
@@ -6,6 +8,11 @@ module.exports = (pubsub, caches) => {
         type: String,
         required: true,
         default: "Assignment",
+      },
+      creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
       },
       assignable: {
         type: mongoose.Schema.Types.ObjectId,
@@ -42,22 +49,30 @@ module.exports = (pubsub, caches) => {
     .pre("deleteOne", { document: true }, function (next) {
       let deleted = this;
       Promise.all([
-        mongoose.model(this.assignable_type).updateOne({ _id: deleted.assignable }, { assignment: null }),
+        crudFunnel(
+          deleted.assignable_type,
+          "updateOne",
+          [{ _id: deleted.assignable }, { assignment: null }],
+          deleted.assignable,
+          { models: mongoose.models, pubsub, caches }
+        ),
       ]).then((resolved) => {
-        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
     .pre("deleteMany", function (next) {
       this.model.find(this.getFilter()).then((assignments) => {
         if (assignments.length) {
-          const assignmentsids = assignments.map((a) => a._id);
+          const assignablesids = assignments.map((a) => a.assignable);
           Promise.all([
-            mongoose.model("YTVideoStream").updateMany({ assignment: { $in: assignmentsids } }, { assignment: null }),
+            crudFunnel(
+              "YTVideoStream",
+              "updateMany",
+              [{ _id: { $in: assignablesids } }, { assignment: null }],
+              assignablesids,
+              { models: mongoose.models, pubsub, caches }
+            ),
           ]).then((resolved) => {
-            assignments.forEach(function (deleted) {
-              caches[deleted.type].del(deleted._id + "");
-            });
             next();
           });
         } else {
@@ -71,18 +86,33 @@ module.exports = (pubsub, caches) => {
       next();
     })
     .post("save", function () {
+      let saved = this;
       if (this.wasNew) {
-        mongoose
-          .model(this.assignable_type)
-          .updateOne(
+        Promise.all([
+          crudFunnel(
+            saved.assignable_type,
+            "updateOne",
+            [{ _id: saved.assignable }, { assignment: saved._id }],
+            saved.assignable,
+            { models: mongoose.models, pubsub, caches }
+          ),
+          crudFunnel(
+            "Auth",
+            "create",
             {
-              _id: this.assignable,
+              shared_resource: saved._id,
+              shared_resource_type: "Course",
+              user: saved.creator,
+              role: "INSTRUCTOR",
             },
+            null,
             {
-              assignment: this._id,
+              models: mongoose.models,
+              pubsub,
+              caches,
             }
-          )
-          .then((auth) => {});
+          ),
+        ]).then((auth) => {});
       }
     });
 

@@ -6,19 +6,19 @@ module.exports = gql`
     name: String!
     creator: User!
     type: String!
-    auths: [Auth!]!
+    auths: [Auth]!
     parent_resource: ParentResource!
     parent_resource_type: String!
   }
 
   extend type UserGroup {
-    user_groups: [UserGroup!]!
-    lectures: [Lecture!]!
+    user_groups: [UserGroup]!
+    lectures: [Lecture]!
   }
 
   extend type Query {
     userGroup(_id: ID!): UserGroup!
-    userGroups: [UserGroup!]!
+    userGroups: [UserGroup]!
   }
 
   extend type Mutation {

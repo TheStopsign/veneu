@@ -1,5 +1,5 @@
-const { AuthenticationError, ForbiddenError } = require("apollo-server-express");
-const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
+const { ForbiddenError } = require("apollo-server-express");
+const { crudFunnel } = require("../crudHandlers");
 
 const eventName = {
   YTVIDEOSTREAM_CREATED: "YTVIDEOSTREAM_CREATED",
@@ -7,29 +7,34 @@ const eventName = {
   YTVIDEOSTREAM_DELETED: "YTVIDEOSTREAM_DELETED",
 };
 
-module.exports = (pubsub) => ({
+module.exports = (pubsub, caches) => ({
   Query: {
-    YTVideoStream: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    YTVideoStream: (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readOne({ _id, type: "YTVideoStream" }, { requester, models, loaders, pubsub });
+      return crudFunnel("YTVideoStream", "findOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
-    YTVideoStreams: (parent, args, { requester, models, loaders, pubsub }, info) => {
+    YTVideoStreams: (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readMany(
-        { auths: { $in: requester.auths.map((a) => a._id) }, type: "YTVideoStream" },
-        { requester, models, loaders, pubsub }
-      );
+      let ids = requester.auths.filter((a) => a.shared_resource_type == "YTVideoStream").map((a) => a._id);
+      return crudFunnel("YTVideoStream", "find", { _id: { $in: ids } }, ids, {
+        models,
+        loaders,
+        pubsub,
+        caches,
+      });
     },
   },
   Mutation: {
     createYTVideoStream: (
       parent,
       { url, name, parent_resource, parent_resource_type, duration, assignment, hidden_until, due, points, checkins },
-      { requester, models, loaders, pubsub },
+      { requester, models, loaders, pubsub, caches },
       info
     ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return createOne(
+      return crudFunnel(
+        "YTVideoStream",
+        "create",
         {
           url,
           name,
@@ -38,30 +43,36 @@ module.exports = (pubsub) => ({
           creator: requester._id,
           duration,
           checkins,
-          type: "YTVideoStream",
         },
-        { requester, models, loaders, pubsub }
+        null,
+        { models, loaders, pubsub, caches }
       ).then((ytVideoStream) => {
         if (assignment) {
-          return createOne(
+          return crudFunnel(
+            "Assignment",
+            "create",
             {
               assignable: ytVideoStream._id,
               assignable_type: "YTVideoStream",
               hidden_until,
               due,
               points,
-              type: "Assignment",
+              creator: requester._id,
+              name,
+              parent_resource: ytVideoStream._id,
+              parent_resource_type: ytVideoStream.type,
             },
-            { requester, models, loaders, pubsub }
+            null,
+            { models, loaders, pubsub, caches }
           ).then((assignment) => ytVideoStream);
         } else {
           return ytVideoStream;
         }
       });
     },
-    deleteYTVideoStream: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    deleteYTVideoStream: (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return deleteOne({ _id, type: "YTVideoStream" }, { requester, models, loaders, pubsub });
+      return crudFunnel("YTVideoStream", "deleteOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
   },
   Subscription: {
@@ -76,9 +87,23 @@ module.exports = (pubsub) => ({
     },
   },
   YTVideoStream: {
-    assignment: (parent, args, { loaders: { Assignment } }, info) =>
-      parent.assignment ? Assignment.load(parent.assignment) : null,
-    checkins: (parent, args, { loaders: { Checkin } }, info) =>
-      parent.checkins ? Checkin.loadMany(parent.checkins) : [],
+    assignment: (parent, args, { models, loaders, pubsub, caches }, info) =>
+      parent.assignment
+        ? crudFunnel("Assignment", "findOne", { _id: parent.assignment }, parent.assignment, {
+            models,
+            loaders,
+            pubsub,
+            caches,
+          })
+        : null,
+    checkins: (parent, args, { models, loaders, pubsub, caches }, info) =>
+      parent.checkins
+        ? crudFunnel("Checkin", "find", { _id: { $in: parent.checkins } }, parent.checkins, {
+            models,
+            loaders,
+            pubsub,
+            caches,
+          })
+        : [],
   },
 });

@@ -1,5 +1,5 @@
-const { AuthenticationError, ForbiddenError } = require("apollo-server-express");
-const { createOne, readOne, readMany, updateOne, deleteOne } = require("../crudHandlers");
+const { ForbiddenError } = require("apollo-server-express");
+const { crudFunnel } = require("../crudHandlers");
 
 const eventName = {
   NOTIFICATION_CREATED: "NOTIFICATION_CREATED",
@@ -7,37 +7,44 @@ const eventName = {
   NOTIFICATION_DELETED: "NOTIFICATION_DELETED",
 };
 
-module.exports = (pubsub) => ({
+module.exports = (pubsub, caches) => ({
   Query: {
-    notification: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    notification: (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readOne({ _id, type: "Notification" }, { requester, models, loaders, pubsub });
+      return crudFunnel("Notification", "findOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
     notifications: (parent, args, { requester, models, loaders, pubsub }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readMany({ type: "Notification" }, { requester, models, loaders, pubsub });
+      return crudFunnel("Notification", "find", { _id: { $in: requester.notifications } }, requester.notifications, {
+        models,
+        loaders,
+        pubsub,
+        caches,
+      });
     },
   },
   Mutation: {
-    createNotification: (parent, { text, redirect, user }, { requester, models, loaders, pubsub }, info) => {
+    createNotification: (parent, { text, redirect, user }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return createOne(
+      return crudFunnel(
+        "Notification",
+        "create",
         {
           text,
           redirect,
           user,
-          type: "Notification",
         },
-        { requester, models, loaders, pubsub }
+        null,
+        { models, loaders, pubsub, caches }
       );
     },
-    updateNotification(parent, { _id, ...patch }, { requester, models, loaders, pubsub }, info) {
+    updateNotification(parent, { _id, ...patch }, { requester, models, loaders, pubsub, caches }, info) {
       if (!requester || requester._id != _id) throw new ForbiddenError("Not allowed");
-      return updateOne({ _id, type: "Notification" }, patch, { requester, models, loaders, pubsub });
+      return crudFunnel("Notification", "updateOne", [{ _id }, patch], _id, { models, loaders, pubsub, caches });
     },
-    deleteNotification: (parent, { _id }, { requester, models, loaders, pubsub }, info) => {
+    deleteNotification: (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester || requester._id != _id) throw new ForbiddenError("Not allowed");
-      return deleteOne({ _id, type: "Notification" }, { requester, models, loaders, pubsub });
+      return crudFunnel("Notification", "deleteOne", { _id }, _id, { models, loaders, pubsub, caches });
     },
   },
   Subscription: {
@@ -52,6 +59,7 @@ module.exports = (pubsub) => ({
     },
   },
   Notification: {
-    user: (parent, args, { loaders: { User } }, info) => User.load(parent.user),
+    user: (parent, args, { models, loaders, pubsub, caches }, info) =>
+      crudFunnel("User", "findOne", { _id: parent.user }, parent.user, { models, loaders, pubsub, caches }),
   },
 });

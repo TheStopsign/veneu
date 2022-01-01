@@ -8,10 +8,10 @@ module.exports = gql`
     name: String!
     email: String!
     password: String
-    auths: [Auth!]!
-    notifications: [Notification!]!
+    auths: [Auth]!
+    notifications: [Notification]!
     type: String!
-    checkins: [Checkin!]!
+    checkins: [Checkin]!
     access_code: String
     active: Boolean!
     created_at: Date
@@ -20,7 +20,7 @@ module.exports = gql`
 
   extend type Query {
     user(_id: ID!): User!
-    users: [User!]!
+    users: [User]!
     me: User
   }
 

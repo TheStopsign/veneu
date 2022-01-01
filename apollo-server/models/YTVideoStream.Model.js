@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const { flatten } = require("../generics");
+const { crudFunnel } = require("../crudHandlers");
 
 module.exports = (pubsub, caches) => {
   const YTVideoStream = new mongoose.Schema(
@@ -53,11 +55,28 @@ module.exports = (pubsub, caches) => {
     .pre("deleteOne", { document: true }, function (next) {
       let deleted = this;
       Promise.all([
-        mongoose.model("Auth").deleteMany({ shared_resource: deleted._id }),
-        mongoose.model("Assignment").deleteOne({ assignable: deleted._id }),
-        mongoose.model(deleted.parent_resource_type).updateOne({ recording: null, recording_type: null }),
+        crudFunnel("Auth", "deleteMany", { _id: { $in: deleted.auths } }, deleted.auths, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel("Assignment", "deleteOne", { _id: deleted.assignment }, deleted.assignment, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel(
+          deleted.parent_resource_type,
+          "updateOne",
+          [{ _id: deleted.parent_resource }, { recording: null, recording_type: null }],
+          deleted.assignment,
+          {
+            models: mongoose.models,
+            pubsub,
+            caches,
+          }
+        ),
       ]).then((resolved) => {
-        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
@@ -65,17 +84,35 @@ module.exports = (pubsub, caches) => {
       this.model.find(this.getFilter()).then((ytvs) => {
         if (ytvs.length) {
           const ytvsids = ytvs.map((a) => a._id);
+          const ytvsauths = flatten(ytvs.map((a) => a.auths));
+          const ytvsassignments = ytvs.map((a) => a.assignment);
           const ytvsparents = ytvs.map((a) => a.parent_resource);
+          const ytvsparentstypes = ytvs.map((a) => a.parent_resource_type);
           Promise.all([
-            mongoose.model("Auth").deleteMany({ shared_resource: { $in: ytvsids } }),
-            mongoose.model("Assignment").deleteMany({ assignable: { $in: ytvsids } }),
-            mongoose
-              .model("Lecture")
-              .updateMany({ _id: { $in: ytvsparents } }, { recording: null, recording_type: null }),
+            crudFunnel("Auth", "deleteMany", { _id: { $in: ytvsauths } }, ytvsauths, {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }),
+            crudFunnel("Assignment", "deleteOne", { _id: { $in: ytvsassignments } }, ytvsassignments, {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }),
+            ...ytvsparentstypes.map((ytvsparentstype) =>
+              crudFunnel(
+                ytvsparentstype,
+                "updateMany",
+                [{ _id: { $in: ytvsparents } }, { recording: null, recording_type: null }],
+                ytvsparents,
+                {
+                  models: mongoose.models,
+                  pubsub,
+                  caches,
+                }
+              )
+            ),
           ]).then((resolved) => {
-            ytvs.forEach(function (deleted) {
-              caches[deleted.type].del(deleted._id + "");
-            });
             next();
           });
         } else {

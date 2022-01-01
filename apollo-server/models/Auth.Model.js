@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { crudFunnel } = require("../crudHandlers");
 
 module.exports = (pubsub, caches) => {
   const Auth = new mongoose.Schema(
@@ -22,10 +23,23 @@ module.exports = (pubsub, caches) => {
     .pre("deleteOne", { document: true }, function (next) {
       let deleted = this;
       Promise.all([
-        mongoose.model("User").updateOne({ _id: deleted._id }, { $pull: { auths: deleted._id } }),
-        mongoose.model(deleted.shared_resource_type).updateOne({ _id: deleted._id }, { $pull: { auths: deleted._id } }),
+        crudFunnel("User", "updateOne", [{ _id: deleted._id }, { $pull: { auths: deleted._id } }], deleted.user, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel(
+          deleted.shared_resource_type,
+          "updateOne",
+          [{ _id: deleted.shared_resource }, { $pull: { auths: deleted._id } }],
+          deleted.shared_resource,
+          {
+            models: mongoose.models,
+            pubsub,
+            caches,
+          }
+        ),
       ]).then((resolved) => {
-        caches[deleted.type].del(deleted._id + "");
         next();
       });
     })
@@ -35,32 +49,62 @@ module.exports = (pubsub, caches) => {
           const authids = auths.map((a) => a._id);
           const authusers = auths.map((a) => a.user);
           const authresources = auths.map((a) => a.shared_resource);
+          const authresourcetypes = [...new Set(auths.map((a) => a.shared_resource_type))];
           Promise.all([
-            mongoose.model("User").updateMany({ _id: { $in: authusers } }, { $pullAll: { auths: authids } }),
-            mongoose
-              .model(auths[0].shared_resource_type)
-              .updateMany({ _id: { $in: authresources } }, { $pullAll: { auths: authids } }),
+            crudFunnel(
+              "User",
+              "updateMany",
+              [{ _id: { $in: authusers } }, { $pullAll: { auths: authids } }],
+              authusers,
+              {
+                models: mongoose.models,
+                pubsub,
+                caches,
+              }
+            ),
+            ...authresourcetypes.map((authresourcetype) =>
+              crudFunnel(
+                authresourcetype,
+                "updateMany",
+                [{ _id: { $in: authresources } }, { $pullAll: { auths: authids } }],
+                authresources,
+                {
+                  models: mongoose.models,
+                  pubsub,
+                  caches,
+                }
+              )
+            ),
           ]).then((resolved) => {
-            auths.forEach(function (deleted) {
-              caches[deleted.type].del(deleted._id + "");
-            });
             next();
           });
         } else next();
       });
     })
     .pre("save", function (next) {
-      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })
     .post("save", function () {
+      let saved = this;
       if (this.wasNew) {
         Promise.all([
-          mongoose.model("User").updateOne({ _id: this.user }, { $addToSet: { auths: this._id } }),
-          mongoose
-            .model(this.shared_resource_type)
-            .updateOne({ _id: this.shared_resource }, { $addToSet: { auths: this._id } }),
+          crudFunnel("User", "updateOne", [{ _id: saved.user }, { $addToSet: { auths: saved._id } }], saved.user, {
+            models: mongoose.models,
+            pubsub,
+            caches,
+          }),
+          crudFunnel(
+            saved.shared_resource_type,
+            "updateOne",
+            [{ _id: saved.shared_resource }, { $addToSet: { auths: saved._id } }],
+            saved.shared_resource,
+            {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }
+          ),
         ]);
       }
     });

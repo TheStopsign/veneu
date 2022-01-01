@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const { crudFunnel } = require("../crudHandlers");
 
-module.exports = (pubsub) => {
+module.exports = (pubsub, caches) => {
   const Course = new mongoose.Schema(
     {
       name: {
@@ -73,35 +74,61 @@ module.exports = (pubsub) => {
     }
   )
     .pre("deleteOne", { document: true }, function (next) {
+      let deleted = this;
       Promise.all([
-        mongoose.model("Auth").deleteMany({ _id: { $in: this.auths } }),
-        mongoose.model("UserGroup").deleteMany({ _id: { $in: this.user_groups } }),
-        mongoose.model("RegistrationSection").deleteMany({ _id: { $in: this.registration_sections } }),
-        mongoose.model("Lecture").deleteMany({ _id: { $in: this.lectures } }),
+        crudFunnel("Auth", "deleteMany", { _id: { $in: deleted.auths } }, deleted.auths, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel("UserGroup", "deleteMany", { _id: { $in: deleted.user_groups } }, deleted.user_groups, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel(
+          "RegistrationSection",
+          "deleteMany",
+          { _id: { $in: deleted.registration_sections } },
+          deleted.registration_sections,
+          {
+            models: mongoose.models,
+            pubsub,
+            caches,
+          }
+        ),
+        crudFunnel("Lecture", "deleteMany", { _id: { $in: deleted.lectures } }, deleted.lectures, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
       ]).then((resolved) => {
         next();
       });
     })
     .pre("save", function (next) {
-      caches[this.type].del(this._id + "");
       this.wasNew = this.isNew;
       next();
     })
     .post("save", function () {
+      let saved = this;
       if (this.wasNew) {
-        mongoose
-          .model("Auth")
-          .create({
-            shared_resource: this._id,
+        crudFunnel(
+          "Auth",
+          "create",
+          {
+            shared_resource: saved._id,
             shared_resource_type: "Course",
-            user: this.creator._id,
+            user: saved.creator,
             role: "INSTRUCTOR",
-          })
-          .then((auth) => {
-            pubsub.publish("AUTH_CREATED", {
-              authCreated: auth,
-            });
-          });
+          },
+          null,
+          {
+            models: mongoose.models,
+            pubsub,
+            caches,
+          }
+        );
       }
     });
 
