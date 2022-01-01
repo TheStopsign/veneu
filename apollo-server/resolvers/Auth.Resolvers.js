@@ -1,4 +1,4 @@
-const { ForbiddenError, withFilter } = require("apollo-server-express");
+const { ForbiddenError, withFilter, UserInputError } = require("apollo-server-express");
 const { readOne, crudFunnel } = require("../crudHandlers");
 
 const hbs = require("nodemailer-express-handlebars");
@@ -38,15 +38,26 @@ module.exports = (pubsub, caches) => ({
       info
     ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readOne({ email: user, type: "User" }, { requester, models, loaders, pubsub }).then((x) => {
+      return readOne({ email: user, type: "User" }, { requester, models, loaders, pubsub }).then(async (x) => {
         if (x) {
-          return crudFunnel(
-            "Auth",
-            "create",
-            { role, user: x._id, shared_resource, shared_resource_type, type: "Auth" },
-            null,
-            { models, loaders, pubsub, caches }
+          const existingAuth = await readOne(
+            { user: x._id, shared_resource, shared_resource_type, type: "Auth" },
+            { requester, models, loaders, pubsub }
           );
+          return existingAuth
+            ? crudFunnel("Auth", "updateOne", [{ _id: existingAuth._id }, { role }], existingAuth._id, {
+                models,
+                loaders,
+                pubsub,
+                caches,
+              })
+            : crudFunnel(
+                "Auth",
+                "create",
+                { role, user: x._id, shared_resource, shared_resource_type, type: "Auth" },
+                null,
+                { models, loaders, pubsub, caches }
+              );
         } else {
           return crudFunnel("User", "create", { email: user, type: "User" }, null, {
             models,
