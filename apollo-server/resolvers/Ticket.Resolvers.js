@@ -34,7 +34,7 @@ module.exports = (pubsub, caches) => ({
       return pubsub.publish("CLAIMED_TICKET", { claimedTicket: { ticket } }).then((done) => ticket);
     },
     approveTicket: async (parent, ticket, { requester, models, loaders, pubsub, caches }, info) => {
-      return crudFunnel("Ticket", "createOne", ticket, null, { models, loaders, pubsub, caches })
+      return crudFunnel("Ticket", "create", ticket, null, { models, loaders, pubsub, caches })
         .then((ticket) => pubsub.publish("APPROVED_TICKET", { approvedTicket: { ticket } }))
         .then((done) => ticket);
     },
