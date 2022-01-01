@@ -189,6 +189,7 @@ module.exports = (pubsub, caches) => ({
     user: async (parent, args, { models, loaders, pubsub, caches }, info) =>
       crudFunnel("User", "findOne", { _id: parent.user }, parent.user, { models, loaders, pubsub, caches }),
     shared_resource: async (parent, args, { models, loaders, pubsub, caches }, info) => {
+      console.log(parent);
       return crudFunnel(
         parent.shared_resource_type,
         "findOne",

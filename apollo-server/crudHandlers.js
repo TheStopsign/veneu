@@ -22,6 +22,7 @@ const fns = {
         res = cacheIdsIsArray ? await loaders[modelName].loadMany(cacheIds) : await loaders[modelName].load(cacheIds);
         console.log(modelName.toUpperCase() + "(S)", cacheIds, "FETCHED FROM DATALOADER");
         if (res && cacheIdsIsArray) {
+          res = res.filter((a) => a);
           res.forEach(function (item) {
             caches[modelName].set(item._id + "", item);
           });
@@ -35,17 +36,20 @@ const fns = {
 
     if (!res) {
       let prefetch;
-      if (REQUIRES_PREFETCH_FNS.includes(functionName)) {
-        prefetch = optionsIsArray ? await models[modelName].find(options[0]) : await models[modelName].findOne(options);
-        console.log(modelName.toUpperCase() + "(S)", cacheIds, "FETCHED FROM DATABASE");
-      }
-
-      res = optionsIsArray
-        ? await models[modelName][functionName](...options)
-        : await models[modelName][functionName](options);
-
-      if (prefetch) {
-        res = prefetch;
+      switch (functionName) {
+        case "deleteOne":
+          prefetch = await models[modelName].findOne(options);
+          res = await prefetch.deleteOne().then((del) => prefetch);
+          break;
+        case "deleteMany":
+          prefetch = await models[modelName].find(options);
+          res = await models[modelName][functionName](options).then((del) => prefetch);
+          break;
+        default:
+          res = optionsIsArray
+            ? await models[modelName][functionName](...options)
+            : await models[modelName][functionName](options);
+          break;
       }
 
       if (REQUIRES_REFETCH_FNS.includes(functionName)) {
@@ -229,7 +233,6 @@ const fns = {
     filters && filters.type
       ? models[filters.type]
           .find(filters)
-          .findOne(filters)
           .then((docs) => docs.deleteMany().then((deleted) => docs))
           .then((deleted) =>
             pubsub
