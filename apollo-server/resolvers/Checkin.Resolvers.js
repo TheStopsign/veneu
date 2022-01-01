@@ -52,7 +52,7 @@ module.exports = (pubsub, caches) => ({
       if (options.ticketing_requires_authorization && !options.ticketing_requires_authentication) {
         throw new ValidationError("Authorization also requires Authentication");
       }
-      crudFunnel(
+      return crudFunnel(
         "Checkin",
         "create",
         {
