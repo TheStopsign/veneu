@@ -93,7 +93,7 @@ module.exports = (pubsub, caches) => ({
         auths.map((b) => b.shared_resource.toString()).includes(a.toString())
       );
       return crudFunnel(
-        "UserGroup",
+        "RegistrationSection",
         "find",
         {
           _id: { $in: ids },
@@ -105,7 +105,7 @@ module.exports = (pubsub, caches) => ({
     lectures: async ({ lectures }, args, { requester: { auths }, loaders, models, pubsub, caches }, info) => {
       let ids = lectures.filter((a) => auths.map((b) => b.shared_resource.toString()).includes(a.toString()));
       return crudFunnel(
-        "UserGroup",
+        "Lecture",
         "find",
         {
           _id: { $in: ids },
