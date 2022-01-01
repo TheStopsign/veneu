@@ -365,7 +365,7 @@ export default {
   },
   watch: {
     theme: function (val, oldVal) {
-      setPalette(document.documentElement, String(val));
+      setPalette(document.documentElement, String(val), { reload: true });
     },
     $route: function (from, to) {},
   },
