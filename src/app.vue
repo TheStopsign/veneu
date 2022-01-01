@@ -365,7 +365,7 @@ export default {
   },
   watch: {
     theme: function (val, oldVal) {
-      setPalette(document.documentElement, String(val));
+      setPalette(document.documentElement, String(val), { vueToReload: this.$q.platform.is.ios ? this : null });
     },
     $route: function (from, to) {},
   },
