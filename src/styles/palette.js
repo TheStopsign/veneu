@@ -39,7 +39,7 @@ const setLight = function (root) {
 };
 
 module.exports = {
-  setPalette(root, mode, { reload }) {
+  setPalette(root, mode) {
     localStorage.setItem("theme", mode);
     if (mode === "null" && window.matchMedia) {
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
@@ -59,9 +59,6 @@ module.exports = {
       setDark(root);
     } else {
       setLight(root);
-    }
-    if (reload) {
-      location.reload();
     }
   },
 };

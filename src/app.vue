@@ -365,7 +365,7 @@ export default {
   },
   watch: {
     theme: function (val, oldVal) {
-      setPalette(document.documentElement, String(val), { reload: this.$q.platform.is.ios });
+      setPalette(document.documentElement, String(val));
     },
     $route: function (from, to) {},
   },
@@ -378,7 +378,7 @@ export default {
     };
   },
   created() {
-    setPalette(document.documentElement, String(this.theme), { reload: this.$q.platform.is.ios });
+    setPalette(document.documentElement, String(this.theme));
     if (this.theme === "true") {
       this.theme = true;
     }
