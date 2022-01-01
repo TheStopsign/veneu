@@ -1,30 +1,39 @@
 const setDark = function (root) {
+  document
+    .querySelector("meta[name=theme-color]")
+    .setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--veneu-dark"));
+
   window.dispatchEvent(
     new CustomEvent("theme-change", {
       detail: { value: "dark" },
     })
   );
+
   root.style.setProperty("--veneu-background", "var(--veneu-dark)");
   root.style.setProperty("--veneu-background-backdrop", "var(--veneu-dark-backdrop)");
   root.style.setProperty("--veneu-background-highlight", "var(--veneu-dark-highlight)");
   root.style.setProperty("--veneu-background-lowlight", "var(--veneu-dark-lowlight)");
   root.style.setProperty("--veneu-firefox-glass", "var(--veneu-dark-firefox-glass)");
-
   root.style.setProperty("--veneu-text-primary", "var(--veneu-light)");
   root.style.setProperty("--veneu-text-alternate", "var(--veneu-light)");
 };
+
 const setLight = function (root) {
+  document
+    .querySelector("meta[name=theme-color]")
+    .setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--veneu-light"));
+
   window.dispatchEvent(
     new CustomEvent("theme-change", {
       detail: { value: "light" },
     })
   );
+
   root.style.setProperty("--veneu-background", "var(--veneu-light)");
   root.style.setProperty("--veneu-background-backdrop", "var(--veneu-light-backdrop)");
   root.style.setProperty("--veneu-background-highlight", "var(--veneu-light-highlight)");
   root.style.setProperty("--veneu-background-lowlight", "var(--veneu-light-lowlight)");
   root.style.setProperty("--veneu-firefox-glass", "var(--veneu-light-firefox-glass)");
-
   root.style.setProperty("--veneu-text-primary", "var(--veneu-blue)");
   root.style.setProperty("--veneu-text-alternate", "var(--veneu-light)");
 };
