@@ -13,6 +13,7 @@
           label="Checkin Name"
           placeholder="e.g. S-2021 01"
         />
+        <WYSIWYG v-model="description" placeholder="Add a description..." />
         <q-checkbox
           v-model="ticketing_requires_authentication"
           label="Ticketing requires authentication"
@@ -48,8 +49,10 @@
 
 <script>
 import gql from "graphql-tag";
+import WYSIWYG from "../components/WYSIWYG.vue";
 export default {
   name: "CreateCheckin",
+  components: { WYSIWYG },
   props: {
     me: Object,
   },
@@ -72,6 +75,7 @@ export default {
       ticketing_requires_authentication: false,
       ticketing_requires_authorization: false,
       ticketing_allows_duplicates: false,
+      description: "",
     };
   },
   methods: {
@@ -81,17 +85,21 @@ export default {
           mutation: gql`
             mutation createCheckin(
               $name: String!
+              $description: String
               $ticketing_requires_authentication: Boolean
               $ticketing_requires_authorization: Boolean
               $ticketing_allows_duplicates: Boolean
             ) {
               createCheckin(
                 name: $name
+                description: $description
                 ticketing_requires_authentication: $ticketing_requires_authentication
                 ticketing_requires_authorization: $ticketing_requires_authorization
                 ticketing_allows_duplicates: $ticketing_allows_duplicates
               ) {
                 _id
+                name
+                description
                 tickets {
                   email
                   user
@@ -109,6 +117,7 @@ export default {
           `,
           variables: {
             name: this.name,
+            description: this.description,
             ticketing_requires_authentication: this.ticketing_requires_authentication,
             ticketing_requires_authorization: this.ticketing_requires_authorization,
             ticketing_allows_duplicates: this.ticketing_allows_duplicates,

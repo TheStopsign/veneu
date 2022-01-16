@@ -44,6 +44,7 @@
     "qr-scanner": "^1.3.0",
     "quasar": "^1.15.20",
     "register-service-worker": "^1.7.2",
+    "sanitize-html": "^2.6.1",
     "video.js": "^7.12.3",
     "videojs-constant-timeupdate": "^1.0.0",
     "videojs-youtube": "^2.6.1",

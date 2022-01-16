@@ -10,6 +10,10 @@ module.exports = (pubsub, caches) => {
         required: true,
         default: "Checkin: " + new Date(),
       },
+      description: {
+        type: String,
+        required: false,
+      },
       type: {
         type: String,
         required: true,
@@ -150,7 +154,7 @@ module.exports = (pubsub, caches) => {
             }
           ).then((auth) => {
             pubsub.publish("AUTH_CREATED", {
-              authCreated: auth,
+              resource: auth,
             });
           }),
         ]).then((res) => {

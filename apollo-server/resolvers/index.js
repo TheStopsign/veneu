@@ -1,6 +1,7 @@
-const { ForbiddenError, withFilter } = require("apollo-server-express");
-const { readOne, readMany, crudFunnel } = require("../crudHandlers");
+const { ForbiddenError } = require("apollo-server-express");
+const { crudFunnel } = require("../crudHandlers");
 const { flatten } = require("../generics");
+const sanitizeHtml = require("sanitize-html");
 
 const ParentResourceResolvers = {
   ParentResource: {
@@ -98,26 +99,59 @@ const VideoStreamResolvers = {
   },
 };
 
-const getResolvers = (pubsub, caches) => [
-  ParentResourceResolvers,
-  SharedResourceResolvers,
-  CalendarizableEventResolvers,
-  AssignableResolvers,
-  SubmittableResolvers,
-  SearchResultResolvers,
-  VideoStreamResolvers,
-  require("./Assignment.Resolvers")(pubsub, caches),
-  require("./Auth.Resolvers")(pubsub, caches),
-  require("./Checkin.Resolvers")(pubsub, caches),
-  require("./Course.Resolvers")(pubsub, caches),
-  require("./Lecture.Resolvers")(pubsub, caches),
-  require("./Notification.Resolvers")(pubsub, caches),
-  require("./RegistrationSection.Resolvers")(pubsub, caches),
-  require("./Ticket.Resolvers")(pubsub, caches),
-  require("./User.Resolvers")(pubsub, caches),
-  require("./UserGroup.Resolvers")(pubsub, caches),
-  require("./VideoStreamPlayback.Resolvers")(pubsub, caches),
-  require("./YTVideoStream.Resolvers")(pubsub, caches),
-];
+const sanitize = (args) => {
+  if (args) {
+    if (typeof args === "object") {
+      const argNames = Object.keys(args);
+      argNames.forEach((argName) => {
+        args[argName] = sanitize(args[argName]);
+      });
+    } else if (typeof args === "string") {
+      return sanitizeHtml(args, {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+      });
+    }
+  }
+  return args;
+};
+
+const getResolvers = (pubsub, caches) => {
+  const resolvers = [
+    ParentResourceResolvers,
+    SharedResourceResolvers,
+    CalendarizableEventResolvers,
+    AssignableResolvers,
+    SubmittableResolvers,
+    SearchResultResolvers,
+    VideoStreamResolvers,
+    require("./Assignment.Resolvers")(pubsub, caches),
+    require("./Auth.Resolvers")(pubsub, caches),
+    require("./Checkin.Resolvers")(pubsub, caches),
+    require("./Course.Resolvers")(pubsub, caches),
+    require("./Lecture.Resolvers")(pubsub, caches),
+    require("./Notification.Resolvers")(pubsub, caches),
+    require("./RegistrationSection.Resolvers")(pubsub, caches),
+    require("./Ticket.Resolvers")(pubsub, caches),
+    require("./User.Resolvers")(pubsub, caches),
+    require("./UserGroup.Resolvers")(pubsub, caches),
+    require("./VideoStreamPlayback.Resolvers")(pubsub, caches),
+    require("./YTVideoStream.Resolvers")(pubsub, caches),
+  ];
+
+  // inject an html sanitizer into all resolvers
+  resolvers.forEach((typeResolvers) => {
+    const types = Object.keys(typeResolvers).filter((a) => a !== "Subscription");
+    types.forEach((type) => {
+      let resolvers = typeResolvers[type];
+      const resolverNames = Object.keys(resolvers);
+      resolverNames.forEach((resolverName) => {
+        const baseResolver = resolvers[resolverName];
+        resolvers[resolverName] = async (parent, args, ctx, info) => baseResolver(parent, sanitize(args), ctx, info);
+      });
+    });
+  });
+
+  return resolvers;
+};
 
 module.exports = getResolvers;

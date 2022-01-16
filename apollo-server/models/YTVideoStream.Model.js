@@ -146,7 +146,7 @@ module.exports = (pubsub, caches) => {
         ])
           .then((auth) => {
             return pubsub.publish("AUTH_CREATED", {
-              authCreated: auth,
+              resource: auth,
             });
           })
           .then((res) => {

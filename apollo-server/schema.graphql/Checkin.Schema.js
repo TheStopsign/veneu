@@ -6,6 +6,7 @@ module.exports = gql`
     auths: [Auth]!
     creator: User!
     name: String!
+    description: String
     type: String!
     parent_resource: ParentResource
     parent_resource_type: String
@@ -40,6 +41,9 @@ module.exports = gql`
   extend type Mutation {
     createCheckin(
       name: String!
+      description: String
+      parent_resource: ID
+      parent_resource_type: String
       ticketing_requires_authentication: Boolean
       ticketing_requires_authorization: Boolean
       ticketing_allows_duplicates: Boolean

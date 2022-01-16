@@ -129,8 +129,13 @@ body,
 .q-tab--inactive,
 .q-notification,
 .q-date__main,
-.q-tree__node--selected {
+.q-tree__node--selected,
+.q-editor {
   animation: grow-in-button 0.5s forwards !important;
+}
+
+.q-editor__toolbar-group + .q-editor__toolbar-group::before {
+  left: -10px !important;
 }
 
 .q-timeline__dot,
@@ -189,7 +194,8 @@ body,
 .q-btn--rectangle,
 .q-field__inner,
 .q-field__control,
-.q-dialog__inner > div {
+.q-dialog__inner > div,
+.q-editor {
   border-radius: 1rem !important;
 }
 
@@ -238,7 +244,8 @@ body,
 .q-btn:focus:not([disabled]),
 .q-btn:hover:not([disabled]),
 .q-focusable:active:not([disabled]) .q-focus-helper,
-.q-hoverable:active:not([disabled]) {
+.q-hoverable:active:not([disabled]),
+.q-editor__content {
   animation: grow-in-input 0.5s forwards !important;
 }
 
@@ -468,6 +475,15 @@ h1 {
   color: var(--veneu-light) !important;
 }
 
+.q-editor,
+.q-editor * {
+  border: none;
+}
+
+.q-editor__toolbar-group {
+  margin: 10px !important;
+}
+
 #headertoolbar,
 .q-dialog__inner .q-card,
 .video-js .vjs-control-bar,
@@ -476,7 +492,8 @@ h1 {
 .q-menu,
 .q-time,
 .glassmorphism,
-.lockview {
+.lockview,
+.q-editor {
   -webkit-backdrop-filter: blur(5px) !important;
   backdrop-filter: blur(5px) !important;
   background: unset !important;
@@ -498,7 +515,8 @@ h1 {
   .q-select__dialog,
   .q-menu,
   .q-time,
-  .glassmorphism {
+  .glassmorphism,
+  .q-editor {
     background-color: var(--veneu-firefox-glass) !important;
     border: none;
     transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;

@@ -8,7 +8,18 @@
       style="margin: auto"
     />
     <div v-if="checkinQuery.error">Error fetching checkin data...</div>
-    <div v-if="checkinQuery.data && checkinQuery.data.checkin" id="checkinloaded">
+    <div
+      v-if="checkinQuery.data && checkinQuery.data.checkin"
+      id="checkinloaded"
+      style="max-width: 60rem; margin: auto"
+    >
+      <h3>{{ checkinQuery.data.checkin.name }}</h3>
+      <div>
+        Description: <br v-if="checkinQuery.data.checkin.description.length" />
+        <div
+          v-html="checkinQuery.data.checkin.description.length ? checkinQuery.data.checkin.description : 'None'"
+        ></div>
+      </div>
       <div class="row full-width justify-center">
         <q-responsive class="neu-convex q-mt-md" style="width: 50vh" :ratio="1">
           <vue-qr
@@ -85,7 +96,7 @@
           </div>
         </div>
       </div>
-      <div class="row full-width justify-center q-mt-lg">
+      <div class="row full-width justify-center q-mt-lg q-mb-md">
         <div class="dangerzone">
           <q-btn label="Delete" size="md" icon-right="delete" class="bg-red text-white" @click="deleteModal = true" />
         </div>
@@ -247,6 +258,8 @@ export default {
             query checkin($_id: ID!) {
               checkin(_id: $_id) {
                 _id
+                name
+                description
                 tickets {
                   email
                   user
@@ -264,6 +277,10 @@ export default {
         .then((data) => {
           this.checkinQuery.loading = false;
           this.checkinQuery.data = data.data;
+          this.checkinQuery.data.checkin.description = this.checkinQuery.data.checkin.description ?? "";
+          if (!this.checkinQuery.data.checkin.description.length) {
+            this.checkinQuery.data.checkin.description = "None";
+          }
           this.checkinQuery.data.checkin.tickets.forEach((ticket) => {
             this.tickets[ticket.code] = ticket;
           });

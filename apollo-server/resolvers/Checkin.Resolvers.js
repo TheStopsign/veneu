@@ -47,7 +47,12 @@ module.exports = (pubsub, caches) => ({
     },
   },
   Mutation: {
-    createCheckin: async (parent, { ...options }, { requester, models, loaders, pubsub, caches }, info) => {
+    createCheckin: async (
+      parent,
+      { name, parent_resource, parent_resource_type, ...options },
+      { requester, models, loaders, pubsub, caches },
+      info
+    ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       if (options.ticketing_requires_authorization && !options.ticketing_requires_authentication) {
         throw new ValidationError("Authorization also requires Authentication");
@@ -57,8 +62,9 @@ module.exports = (pubsub, caches) => ({
         "create",
         {
           creator: requester._id,
-          parent_resource: requester._id,
-          parent_resource_type: "User",
+          name,
+          parent_resource: parent_resource && parent_resource_type ? parent_resource : requester._id,
+          parent_resource_type: parent_resource && parent_resource_type ? parent_resource_type : "User",
           ...options,
         },
         null,

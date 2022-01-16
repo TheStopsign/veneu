@@ -157,7 +157,7 @@ module.exports = (pubsub, caches) => {
             }
           ).then((auth) =>
             pubsub.publish("AUTH_CREATED", {
-              authCreated: auth,
+              resource: auth,
             })
           ),
           crudFunnel(

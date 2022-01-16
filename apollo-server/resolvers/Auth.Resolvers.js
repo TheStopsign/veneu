@@ -20,14 +20,42 @@ module.exports = (pubsub, caches) => ({
   Query: {
     auth: async (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return crudFunnel("Auth", "findOne", { _id }, _id, { models, loaders, pubsub, caches });
+      return crudFunnel(
+        "Auth",
+        "findOne",
+        {
+          _id,
+        },
+        _id,
+        {
+          models,
+          loaders,
+          pubsub,
+          caches,
+        }
+      );
     },
     auths: async (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
       let ids = args.shared_resource
         ? requester.auths.filter((a) => a.shared_resource == args.shared_resource).map((a) => a._id)
         : requester.auths.map((a) => a._id);
-      return crudFunnel("Auth", "find", { _id: { $in: ids } }, ids, { models, loaders, pubsub, caches });
+      return crudFunnel(
+        "Auth",
+        "find",
+        {
+          _id: {
+            $in: ids,
+          },
+        },
+        ids,
+        {
+          models,
+          loaders,
+          pubsub,
+          caches,
+        }
+      );
     },
   },
   Mutation: {
@@ -38,40 +66,102 @@ module.exports = (pubsub, caches) => ({
       info
     ) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return readOne({ email: user, type: "User" }, { requester, models, loaders, pubsub }).then(async (x) => {
+      return readOne(
+        {
+          email: user,
+          type: "User",
+        },
+        {
+          requester,
+          models,
+          loaders,
+          pubsub,
+        }
+      ).then(async (x) => {
         if (x) {
           const existingAuth = await readOne(
-            { user: x._id, shared_resource, shared_resource_type, type: "Auth" },
-            { requester, models, loaders, pubsub }
+            {
+              user: x._id,
+              shared_resource,
+              shared_resource_type,
+              type: "Auth",
+            },
+            {
+              requester,
+              models,
+              loaders,
+              pubsub,
+            }
           );
           return existingAuth
-            ? crudFunnel("Auth", "updateOne", [{ _id: existingAuth._id }, { role }], existingAuth._id, {
-                models,
-                loaders,
-                pubsub,
-                caches,
-              })
+            ? crudFunnel(
+                "Auth",
+                "updateOne",
+                [
+                  {
+                    _id: existingAuth._id,
+                  },
+                  {
+                    role,
+                  },
+                ],
+                existingAuth._id,
+                {
+                  models,
+                  loaders,
+                  pubsub,
+                  caches,
+                }
+              )
             : crudFunnel(
                 "Auth",
                 "create",
-                { role, user: x._id, shared_resource, shared_resource_type, type: "Auth" },
+                {
+                  role,
+                  user: x._id,
+                  shared_resource,
+                  shared_resource_type,
+                  type: "Auth",
+                },
                 null,
-                { models, loaders, pubsub, caches }
+                {
+                  models,
+                  loaders,
+                  pubsub,
+                  caches,
+                }
               );
         } else {
-          return crudFunnel("User", "create", { email: user, type: "User" }, null, {
-            models,
-            loaders,
-            pubsub,
-            caches,
-          }).then((y) => {
+          return crudFunnel(
+            "User",
+            "create",
+            {
+              email: user,
+              type: "User",
+            },
+            null,
+            {
+              models,
+              loaders,
+              pubsub,
+              caches,
+            }
+          ).then((y) => {
             if (y) {
               return crudFunnel(
                 shared_resource_type,
                 "findOne",
-                { _id: shared_resource, type: shared_resource_type },
+                {
+                  _id: shared_resource,
+                  type: shared_resource_type,
+                },
                 shared_resource,
-                { models, loaders, pubsub, caches }
+                {
+                  models,
+                  loaders,
+                  pubsub,
+                  caches,
+                }
               ).then((z) => {
                 oauth2Client.setCredentials({
                   refresh_token: GMAIL_OAUTH_REFRESH,
@@ -80,11 +170,22 @@ module.exports = (pubsub, caches) => ({
                   oauth2Client.getAccessToken((err, accessToken) => {
                     if (err) {
                       console.log("OATH2CLIENT GETACCESSTOKEN ERROR:", err);
-                      crudFunnel("User", "deleteOne", { _id: y._id }, y._id, { models, loaders, pubsub, caches }).then(
-                        (a) => {
-                          reject(null);
+                      crudFunnel(
+                        "User",
+                        "deleteOne",
+                        {
+                          _id: y._id,
+                        },
+                        y._id,
+                        {
+                          models,
+                          loaders,
+                          pubsub,
+                          caches,
                         }
-                      );
+                      ).then((a) => {
+                        reject(null);
+                      });
                     } else {
                       var transporter = nodemailer.createTransport({
                         service: "gmail",
@@ -136,26 +237,48 @@ module.exports = (pubsub, caches) => ({
                         transporter.sendMail(mailOptions, function (error, info) {
                           if (error || info == null) {
                             console.log(error);
-                            crudFunnel("User", "deleteOne", { _id: y._id }, y._id, {
-                              models,
-                              loaders,
-                              pubsub,
-                              caches,
-                            }).then((a) => {
+                            crudFunnel(
+                              "User",
+                              "deleteOne",
+                              {
+                                _id: y._id,
+                              },
+                              y._id,
+                              {
+                                models,
+                                loaders,
+                                pubsub,
+                                caches,
+                              }
+                            ).then((a) => {
                               reject(null);
                             });
                           } else {
-                            resolve({ role, user: y._id, shared_resource, shared_resource_type, type: "Auth" });
+                            resolve({
+                              role,
+                              user: y._id,
+                              shared_resource,
+                              shared_resource_type,
+                              type: "Auth",
+                            });
                           }
                         });
                       } else {
                         console.log("MAILER FAILED");
-                        crudFunnel("User", "deleteOne", { _id: y._id }, y._id, {
-                          models,
-                          loaders,
-                          pubsub,
-                          caches,
-                        }).then((a) => {
+                        crudFunnel(
+                          "User",
+                          "deleteOne",
+                          {
+                            _id: y._id,
+                          },
+                          y._id,
+                          {
+                            models,
+                            loaders,
+                            pubsub,
+                            caches,
+                          }
+                        ).then((a) => {
                           reject(null);
                         });
                       }
@@ -163,7 +286,14 @@ module.exports = (pubsub, caches) => ({
                   });
                 });
                 return finishedEmail
-                  .then((authInfo) => crudFunnel("Auth", "create", authInfo, null, { models, loaders, pubsub, caches }))
+                  .then((authInfo) =>
+                    crudFunnel("Auth", "create", authInfo, null, {
+                      models,
+                      loaders,
+                      pubsub,
+                      caches,
+                    })
+                  )
                   .catch((e) => null);
               });
             } else {
@@ -175,16 +305,42 @@ module.exports = (pubsub, caches) => ({
     },
     updateAuth: async (parent, { _id, role }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return crudFunnel("Auth", "updateOne", [{ _id }, { role }], _id, {
-        models,
-        loaders,
-        pubsub,
-        caches,
-      });
+      return crudFunnel(
+        "Auth",
+        "updateOne",
+        [
+          {
+            _id,
+          },
+          {
+            role,
+          },
+        ],
+        _id,
+        {
+          models,
+          loaders,
+          pubsub,
+          caches,
+        }
+      );
     },
     deleteAuth: async (parent, { _id }, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      return crudFunnel("Auth", "deleteOne", { _id }, _id, { models, loaders, pubsub, caches });
+      return crudFunnel(
+        "Auth",
+        "deleteOne",
+        {
+          _id,
+        },
+        _id,
+        {
+          models,
+          loaders,
+          pubsub,
+          caches,
+        }
+      );
     },
   },
   Subscription: {
@@ -198,12 +354,27 @@ module.exports = (pubsub, caches) => ({
   },
   Auth: {
     user: async (parent, args, { models, loaders, pubsub, caches }, info) =>
-      crudFunnel("User", "findOne", { _id: parent.user }, parent.user, { models, loaders, pubsub, caches }),
+      crudFunnel(
+        "User",
+        "findOne",
+        {
+          _id: parent.user,
+        },
+        parent.user,
+        {
+          models,
+          loaders,
+          pubsub,
+          caches,
+        }
+      ),
     shared_resource: async (parent, args, { models, loaders, pubsub, caches }, info) => {
       return crudFunnel(
         parent.shared_resource_type,
         "findOne",
-        { _id: parent.shared_resource },
+        {
+          _id: parent.shared_resource,
+        },
         parent.shared_resource,
         {
           models,
