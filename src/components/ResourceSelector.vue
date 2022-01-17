@@ -152,9 +152,6 @@ export default {
     this.$refs.scrollContents.$el.parentElement.style.position = "absolute";
     let self = this;
     this.scrollToSelected();
-    if (!this.nav) {
-      console.log(this.selectable);
-    }
   },
   watch: {
     selected_resource: function (val, oldVal) {
@@ -270,9 +267,20 @@ export default {
           !(this.selectable.includes(auth._id) || this.selectable.includes(auth.treeid))
         ) {
           auth.selectable = false;
-          auth.handler = () => this.errorMsg("This resource is not selectable");
+          auth.handler = () => {
+            this.errorMsg("This resource is not selectable");
+          };
         } else if (this.nav) {
-          auth.handler = () => this.handleNav(auth);
+          auth.handler = (a) => {
+            if (
+              !this.selected_resource &&
+              ((a.treeid == this.me._id && this.$route.name == "Me") || a.treeid == this.$route.params._id)
+            ) {
+              this.selected_resource = a.treeid;
+            } else {
+              this.handleNav(auth);
+            }
+          };
         }
         if (this.scope && auth.shared_resource._id == this.scope) {
           this.scopeRef = auth;
