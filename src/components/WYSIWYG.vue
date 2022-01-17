@@ -70,7 +70,6 @@
       times_new_roman: 'Times New Roman',
       verdana: 'Verdana',
     }"
-    @input="input"
   />
 </template>
 
@@ -93,10 +92,12 @@ export default {
       qeditor: "",
     };
   },
-  methods: {
-    input(value) {
-      console.log(value);
-      this.$emit("input", value);
+  mounted() {
+    this.qeditor = this.value;
+  },
+  watch: {
+    qeditor: function (val, oldVal) {
+      this.$emit("input", val);
     },
   },
 };

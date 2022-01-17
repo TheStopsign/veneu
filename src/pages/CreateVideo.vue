@@ -18,7 +18,7 @@
           label="For Lecture..."
           :selected="parent_resource"
           :selectable="me.auths.filter((a) => a.shared_resource_type === 'Lecture').map((a) => a._id)"
-          @change="handleChangeLecture"
+          v-model="selected_auth"
           class="q-px-md"
         />
         <q-input
@@ -110,12 +110,28 @@ export default {
     ResourceSelector,
     CheckinSelector,
   },
+  watch: {
+    selected_auth: function (val) {
+      this.selected_auth = val ?? {
+        shared_resource: {
+          _id: null,
+        },
+        shared_resource_type: null,
+      };
+    },
+  },
   data() {
     return {
       name: "",
       url: "",
-      parent_resource: this.$route.query.from ? this.$route.query.from : null,
+      parent_resource: this.$route.query.from ?? null,
       parent_resource_type: "Lecture",
+      selected_auth: {
+        shared_resource: {
+          _id: null,
+        },
+        shared_resource_type: null,
+      },
       yt_valid: false,
       vjs: null,
       duration: -1,
@@ -188,7 +204,7 @@ export default {
       this.$router.go(-1);
     },
     formValid() {
-      if (!this.parent_resource || !this.parent_resource_type) {
+      if (!this.selected_auth.shared_resource._id || !this.selected_auth.shared_resource_type) {
         return false;
       }
       if (
@@ -265,8 +281,8 @@ export default {
             variables: {
               url: this.url,
               name: this.name,
-              parent_resource: this.parent_resource,
-              parent_resource_type: this.parent_resource_type,
+              parent_resource: this.selected_auth.shared_resource._id,
+              parent_resource_type: this.selected_auth.shared_resource_type,
               assignment: this.is_assignment,
               hidden_until: this.assignment.hidden_until,
               due: this.assignment.due,
@@ -287,9 +303,6 @@ export default {
             });
           });
       }
-    },
-    handleChangeLecture(parent_resource) {
-      this.parent_resource = parent_resource;
     },
     handleChangeCheckin(val, oldVal) {
       this.checkins = val;

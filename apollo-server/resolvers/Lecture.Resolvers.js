@@ -107,7 +107,7 @@ module.exports = (pubsub, caches) => ({
           })
         : null,
     parent_resource: (parent, args, { models, loaders, pubsub, caches }, info) =>
-      crudFunnel(parent.parent_resource_type, "findOne", { _id: parent.parent_resource }, parent.recording, {
+      crudFunnel(parent.parent_resource_type, "findOne", { _id: parent.parent_resource }, parent.parent_resource, {
         models,
         loaders,
         pubsub,

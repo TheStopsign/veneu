@@ -157,6 +157,13 @@ module.exports = (pubsub, caches) => {
               resource: auth,
             });
           }),
+          crudFunnel(
+            saved.parent_resource_type,
+            "updateOne",
+            [{ _id: saved.parent_resource }, { $addToSet: { checkins: saved._id } }],
+            saved.parent_resource,
+            { models: mongoose.models, pubsub, caches }
+          ),
         ]).then((res) => {
           return;
         });

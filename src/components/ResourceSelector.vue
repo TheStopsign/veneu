@@ -3,14 +3,14 @@
     <div class="q-mt-md">
       <q-icon size="xs" name="account_tree" class="q-mr-sm q-pb-xs" />{{ label || "Select a resource" }}
     </div>
-    <q-input flat v-model="filter" label="Search..." standout="bg-primary text-white" class="q-mt-md q-py-none">
+    <!-- <q-input flat v-model="filter" label="Search..." standout="bg-primary text-white" class="q-mt-md q-py-none">
       <template v-slot:prepend>
         <q-icon name="search" />
       </template>
       <template v-slot:append v-if="filter">
         <q-icon name="close" @click="filter = ''" class="cursor-pointer" />
       </template>
-    </q-input>
+    </q-input> -->
     <div class="neu-concave" style="max-height: 20rem; min-height: 3.125rem">
       <q-scroll-area
         class="neu-convex q-my-md"
@@ -84,6 +84,10 @@ export default {
       required: false,
     },
     flat: { type: Boolean, required: false, default: false },
+    value: {
+      type: Object,
+      required: false,
+    },
   },
   data() {
     return {
@@ -148,13 +152,22 @@ export default {
     this.$refs.scrollContents.$el.parentElement.style.position = "absolute";
     let self = this;
     this.scrollToSelected();
+    if (!this.nav) {
+      console.log(this.selectable);
+    }
   },
   watch: {
     selected_resource: function (val, oldVal) {
-      this.$emit("change", val);
+      this.$emit(
+        "input",
+        this.me.auths.find((auth) => auth.shared_resource._id == val)
+      );
     },
     ticked: function (val, oldVal) {
-      this.$emit("change", val);
+      this.$emit(
+        "input",
+        this.me.auths.filter((auth) => val.includes(auth.shared_resource._id))
+      );
     },
   },
   methods: {

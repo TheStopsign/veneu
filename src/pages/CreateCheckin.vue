@@ -14,6 +14,18 @@
           placeholder="e.g. S-2021 01"
         />
         <WYSIWYG v-model="description" placeholder="Add a description..." class="q-mx-md" />
+        <ResourceSelector
+          v-model="selected_auth"
+          :me="me"
+          label="Checkin for..."
+          :selectable="
+            me.auths
+              .filter((a) => ['Course', 'RegistrationSection', 'UserGroup', 'Lecture'].includes(a.shared_resource_type))
+              .map((a) => a._id)
+              .concat([me._id])
+          "
+          class="q-mx-md"
+        />
         <q-checkbox
           v-model="ticketing_requires_authentication"
           label="Ticketing requires authentication"
@@ -50,11 +62,12 @@
 <script>
 import gql from "graphql-tag";
 import WYSIWYG from "../components/WYSIWYG.vue";
+import ResourceSelector from "../components/ResourceSelector.vue";
 export default {
   name: "CreateCheckin",
-  components: { WYSIWYG },
+  components: { WYSIWYG, ResourceSelector },
   props: {
-    me: Object,
+    me: { type: Object, required: true },
   },
   watch: {
     ticketing_requires_authorization(val, oldVal) {
@@ -68,6 +81,14 @@ export default {
         });
       }
     },
+    selected_auth: function (val) {
+      this.selected_auth = val ?? {
+        shared_resource: {
+          _id: null,
+        },
+        shared_resource_type: null,
+      };
+    },
   },
   data() {
     return {
@@ -76,6 +97,12 @@ export default {
       ticketing_requires_authorization: false,
       ticketing_allows_duplicates: false,
       description: "",
+      selected_auth: {
+        shared_resource: {
+          _id: null,
+        },
+        shared_resource_type: null,
+      },
     };
   },
   methods: {
@@ -89,6 +116,8 @@ export default {
               $ticketing_requires_authentication: Boolean
               $ticketing_requires_authorization: Boolean
               $ticketing_allows_duplicates: Boolean
+              $parent_resource: ID
+              $parent_resource_type: String
             ) {
               createCheckin(
                 name: $name
@@ -96,6 +125,8 @@ export default {
                 ticketing_requires_authentication: $ticketing_requires_authentication
                 ticketing_requires_authorization: $ticketing_requires_authorization
                 ticketing_allows_duplicates: $ticketing_allows_duplicates
+                parent_resource: $parent_resource
+                parent_resource_type: $parent_resource_type
               ) {
                 _id
                 name
@@ -121,6 +152,8 @@ export default {
             ticketing_requires_authentication: this.ticketing_requires_authentication,
             ticketing_requires_authorization: this.ticketing_requires_authorization,
             ticketing_allows_duplicates: this.ticketing_allows_duplicates,
+            parent_resource: this.selected_auth.shared_resource._id ?? this.me._id,
+            parent_resource_type: this.selected_auth.shared_resource_type ?? "User",
           },
         })
         .then(({ data: { createCheckin } }) => {

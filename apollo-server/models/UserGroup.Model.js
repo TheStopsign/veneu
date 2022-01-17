@@ -43,6 +43,12 @@ module.exports = (pubsub, caches) => {
           ref: "Lecture",
         },
       ],
+      checkins: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Checkin",
+        },
+      ],
     },
     {
       timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
@@ -62,6 +68,11 @@ module.exports = (pubsub, caches) => {
           caches,
         }),
         crudFunnel("Lecture", "deleteMany", { _id: { $in: deleted.lectures } }, deleted.lectures, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel("Checkin", "deleteMany", { _id: { $in: deleted.checkins } }, deleted.checkins, {
           models: mongoose.models,
           pubsub,
           caches,
@@ -90,6 +101,7 @@ module.exports = (pubsub, caches) => {
           const groupsparentstypes = userGroups.map((a) => a.parent_resource_type);
           const groupsgroups = flatten(userGroups.map((a) => a.user_groups));
           const groupslectures = flatten(userGroups.map((a) => a.lectures));
+          const groupscheckins = flatten(userGroups.map((a) => a.checkins));
           Promise.all([
             crudFunnel("Auth", "deleteMany", { _id: { $in: groupsauths } }, groupsauths, {
               models: mongoose.models,
@@ -102,6 +114,11 @@ module.exports = (pubsub, caches) => {
               caches,
             }),
             crudFunnel("Lecture", "deleteMany", { _id: { $in: groupslectures } }, groupslectures, {
+              models: mongoose.models,
+              pubsub,
+              caches,
+            }),
+            crudFunnel("Checkin", "deleteMany", { _id: { $in: groupscheckins } }, groupscheckins, {
               models: mongoose.models,
               pubsub,
               caches,

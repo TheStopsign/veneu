@@ -114,5 +114,17 @@ module.exports = (pubsub, caches) => ({
         { models, pubsub, caches, loaders }
       );
     },
+    checkins: async ({ checkins }, args, { requester: { auths }, loaders, models, pubsub, caches }, info) => {
+      let ids = checkins.filter((a) => auths.map((b) => b.shared_resource.toString()).includes(a.toString()));
+      return crudFunnel(
+        "Checkin",
+        "find",
+        {
+          _id: { $in: ids },
+        },
+        ids,
+        { models, pubsub, caches, loaders }
+      );
+    },
   },
 });

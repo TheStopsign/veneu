@@ -16,6 +16,7 @@ module.exports = gql`
     user_groups: [UserGroup]!
     lectures: [Lecture]!
     meeting_times: [WeekDayEvent]!
+    checkins: [Checkin]!
   }
 
   extend type Query {

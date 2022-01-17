@@ -16,7 +16,7 @@
         <ResourceSelector
           :me="me"
           label="For Resource..."
-          @change="handleChangeResource"
+          v-model="selected_auth"
           :selected="parent_resource"
           :selectable="
             me.auths
@@ -113,12 +113,27 @@ export default {
   components: {
     ResourceSelector,
   },
+  watch: {
+    selected_auth: function (val, oldVal) {
+      this.selected_auth = val ?? {
+        shared_resource: {
+          _id: null,
+        },
+        shared_resource_type: null,
+      };
+    },
+  },
   data() {
     return {
       name: "",
       date: null,
-      parent_resource: this.$route.query.from ? this.$route.query.from : null,
-      parent_resource_type: null,
+      parent_resource: this.$route.query.from ?? null,
+      selected_auth: {
+        shared_resource: {
+          _id: null,
+        },
+        shared_resource_type: null,
+      },
       start: "",
       end: "",
     };
@@ -171,8 +186,8 @@ export default {
           `,
           variables: {
             name: this.name,
-            parent_resource: this.parent_resource,
-            parent_resource_type: this.parent_resource_type,
+            parent_resource: this.selected_auth.shared_resource._id,
+            parent_resource_type: this.selected_auth.shared_resource_type,
             start: this.start,
             end: this.end,
           },
@@ -185,7 +200,7 @@ export default {
       this.$router.go(-1);
     },
     formValid() {
-      if (!this.parent_resource || !this.parent_resource_type) {
+      if (!this.selected_auth.shared_resource._id || !this.selected_auth.shared_resource_type) {
         return false;
       }
       if (!this.name) {
@@ -198,13 +213,6 @@ export default {
     },
     handleCreateLecture() {
       this.$router.push({ name: "Calendar" });
-    },
-    handleChangeResource(resource, type) {
-      this.parent_resource = resource;
-      let a = this.me.auths.find((a) => a.shared_resource._id == resource);
-      if (a) {
-        this.parent_resource_type = a.shared_resource_type;
-      }
     },
   },
 };

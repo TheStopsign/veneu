@@ -68,6 +68,12 @@ module.exports = (pubsub, caches) => {
         type: String,
         required: false,
       },
+      checkins: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Checkin",
+        },
+      ],
     },
     {
       timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
@@ -98,6 +104,11 @@ module.exports = (pubsub, caches) => {
           }
         ),
         crudFunnel("Lecture", "deleteMany", { _id: { $in: deleted.lectures } }, deleted.lectures, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
+        crudFunnel("Checkin", "deleteMany", { _id: { $in: deleted.checkins } }, deleted.checkins, {
           models: mongoose.models,
           pubsub,
           caches,

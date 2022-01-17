@@ -2,7 +2,7 @@
   <q-page id="create-registrationsection">
     <ApolloMutation
       :mutation="require('../graphql/CreateRegistrationSection.gql')"
-      :variables="{ name, course, meeting_times }"
+      :variables="{ name, course: selected_auth.shared_resource._id, meeting_times }"
       class="form q-pt-md q-pb-xl q-px-md"
       @done="handleCreateRegistrationSection"
     >
@@ -24,7 +24,7 @@
             :me="me"
             label="For Course..."
             :selectable="me.auths.filter((a) => a.shared_resource_type === 'Course').map((a) => a._id)"
-            @change="handleChangeCourse"
+            v-model="selected_auth"
             class="q-px-md"
           />
           <div
@@ -128,11 +128,26 @@ export default {
   components: {
     ResourceSelector,
   },
+  watch: {
+    selected_auth: function (val) {
+      this.selected_auth = val ?? {
+        shared_resource: {
+          _id: null,
+        },
+        shared_resource_type: null,
+      };
+    },
+  },
   data() {
     return {
       name: "",
-      course: null,
       meeting_times: [],
+      selected_auth: {
+        shared_resource: {
+          _id: null,
+        },
+        shared_resource_type: null,
+      },
     };
   },
   methods: {
@@ -140,7 +155,11 @@ export default {
       this.$router.go(-1);
     },
     formValid() {
-      if (!this.course) {
+      if (
+        !this.selected_auth.shared_resource._id ||
+        !this.selected_auth.shared_resource_type ||
+        !this.selected_auth.shared_resource_type == "Course"
+      ) {
         return false;
       }
       if (!this.name.length) {
@@ -172,7 +191,7 @@ export default {
     },
     handleCreateRegistrationSection() {
       this.name = "";
-      this.course = null;
+      this.selected_auth = { shared_resource: null, shared_resource_type: null };
       this.$router.push({ name: "Calendar" });
     },
     handleAddMeeting() {
@@ -184,9 +203,6 @@ export default {
           name: "",
         },
       });
-    },
-    handleChangeCourse(course) {
-      this.course = course;
     },
   },
 };

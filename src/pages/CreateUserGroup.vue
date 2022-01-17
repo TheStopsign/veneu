@@ -2,7 +2,11 @@
   <q-page id="create-course">
     <ApolloMutation
       :mutation="require('../graphql/CreateUserGroup.gql')"
-      :variables="{ name, parent_resource, parent_resource_type }"
+      :variables="{
+        name,
+        parent_resource: selected_auth.shared_resource._id,
+        parent_resource_type: selected_auth.shared_resource_type,
+      }"
       class="form q-pt-md q-pb-xl q-px-md"
       @done="handleCreateUserGroup"
     >
@@ -23,13 +27,13 @@
           <ResourceSelector
             :me="me"
             label="For Resource..."
-            @change="handleChangeResource"
             :selectable="
               me.auths
                 .filter((a) => ['Course', 'RegistrationSection', 'UserGroup'].includes(a.shared_resource_type))
                 .map((a) => a._id)
             "
             class="q-px-md"
+            v-model="selected_auth"
           />
           <q-bar class="q-pa-none q-ml-md q-pr-md q-gutter-x-md">
             <q-btn type="button" label="Back" class="q-ml-md" @click="handleBack" />
@@ -51,11 +55,25 @@ export default {
   props: {
     me: Object,
   },
+  watch: {
+    selected_auth: function (val) {
+      this.selected_auth = val ?? {
+        shared_resource: {
+          _id: null,
+        },
+        shared_resource_type: null,
+      };
+    },
+  },
   data() {
     return {
       name: "",
-      parent_resource: null,
-      parent_resource_type: null,
+      selected_auth: {
+        shared_resource: {
+          _id: null,
+        },
+        shared_resource_type: null,
+      },
     };
   },
   methods: {
@@ -63,19 +81,12 @@ export default {
       this.$router.go(-1);
     },
     formValid() {
-      return this.name.length && this.parent_resource && this.parent_resource_type;
+      return this.name.length && this.selected_auth.shared_resource._id && this.selected_auth.shared_resource_type;
     },
     handleCreateUserGroup() {
       this.name = "";
       this.parent_resource = null;
       this.$router.push({ name: "Calendar" });
-    },
-    handleChangeResource(resource, type) {
-      this.parent_resource = resource;
-      let a = this.me.auths.find((a) => a.shared_resource._id == resource);
-      if (a) {
-        this.parent_resource_type = a.shared_resource_type;
-      }
     },
   },
 };
