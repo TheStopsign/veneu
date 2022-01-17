@@ -14,12 +14,7 @@
       style="max-width: 60rem; margin: auto"
     >
       <h3>{{ checkinQuery.data.checkin.name }}</h3>
-      <div>
-        Description: <br v-if="checkinQuery.data.checkin.description.length" />
-        <div
-          v-html="checkinQuery.data.checkin.description.length ? checkinQuery.data.checkin.description : 'None'"
-        ></div>
-      </div>
+      <div v-html="checkinQuery.data.checkin.description.length ? checkinQuery.data.checkin.description : 'None'" />
       <div class="row full-width justify-center">
         <q-responsive class="neu-convex q-mt-md" style="width: 50vh" :ratio="1">
           <vue-qr

@@ -15,9 +15,7 @@
                 v-if="hasPermissions()"
               />
             </div>
-            <div v-if="data.course.description" class="row full-width q-px-md">
-              {{ data.course.description }}
-            </div>
+            <div v-if="data.course.description" class="row full-width q-px-md" v-html="data.course.description" />
             <q-btn
               v-else-if="hasPermissions()"
               size="md"

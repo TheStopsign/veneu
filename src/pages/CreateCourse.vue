@@ -21,16 +21,7 @@
           >
           </q-input>
 
-          <q-input
-            standout="bg-primary text-white q-ma-none"
-            color="primary"
-            class="text-primary q-mt-md"
-            v-model="description"
-            label="Description"
-            placeholder="e.g. Learning about x, y, and z."
-            type="textarea"
-          >
-          </q-input>
+          <WYSIWYG v-model="description" placeholder="Add a description..." class="q-mt-md" />
 
           <div class="row full-width">
             <q-input
@@ -82,8 +73,10 @@
 </template>
 
 <script>
+import WYSIWYG from "../components/WYSIWYG.vue";
 export default {
   name: "CreateCourse",
+  components: { WYSIWYG },
   data() {
     return {
       name: "",

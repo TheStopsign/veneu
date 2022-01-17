@@ -108,7 +108,12 @@ const sanitize = (args) => {
       });
     } else if (typeof args === "string") {
       return sanitizeHtml(args, {
-        allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img", "font", "strike"]),
+        allowedAttributes: {
+          ...sanitizeHtml.defaults.allowedAttributes,
+          font: ["face"],
+          div: ["align"],
+        },
       });
     }
   }

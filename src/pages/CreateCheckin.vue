@@ -13,7 +13,7 @@
           label="Checkin Name"
           placeholder="e.g. S-2021 01"
         />
-        <WYSIWYG v-model="description" placeholder="Add a description..." />
+        <WYSIWYG v-model="description" placeholder="Add a description..." class="q-mx-md" />
         <q-checkbox
           v-model="ticketing_requires_authentication"
           label="Ticketing requires authentication"
