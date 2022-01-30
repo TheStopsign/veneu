@@ -111,7 +111,7 @@ const sanitize = (args) => {
         allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img", "font", "strike"]),
         allowedAttributes: {
           ...sanitizeHtml.defaults.allowedAttributes,
-          font: ["face"],
+          font: ["face", "size"],
           div: ["align"],
         },
       });

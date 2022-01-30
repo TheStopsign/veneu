@@ -14,7 +14,7 @@ const UserGroup = () => import("./pages/UserGroup.vue");
 const Lecture = () => import("./pages/Lecture.vue");
 const Me = () => import("./pages/Me.vue");
 
-const CreateCourse = () => import("./pages/CreateCourse.vue");
+const SaveCourse = () => import("./pages/SaveCourse.vue");
 const CreateUserGroup = () => import("./pages/CreateUserGroup.vue");
 const CreateRegistrationSection = () => import("./pages/CreateRegistrationSection.vue");
 const CreateLecture = () => import("./pages/CreateLecture.vue");
@@ -84,10 +84,19 @@ const router = new VueRouter({
     {
       path: "/create-course",
       name: "CreateCourse",
-      component: CreateCourse,
+      component: SaveCourse,
       meta: {
         auth: true,
       },
+    },
+    {
+      path: "/edit-course",
+      name: "EditCourse",
+      component: SaveCourse,
+      meta: {
+        auth: true,
+      },
+      props: true,
     },
     {
       path: "/create-user-group",
@@ -224,9 +233,29 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.auth && !localStorage.getItem("token")) next({ name: "Login", query: { redirect: to.path } });
-  else if (to.meta.noAuth && localStorage.getItem("token")) next({ name: "Calendar" });
-  else next();
+  try {
+    if (
+      (window.location !== window.parent.location || window.self !== window.top || window.frameElement) &&
+      !to.path.startsWith("/enterprise")
+    ) {
+      next({ name: "404" });
+    } else if (to.meta.auth && !localStorage.getItem("token")) {
+      next({ name: "Login", query: { redirect: to.path } });
+    } else if (to.meta.noAuth && localStorage.getItem("token")) {
+      next({ name: "Calendar" });
+    } else {
+      next();
+    }
+  } catch (e) {
+    next({ name: "404" });
+  }
+});
+
+const DEFAULT_TITLE = "veneu | ";
+router.afterEach((to, from) => {
+  Vue.nextTick(() => {
+    document.title = DEFAULT_TITLE + (to.meta.title || to.name);
+  });
 });
 
 export default router;

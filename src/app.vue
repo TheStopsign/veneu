@@ -79,48 +79,54 @@
 
                 <q-space />
 
-                <q-toggle
-                  toggle-indeterminate
-                  v-model="theme"
-                  unchecked-icon="dark_mode"
-                  indeterminate-icon="palette"
-                  checked-icon="light_mode"
-                  color="primary"
-                  size="md"
-                />
+                <div style="overflow-x: auto; height: 40px" class="toolbar-btns">
+                  <q-toggle
+                    toggle-indeterminate
+                    v-model="theme"
+                    unchecked-icon="dark_mode"
+                    indeterminate-icon="palette"
+                    checked-icon="light_mode"
+                    color="primary"
+                    size="md"
+                  />
 
-                <q-btn size="sm" round icon="qr_code_2" class="q-mx-sm" title="Checkin" aria-label="Checkin">
-                  <q-menu :offset="[0, 16]">
-                    <div class="q-pa-xs">
-                      <q-item clickable class="row full-width items-center q-ma-none" @click="handleScan"
-                        ><q-icon color="primary" size="sm" name="qr_code_scanner" class="q-mr-sm" />Attend</q-item
-                      >
-                      <q-item v-if="data.me" clickable class="row full-width items-center q-ma-none" @click="handleHost"
-                        ><q-icon color="primary" size="sm" name="present_to_all" class="q-mr-sm" />Host</q-item
-                      >
-                    </div>
-                  </q-menu>
-                </q-btn>
-                <q-btn
-                  v-if="data.me"
-                  size="sm"
-                  round
-                  icon="notifications"
-                  class="q-mx-sm"
-                  title="Notifications"
-                  aria-label="API"
-                >
-                  <q-badge rounded color="red" floating label="1+" />
-                </q-btn>
-                <q-btn
-                  size="sm"
-                  round
-                  icon="auto_awesome"
-                  class="q-mx-sm"
-                  title="Voyager"
-                  aria-label="Voyager"
-                  @click="handleVoyager()"
-                />
+                  <q-btn size="sm" round icon="qr_code_2" class="q-mx-sm" title="Checkin" aria-label="Checkin">
+                    <q-menu :offset="[0, 16]">
+                      <div class="q-pa-xs">
+                        <q-item clickable class="row full-width items-center q-ma-none" @click="handleScan"
+                          ><q-icon color="primary" size="sm" name="qr_code_scanner" class="q-mr-sm" />Attend</q-item
+                        >
+                        <q-item
+                          v-if="data.me"
+                          clickable
+                          class="row full-width items-center q-ma-none"
+                          @click="handleHost"
+                          ><q-icon color="primary" size="sm" name="present_to_all" class="q-mr-sm" />Host</q-item
+                        >
+                      </div>
+                    </q-menu>
+                  </q-btn>
+                  <q-btn
+                    v-if="data.me"
+                    size="sm"
+                    round
+                    icon="notifications"
+                    class="q-mx-sm"
+                    title="Notifications"
+                    aria-label="API"
+                  >
+                    <q-badge rounded color="red" floating label="1+" />
+                  </q-btn>
+                  <q-btn
+                    size="sm"
+                    round
+                    icon="auto_awesome"
+                    class="q-mx-sm"
+                    title="Voyager"
+                    aria-label="Voyager"
+                    @click="handleVoyager()"
+                  />
+                </div>
               </q-toolbar>
             </q-pull-to-refresh>
           </q-header>
@@ -563,4 +569,11 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.toolbar-btns {
+  white-space: nowrap;
+}
+.toolbar-btns > * {
+  display: inline-block;
+}
+</style>

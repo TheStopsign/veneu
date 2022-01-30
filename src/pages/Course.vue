@@ -7,22 +7,22 @@
         <div v-if="data && data.course" id="courseloaded" class="q-mb-xl">
           <div style="max-width: 60rem; margin: auto">
             <h1 class="q-pa-sm q-mt-md">{{ data.course.name }}</h1>
-            <div class="row full-width q-mt-sm q-mb-md q-px-md">
+            <div class="row full-width q-mt-sm q-mb-md q-gutter-x-md q-gutter-y-md">
               <ShareResourceModal
                 :resourceid="data.course._id"
                 resourcetype="Course"
                 :me="me"
                 v-if="hasPermissions()"
               />
+              <q-btn
+                icon="edit"
+                :label="$q.screen.gt.xs ? 'Edit' : ''"
+                v-if="hasPermissions()"
+                @click="handleEditCourse(data.course)"
+              />
             </div>
-            <div v-if="data.course.description" class="row full-width q-px-md" v-html="data.course.description" />
-            <q-btn
-              v-else-if="hasPermissions()"
-              size="md"
-              class="row full-width q-my-md"
-              label="Add description - coming soon"
-              icon="create"
-            />
+            <div v-if="data.course.description" class="q-px-md" v-html="data.course.description" />
+
             <div class="row full-width q-pl-md">
               <ResourceSelector
                 :me="me"
@@ -149,6 +149,9 @@ export default {
       return [...vals].sort(function (a, b) {
         return new Date(a.start) - new Date(b.start);
       });
+    },
+    handleEditCourse(original) {
+      this.$router.push({ name: "EditCourse", params: { original } });
     },
   },
 };

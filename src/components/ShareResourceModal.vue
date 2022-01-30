@@ -1,6 +1,6 @@
 <template>
   <div class="share-resource-modal-container flex inline">
-    <q-btn size="md" label="Share" title="Share" @click="isOpen = true" icon="share" />
+    <q-btn size="md" :label="$q.screen.gt.xs ? 'Share' : ''" title="Share" @click="isOpen = true" icon="share" />
     <q-dialog v-model="isOpen" noBackdropDismiss persistent>
       <ApolloQuery :query="require('../graphql/AuthsForResource.gql')" :variables="{ shared_resource: resourceid }">
         <template slot-scope="{ result: { loading, error, data } }">
