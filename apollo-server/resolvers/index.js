@@ -31,18 +31,32 @@ const CalendarizableEventResolvers = {
   Query: {
     calendarEvents: async (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      let ids = requester.auths.filter((a) => a.shared_resource_type == "Lecture").map((a) => a.shared_resource);
-      return crudFunnel(
-        "Lecture",
-        "find",
-        {
-          _id: {
-            $in: ids,
+      let lectureids = requester.auths.filter((a) => a.shared_resource_type == "Lecture").map((a) => a.shared_resource);
+      let courseids = requester.auths.filter((a) => a.shared_resource_type == "Course").map((a) => a.shared_resource);
+      return Promise.all([
+        crudFunnel(
+          "Lecture",
+          "find",
+          {
+            _id: {
+              $in: lectureids,
+            },
           },
-        },
-        ids,
-        { models, loaders, pubsub, caches }
-      );
+          lectureids,
+          { models, loaders, pubsub, caches }
+        ),
+        crudFunnel(
+          "Course",
+          "find",
+          {
+            _id: {
+              $in: courseids,
+            },
+          },
+          courseids,
+          { models, loaders, pubsub, caches }
+        ),
+      ]).then(flatten);
     },
   },
   CalendarizableEvent: {
