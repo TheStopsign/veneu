@@ -101,7 +101,7 @@ module.exports = (pubsub, caches) => {
             "create",
             {
               shared_resource: saved._id,
-              shared_resource_type: "Course",
+              shared_resource_type: saved.type,
               user: saved.creator,
               role: "INSTRUCTOR",
             },
