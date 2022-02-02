@@ -14,6 +14,11 @@ module.exports = (pubsub, caches) => {
         ref: "User",
         required: true,
       },
+      name: {
+        type: String,
+        required: true,
+        default: "New Assignment",
+      },
       assignable: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
