@@ -35,90 +35,99 @@ const fns = {
       }
     }
 
-    if (!res) {
-      let prefetch;
-      switch (functionName) {
-        case "deleteOne":
-          prefetch = await models[modelName].findOne(options);
-          res = await prefetch.deleteOne().then((del) => prefetch);
-          break;
-        case "deleteMany":
-          prefetch = await models[modelName].find(options);
-          res = await models[modelName][functionName](options).then((del) => prefetch);
-          break;
-        default:
-          res = optionsIsArray
-            ? await models[modelName][functionName](...options)
-            : await models[modelName][functionName](options);
-          break;
-      }
+    if (res) {
+      return res;
+    }
 
-      if (REQUIRES_REFETCH_FNS.includes(functionName)) {
-        res =
-          optionsIsArray && cacheIdsIsArray
-            ? await models[modelName].find(options[0])
-            : optionsIsArray
-            ? await models[modelName].findOne(options[0])
-            : cacheIdsIsArray
-            ? await models[modelName].find(options)
-            : await models[modelName].findOne(options);
-      }
-
-      if (REMOVE_FROM_CACHE_FNS.includes(functionName)) {
-        if (cacheIdsIsArray) {
-          cacheIds.forEach((id) => {
-            caches[modelName].del(id + "");
-          });
-        } else if (cacheIds) {
-          caches[modelName].del(cacheIds + "");
+    let prefetch;
+    switch (functionName) {
+      case "deleteOne":
+        prefetch = await models[modelName].findOne(options);
+        res = await prefetch.deleteOne().then((del) => prefetch);
+        break;
+      case "deleteMany":
+        prefetch = await models[modelName].find(options);
+        res = await models[modelName][functionName](options).then((del) => prefetch);
+        break;
+      default:
+        res = optionsIsArray
+          ? await models[modelName][functionName](...options)
+          : await models[modelName][functionName](options);
+        if (res && res.length && ADD_TO_CACHE_FNS.includes(functionName)) {
+          res
+            .filter((a) => a)
+            .forEach(function (item) {
+              caches[modelName].set(item._id + "", item);
+            });
         }
-        console.log(modelName.toUpperCase() + "(S)", cacheIds, "REMOVED FROM CACHE");
-      }
+        break;
+    }
 
-      switch (functionName) {
-        case "create":
+    if (REQUIRES_REFETCH_FNS.includes(functionName)) {
+      res =
+        optionsIsArray && cacheIdsIsArray
+          ? await models[modelName].find(options[0])
+          : optionsIsArray
+          ? await models[modelName].findOne(options[0])
+          : cacheIdsIsArray
+          ? await models[modelName].find(options)
+          : await models[modelName].findOne(options);
+    }
+
+    if (REMOVE_FROM_CACHE_FNS.includes(functionName)) {
+      if (cacheIdsIsArray) {
+        cacheIds.forEach((id) => {
+          caches[modelName].del(id + "");
+        });
+      } else if (cacheIds) {
+        caches[modelName].del(cacheIds + "");
+      }
+      console.log(modelName.toUpperCase() + "(S)", cacheIds, "REMOVED FROM CACHE");
+    }
+
+    switch (functionName) {
+      case "create":
+        console.log(modelName.toUpperCase(), "CREATED");
+        await pubsub.publish(modelName.toUpperCase() + "_CREATED", {
+          resource: res,
+        });
+        break;
+      case "insertMany":
+        for (let i = 0; i < res.length; i++) {
           console.log(modelName.toUpperCase(), "CREATED");
           await pubsub.publish(modelName.toUpperCase() + "_CREATED", {
             resource: res,
           });
-          break;
-        case "insertMany":
-          for (let i = 0; i < res.length; i++) {
-            console.log(modelName.toUpperCase(), "CREATED");
-            await pubsub.publish(modelName.toUpperCase() + "_CREATED", {
-              resource: res,
-            });
-          }
-          break;
-        case "updateOne":
-          console.log(modelName.toUpperCase() + "(S)", cacheIds, "UPDATED");
+        }
+        break;
+      case "updateOne":
+        console.log(modelName.toUpperCase() + "(S)", cacheIds, "UPDATED");
+        await pubsub.publish(modelName.toUpperCase() + "_UPDATED", {
+          resource: res,
+        });
+        break;
+      case "updateMany":
+        console.log(modelName.toUpperCase() + "(S)", cacheIds, "UPDATED");
+        for (let i = 0; i < res.length; i++) {
           await pubsub.publish(modelName.toUpperCase() + "_UPDATED", {
             resource: res,
           });
-          break;
-        case "updateMany":
-          console.log(modelName.toUpperCase() + "(S)", cacheIds, "UPDATED");
-          for (let i = 0; i < res.length; i++) {
-            await pubsub.publish(modelName.toUpperCase() + "_UPDATED", {
-              resource: res,
-            });
-          }
-          break;
-        case "deleteOne":
-          console.log(modelName.toUpperCase() + "(S)", cacheIds, "DELETED");
+        }
+        break;
+      case "deleteOne":
+        console.log(modelName.toUpperCase() + "(S)", cacheIds, "DELETED");
+        await pubsub.publish(modelName.toUpperCase() + "_DELETED", {
+          resource: res,
+        });
+        break;
+      case "deleteMany":
+        console.log(modelName.toUpperCase() + "(S)", cacheIds, "DELETED");
+        for (let i = 0; i < res.length; i++) {
           await pubsub.publish(modelName.toUpperCase() + "_DELETED", {
             resource: res,
           });
-          break;
-        case "deleteMany":
-          console.log(modelName.toUpperCase() + "(S)", cacheIds, "DELETED");
-          for (let i = 0; i < res.length; i++) {
-            await pubsub.publish(modelName.toUpperCase() + "_DELETED", {
-              resource: res,
-            });
-          }
-          break;
-      }
+        }
+        break;
     }
 
     return res;
