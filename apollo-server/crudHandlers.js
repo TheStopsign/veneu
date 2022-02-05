@@ -53,12 +53,16 @@ const fns = {
         res = optionsIsArray
           ? await models[modelName][functionName](...options)
           : await models[modelName][functionName](options);
-        if (res && res.length && ADD_TO_CACHE_FNS.includes(functionName)) {
-          res
-            .filter((a) => a)
-            .forEach(function (item) {
-              caches[modelName].set(item._id + "", item);
-            });
+        if (res && ADD_TO_CACHE_FNS.includes(functionName) && res instanceof Array) {
+          if (res instanceof Array) {
+            res
+              .filter((a) => a)
+              .forEach(function (item) {
+                caches[modelName].set(item._id + "", item);
+              });
+          } else if (res._id) {
+            caches[modelName].set(res._id + "", res);
+          }
         }
         break;
     }
