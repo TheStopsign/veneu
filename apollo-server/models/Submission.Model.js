@@ -22,6 +22,12 @@ module.exports = (pubsub, caches) => {
         ref: "Assignment",
         required: true,
       },
+      auths: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Auth",
+        },
+      ],
       is_submitted: {
         type: Boolean,
         default: false,
@@ -57,6 +63,11 @@ module.exports = (pubsub, caches) => {
           deleted.submittable,
           { models: mongoose.models, pubsub, caches }
         ),
+        crudFunnel("Auth", "deleteMany", { _id: { $in: deleted.auths } }, deleted.auths, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
       ]).then((resolved) => {
         next();
       });

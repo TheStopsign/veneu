@@ -19,6 +19,12 @@ module.exports = (pubsub, caches) => {
         required: true,
         default: "New Assignment",
       },
+      auths: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Auth",
+        },
+      ],
       assignable: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -61,6 +67,11 @@ module.exports = (pubsub, caches) => {
           deleted.assignable,
           { models: mongoose.models, pubsub, caches }
         ),
+        crudFunnel("Auth", "deleteMany", { _id: { $in: deleted.auths } }, deleted.auths, {
+          models: mongoose.models,
+          pubsub,
+          caches,
+        }),
       ]).then((resolved) => {
         next();
       });

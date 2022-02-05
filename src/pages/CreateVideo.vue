@@ -28,9 +28,9 @@
           v-model="url"
           label="YT Link"
           placeholder="e.g. https://www.youtube.com/watch?v=tz56ac6BaJQ"
-          @change="handleYTUrlChange()"
+          @change="handleYTUrlChange"
         />
-        <div class="q-pa-xs neu-convex" v-if="yt_valid">
+        <div class="q-pa-xs q-mx-md neu-convex" v-if="yt_valid">
           <q-responsive :ratio="16 / 9">
             <video id="video_player" class="video-js vjs-big-play-centered" playsinline></video>
           </q-responsive>
@@ -86,6 +86,14 @@
           </div>
         </div>
 
+        <div
+          v-if="errorMessage.length"
+          class="q-ma-md q-px-md row full-width justify-center"
+          style="color: red !important"
+        >
+          {{ errorMessage }}
+        </div>
+
         <q-bar class="q-pa-none q-ml-md q-pr-md q-gutter-x-md">
           <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
           <q-btn type="submit" color="primary" label="Continue" class="q-ml-sm full-width" :disabled="!formValid()" />
@@ -112,12 +120,15 @@ export default {
   },
   watch: {
     selected_auth: function (val) {
-      this.selected_auth = val ?? {
-        shared_resource: {
-          _id: null,
-        },
-        shared_resource_type: null,
-      };
+      console.log("c");
+      if (!val) {
+        this.selected_auth = {
+          shared_resource: {
+            _id: null,
+          },
+          shared_resource_type: null,
+        };
+      }
     },
   },
   data() {
@@ -142,13 +153,24 @@ export default {
       },
       points: null,
       checkins: [],
+      errorMessage: "",
     };
   },
   beforeDestroy() {
     this.tryDisposeVjs();
   },
   methods: {
+    matchYoutubeUrl(url) {
+      console.log("a");
+      const p =
+        /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+      if (url.match(p)) {
+        return url.match(p)[1];
+      }
+      return false;
+    },
     handleYTUrlChange() {
+      console.log("b");
       let self = this;
       if (self.vjs) {
         document.getElementsByClassName("video-js")[0].remove();
@@ -158,7 +180,7 @@ export default {
         self.yt_valid = false;
       }
       self.$nextTick(() => {
-        if (/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/gm.test(self.url)) {
+        if (self.matchYoutubeUrl(self.url)) {
           self.yt_valid = true;
           self.$nextTick(() => {
             if (self.vjs) {
@@ -194,6 +216,7 @@ export default {
       });
     },
     tryDisposeVjs() {
+      console.log("e");
       if (this.vjs) {
         this.vjs.dispose();
         this.vjs = null;
@@ -204,37 +227,47 @@ export default {
       this.$router.go(-1);
     },
     formValid() {
-      if (!this.selected_auth.shared_resource._id || !this.selected_auth.shared_resource_type) {
-        return false;
-      }
-      if (
-        !this.me.auths.find((a) => a.shared_resource._id == this.parent_resource && a.shared_resource_type == "Lecture")
-      ) {
-        return false;
-      }
+      console.log("d");
       if (!this.name.length) {
+        this.errorMessage = "A name is required";
         return false;
       }
-      if (!this.url.length || !this.yt_valid) {
+      if (!this.selected_auth.shared_resource._id || !this.selected_auth.shared_resource_type) {
+        this.errorMessage = "Select a valid resource";
         return false;
       }
+      if (!this.url.length) {
+        this.errorMessage = "A link is required";
+        return false;
+      }
+      if (!this.yt_valid) {
+        this.errorMessage = "The link entered is invalid";
+        return false;
+      }
+      // Required for assignments
       if (this.is_assignment) {
         if (!this.duration > 0) {
+          this.errorMessage = "The video must have a duration";
           return false;
         }
         if (!this.assignment.due) {
+          this.errorMessage = "A due date is required for assignments";
           return false;
         }
       }
 
+      this.errorMessage = "";
+
       return true;
     },
     toTitleCase(str) {
+      console.log("f");
       return str.replace(/\w\S*/g, function (txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
       });
     },
     handleCreateVideo() {
+      console.log("g");
       if (this.formValid()) {
         this.$apollo
           .mutate({
@@ -305,6 +338,7 @@ export default {
       }
     },
     handleChangeCheckin(val, oldVal) {
+      console.log("h");
       this.checkins = val;
     },
   },
