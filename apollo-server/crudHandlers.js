@@ -12,24 +12,25 @@ const fns = {
       let cached = cacheIdsIsArray
         ? cacheIds.map((cacheId) => caches[modelName].has(cacheId + ""))
         : [caches[modelName].has(cacheIds + "")];
-
-      if (!cached.includes(false)) {
-        res = cacheIdsIsArray
-          ? cacheIds.map((cacheId) => caches[modelName].get(cacheId + ""))
-          : caches[modelName].get(cacheIds + "");
-        console.log(modelName.toUpperCase() + "(S)", cacheIds, "FETCHED FROM CACHE");
-      } else if (loaders && loaders[modelName]) {
-        res = cacheIdsIsArray ? await loaders[modelName].loadMany(cacheIds) : await loaders[modelName].load(cacheIds);
-        console.log(modelName.toUpperCase() + "(S)", cacheIds, "FETCHED FROM DATALOADER");
-        if (res && cacheIdsIsArray) {
-          res = res.filter((a) => a);
-          res.forEach(function (item) {
-            caches[modelName].set(item._id + "", item);
-          });
-          console.log(modelName.toUpperCase(), cacheIds, "ADDED TO CACHE");
-        } else if (res) {
-          caches[modelName].set(res._id + "", res);
-          console.log(modelName.toUpperCase(), cacheIds, "ADDED TO CACHE");
+      if (cached.length) {
+        if (!cached.includes(false)) {
+          res = cacheIdsIsArray
+            ? cacheIds.map((cacheId) => caches[modelName].get(cacheId + ""))
+            : caches[modelName].get(cacheIds + "");
+          console.log(modelName.toUpperCase() + "(S)", cacheIds, "FETCHED FROM CACHE");
+        } else if (loaders && loaders[modelName]) {
+          res = cacheIdsIsArray ? await loaders[modelName].loadMany(cacheIds) : await loaders[modelName].load(cacheIds);
+          console.log(modelName.toUpperCase() + "(S)", cacheIds, "FETCHED FROM DATALOADER");
+          if (res && cacheIdsIsArray) {
+            res = res.filter((a) => a);
+            res.forEach(function (item) {
+              caches[modelName].set(item._id + "", item);
+            });
+            console.log(modelName.toUpperCase(), cacheIds, "ADDED TO CACHE");
+          } else if (res) {
+            caches[modelName].set(res._id + "", res);
+            console.log(modelName.toUpperCase(), cacheIds, "ADDED TO CACHE");
+          }
         }
       }
     }

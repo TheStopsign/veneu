@@ -37,25 +37,50 @@ module.exports = (pubsub, caches) => ({
     },
     auths: async (parent, args, { requester, models, loaders, pubsub, caches }, info) => {
       if (!requester) throw new ForbiddenError("Not allowed");
-      let ids = args.shared_resource
-        ? requester.auths.filter((a) => a.shared_resource == args.shared_resource).map((a) => a._id)
-        : requester.auths.map((a) => a._id);
-      return crudFunnel(
-        "Auth",
-        "find",
-        {
-          _id: {
-            $in: ids,
-          },
-        },
-        ids,
-        {
-          models,
-          loaders,
-          pubsub,
-          caches,
-        }
-      );
+      let requesterAuths = args.shared_resource
+        ? requester.auths.filter((a) => a.shared_resource == args.shared_resource)
+        : requester.auths;
+
+      let requesterIds = requesterAuths.map((a) => a._id);
+
+      console.log(args.shared_resource && requesterAuths.length);
+
+      let ret =
+        args.shared_resource && requesterAuths.length
+          ? await crudFunnel(
+              "Auth",
+              "find",
+              {
+                shared_resource: args.shared_resource,
+              },
+              [],
+              {
+                models,
+                loaders,
+                pubsub,
+                caches,
+              }
+            )
+          : await crudFunnel(
+              "Auth",
+              "find",
+              {
+                _id: {
+                  $in: requesterIds,
+                },
+              },
+              requesterIds,
+              {
+                models,
+                loaders,
+                pubsub,
+                caches,
+              }
+            );
+
+      console.log(ret);
+
+      return ret;
     },
   },
   Mutation: {
@@ -79,6 +104,7 @@ module.exports = (pubsub, caches) => ({
         }
       ).then(async (x) => {
         if (x) {
+          console.log("SHARING WITH EXISTING USER");
           const existingAuth = await readOne(
             {
               user: x._id,
@@ -93,6 +119,9 @@ module.exports = (pubsub, caches) => ({
               pubsub,
             }
           );
+          if (existingAuth) {
+            console.log("UPDATING EXISTING AUTH");
+          }
           return existingAuth
             ? crudFunnel(
                 "Auth",
@@ -132,7 +161,8 @@ module.exports = (pubsub, caches) => ({
                 }
               );
         } else {
-          return crudFunnel(
+          console.log("SHARING WITH NONEXISTANT USER");
+          let newUser = await crudFunnel(
             "User",
             "create",
             {
@@ -146,132 +176,110 @@ module.exports = (pubsub, caches) => ({
               pubsub,
               caches,
             }
-          ).then((y) => {
-            if (y) {
-              return crudFunnel(
-                shared_resource_type,
-                "findOne",
-                {
-                  _id: shared_resource,
-                  type: shared_resource_type,
-                },
-                shared_resource,
-                {
-                  models,
-                  loaders,
-                  pubsub,
-                  caches,
-                }
-              ).then((z) => {
-                oauth2Client.setCredentials({
-                  refresh_token: GMAIL_OAUTH_REFRESH,
-                });
-                let finishedEmail = new Promise((resolve, reject) => {
-                  oauth2Client.getAccessToken((err, accessToken) => {
-                    if (err) {
-                      console.log("OATH2CLIENT GETACCESSTOKEN ERROR:", err);
-                      crudFunnel(
-                        "User",
-                        "deleteOne",
-                        {
-                          _id: y._id,
-                        },
-                        y._id,
-                        {
-                          models,
-                          loaders,
-                          pubsub,
-                          caches,
-                        }
-                      ).then((a) => {
-                        reject(null);
-                      });
-                    } else {
-                      var transporter = nodemailer.createTransport({
-                        service: "gmail",
-                        auth: {
-                          type: "OAuth2",
-                          user: GMAIL,
-                          clientId: GMAIL_OAUTH_ID,
-                          clientSecret: GMAIL_OAUTH_SECRET,
-                          refreshToken: GMAIL_OAUTH_REFRESH,
-                          accessToken,
-                        },
-                      });
+          );
+          if (newUser) {
+            console.log("USER CREATED TO SHARE WITH");
+            let resourceToShare = await crudFunnel(
+              shared_resource_type,
+              "findOne",
+              {
+                _id: shared_resource,
+                type: shared_resource_type,
+              },
+              shared_resource,
+              {
+                models,
+                loaders,
+                pubsub,
+                caches,
+              }
+            );
+            if (resourceToShare) {
+              console.log("RESOURCE TO SHARE WAS FOUND");
+            } else {
+              console.log("FAILED TO FIND RESOURCE TO SHARE");
+            }
+            oauth2Client.setCredentials({
+              refresh_token: GMAIL_OAUTH_REFRESH,
+            });
+            let finishedEmail = new Promise((resolve, reject) => {
+              oauth2Client.getAccessToken((err, accessToken) => {
+                if (err) {
+                  console.log("OATH2CLIENT GETACCESSTOKEN ERROR:", err);
+                  crudFunnel(
+                    "User",
+                    "deleteOne",
+                    {
+                      _id: newUser._id,
+                    },
+                    newUser._id,
+                    {
+                      models,
+                      loaders,
+                      pubsub,
+                      caches,
+                    }
+                  ).then((a) => {
+                    reject(null);
+                  });
+                } else {
+                  var transporter = nodemailer.createTransport({
+                    service: "gmail",
+                    auth: {
+                      type: "OAuth2",
+                      user: GMAIL,
+                      clientId: GMAIL_OAUTH_ID,
+                      clientSecret: GMAIL_OAUTH_SECRET,
+                      refreshToken: GMAIL_OAUTH_REFRESH,
+                      accessToken,
+                    },
+                  });
 
-                      if (transporter) {
-                        transporter.use(
-                          "compile",
-                          hbs({
-                            viewEngine: {
-                              extName: ".handlebars",
-                              partialsDir: "./apollo-server/email_templates/",
-                              layoutsDir: "./apollo-server/email_templates/",
-                              defaultLayout: "",
-                            },
-                            viewPath: "./apollo-server/email_templates/",
-                            extName: ".handlebars",
-                          })
-                        );
-                        var mailOptions = {
-                          from: GMAIL,
-                          to: user,
-                          subject: "You have been added to a Veneu course",
-                          template: "newAuth",
-                          context: {
-                            url: process.env.BASE_URL + "firstlogin/" + y.access_code,
-                            role: role.toLowerCase(),
-                            type: shared_resource_type.toLowerCase(),
-                            course: z.name,
-                            instructor: requester.first_name + " " + requester.last_name,
-                          },
-                          attachments: [
-                            {
-                              filename: "venue-logo.png",
-                              path: "./apollo-server/email_templates/venue-logo.png",
-                              cid: "logo",
-                            },
-                          ],
-                        };
+                  if (transporter) {
+                    transporter.use(
+                      "compile",
+                      hbs({
+                        viewEngine: {
+                          extName: ".handlebars",
+                          partialsDir: "./apollo-server/email_templates/",
+                          layoutsDir: "./apollo-server/email_templates/",
+                          defaultLayout: "",
+                        },
+                        viewPath: "./apollo-server/email_templates/",
+                        extName: ".handlebars",
+                      })
+                    );
+                    var mailOptions = {
+                      from: GMAIL,
+                      to: user,
+                      subject: "You have been added to a Veneu course",
+                      template: "newAuth",
+                      context: {
+                        url: process.env.BASE_URL + "firstlogin/" + newUser.access_code,
+                        role: role.toLowerCase(),
+                        type: shared_resource_type.toLowerCase(),
+                        name: resourceToShare.name,
+                        instructor: requester.first_name + " " + requester.last_name,
+                      },
+                      attachments: [
+                        {
+                          filename: "venue-logo.png",
+                          path: "./apollo-server/email_templates/venue-logo.png",
+                          cid: "logo",
+                        },
+                      ],
+                    };
 
-                        transporter.sendMail(mailOptions, function (error, info) {
-                          if (error || info == null) {
-                            console.log(error);
-                            crudFunnel(
-                              "User",
-                              "deleteOne",
-                              {
-                                _id: y._id,
-                              },
-                              y._id,
-                              {
-                                models,
-                                loaders,
-                                pubsub,
-                                caches,
-                              }
-                            ).then((a) => {
-                              reject(null);
-                            });
-                          } else {
-                            resolve({
-                              role,
-                              user: y._id,
-                              shared_resource,
-                              shared_resource_type,
-                              type: "Auth",
-                            });
-                          }
-                        });
-                      } else {
-                        console.log("MAILER FAILED");
+                    transporter.sendMail(mailOptions, function (error, info) {
+                      if (error || info == null) {
+                        console.log(error);
                         crudFunnel(
                           "User",
                           "deleteOne",
                           {
-                            _id: y._id,
+                            _id: newUser._id,
                           },
-                          y._id,
+                          newUser._id,
                           {
                             models,
                             loaders,
@@ -281,25 +289,52 @@ module.exports = (pubsub, caches) => ({
                         ).then((a) => {
                           reject(null);
                         });
+                      } else {
+                        resolve({
+                          role,
+                          user: newUser._id,
+                          shared_resource,
+                          shared_resource_type,
+                          type: "Auth",
+                        });
                       }
-                    }
-                  });
-                });
-                return finishedEmail
-                  .then((authInfo) =>
-                    crudFunnel("Auth", "create", authInfo, null, {
-                      models,
-                      loaders,
-                      pubsub,
-                      caches,
-                    })
-                  )
-                  .catch((e) => null);
+                    });
+                  } else {
+                    console.log("MAILER FAILED");
+                    crudFunnel(
+                      "User",
+                      "deleteOne",
+                      {
+                        _id: newUser._id,
+                      },
+                      newUser._id,
+                      {
+                        models,
+                        loaders,
+                        pubsub,
+                        caches,
+                      }
+                    ).then((a) => {
+                      reject(null);
+                    });
+                  }
+                }
               });
-            } else {
-              return null;
-            }
-          });
+            });
+            return finishedEmail
+              .then((authInfo) =>
+                crudFunnel("Auth", "create", authInfo, null, {
+                  models,
+                  loaders,
+                  pubsub,
+                  caches,
+                })
+              )
+              .catch((e) => null);
+          } else {
+            console.log("FAILED TO CREATE USER TO SHARE WITH");
+            return null;
+          }
         }
       });
     },
