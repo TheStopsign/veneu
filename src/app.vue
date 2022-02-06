@@ -158,7 +158,7 @@
               >
                 <q-item-section avatar class="q-my-xs">
                   <q-avatar id="avatar">
-                    {{ getAvatar(data.me._id) }}
+                    {{ getAvatar(data.me) }}
                   </q-avatar>
                 </q-item-section>
 
@@ -415,11 +415,11 @@ export default {
         this.$router.push({ name: "Me" });
       }
     },
-    getAvatar: (seed) => {
+    getAvatar: (user) => {
       let avatarEl = document.getElementById("avatar");
       if (avatarEl) {
         avatarEl.innerHTML = createAvatar(botttsStyle, {
-          seed,
+          seed: user.bottts ? user.bottts : user._id,
         });
       }
     },

@@ -5,6 +5,7 @@ query me {
     last_name
     name
     email
+    bottts
     created_at
     updated_at
     auths {

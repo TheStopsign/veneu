@@ -14,6 +14,7 @@ module.exports = gql`
     checkins: [Checkin]!
     access_code: String
     active: Boolean!
+    bottts: String
     created_at: Date
     updated_at: Date
   }
@@ -26,7 +27,7 @@ module.exports = gql`
 
   extend type Mutation {
     createUser(email: String!): User!
-    updateUser(_id: ID!, first_name: String, last_name: String, email: String): User!
+    updateUser(_id: ID!, first_name: String, last_name: String, email: String, bottts: String): User!
     deleteUser(_id: ID!): User!
     login(email: String!, password: String!): String!
     firstLogin(access_code: String!, first_name: String!, last_name: String!, password: String!): Boolean!
