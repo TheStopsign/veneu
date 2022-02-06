@@ -14,7 +14,7 @@
       style="max-width: 60rem; margin: auto"
     >
       <h1>{{ checkinQuery.data.checkin.name }}</h1>
-      <div v-html="checkinQuery.data.checkin.description.length ? checkinQuery.data.checkin.description : 'None'" />
+      <div v-if="checkinQuery.data.checkin.description" v-html="checkinQuery.data.checkin.description" />
       <div class="row full-width justify-center">
         <q-responsive class="neu-convex q-mt-md" style="width: 50vh" :ratio="1">
           <vue-qr
@@ -273,9 +273,6 @@ export default {
           this.checkinQuery.loading = false;
           this.checkinQuery.data = data.data;
           this.checkinQuery.data.checkin.description = this.checkinQuery.data.checkin.description ?? "";
-          if (!this.checkinQuery.data.checkin.description.length) {
-            this.checkinQuery.data.checkin.description = "None";
-          }
           this.checkinQuery.data.checkin.tickets.forEach((ticket) => {
             this.tickets[ticket.code] = ticket;
           });
