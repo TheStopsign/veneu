@@ -282,45 +282,15 @@
                 >
                   <div v-if="$apollo.queries.tickets.loading">Loading...</div>
                   <q-list v-else-if="tickets">
-                    <q-item class="row items-center justify-center" v-for="ticket in tickets" :key="ticket._id">
-                      {{ getFormattedDate(ticket.created_at) }}
+                    <q-item
+                      class="row items-center justify-center"
+                      v-for="ticket in tickets"
+                      :key="ticket._id"
+                      :to="{ name: 'CheckinReceipt', params: { _id: ticket.checkin._id } }"
+                    >
+                      "{{ ticket.checkin.name }}" - {{ getFormattedDate(ticket.created_at) }}
                     </q-item>
                     <q-item v-if="!tickets.length" class="row items-center justify-center"> None </q-item>
-                  </q-list>
-                </q-expansion-item>
-              </q-list>
-              <q-list
-                class="fdsafdsfdsatext-primary neu-convex q-ml-md q-my-md q-pa-xs"
-                :class="$q.screen.lt.md ? 'q-mr-md' : 'q-mr-xs'"
-              >
-                <q-expansion-item
-                  icon="assignment"
-                  label="Assignments"
-                  expand-icon-class="text-primary"
-                  :content-inset-level="0.5"
-                >
-                  <q-list class="rounded-borders">
-                    <q-expansion-item
-                      icon="assignment_late"
-                      label="Due"
-                      :content-inset-level="0"
-                      expand-icon-class="text-primary"
-                    >
-                      <q-item class="items-center justify-center">
-                        <em>Coming soon</em>
-                      </q-item>
-                    </q-expansion-item>
-
-                    <q-expansion-item
-                      icon="assignment_turned_in"
-                      label="Complete"
-                      :content-inset-level="0"
-                      expand-icon-class="text-primary"
-                    >
-                      <q-item class="items-center justify-center">
-                        <em>Coming soon</em>
-                      </q-item>
-                    </q-expansion-item>
                   </q-list>
                 </q-expansion-item>
               </q-list>
@@ -407,6 +377,10 @@ export default {
     }
   },
   methods: {
+    handleReceipt(_id) {
+      console.log(_id);
+      this.$router.push({ name: "CheckinReceipt", params: { _id } });
+    },
     isOnMePage() {
       this.$route.name == "Me";
     },

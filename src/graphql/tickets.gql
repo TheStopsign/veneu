@@ -4,6 +4,7 @@ query tickets {
     code
     checkin {
       _id
+      name
       created_at
     }
     created_at

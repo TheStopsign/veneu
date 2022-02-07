@@ -193,21 +193,21 @@ module.exports = (pubsub, caches) => ({
     },
   },
   User: {
-    notifications: (parent, args, { requester, models, loaders, pubsub, caches }, info) =>
+    notifications: async (parent, args, { requester, models, loaders, pubsub, caches }, info) =>
       crudFunnel("Notification", "find", { _id: { $in: parent.notifications } }, parent.notifications, {
         models,
         loaders,
         pubsub,
         caches,
       }),
-    auths: (parent, args, { requester, models, loaders, pubsub, caches }, info) =>
+    auths: async (parent, args, { requester, models, loaders, pubsub, caches }, info) =>
       crudFunnel("Auth", "find", { _id: { $in: parent.auths } }, parent.auths, {
         models,
         loaders,
         pubsub,
         caches,
       }),
-    name: (parent, args, context, info) => parent.first_name + " " + parent.last_name,
+    name: async (parent, args, context, info) => parent.first_name + " " + parent.last_name,
     checkins: async ({ checkins }, args, { requester: { auths }, loaders, models, pubsub, caches }, info) => {
       let ids = checkins.filter((a) => auths.map((b) => b.shared_resource.toString()).includes(a.toString()));
       return crudFunnel(
@@ -220,5 +220,6 @@ module.exports = (pubsub, caches) => ({
         { models, pubsub, caches, loaders }
       );
     },
+    password: async () => "", // Any attempts to retrieve a User's password is prevented
   },
 });

@@ -78,14 +78,10 @@
               class="seatindicator q-pa-xs"
               v-for="ticket in tickets"
               :key="ticket.code"
-              :title="ticket.email"
               :style="{ display: ticket && ticket.code == current.code ? 'none' : 'inline-block' }"
             >
               <div v-if="ticket.code != current.code">
                 <q-icon size="lg" color="primary" name="event_seat" />
-                <p>
-                  {{ ticket.email }}
-                </p>
               </div>
             </div>
           </div>
@@ -259,6 +255,7 @@ export default {
                   email
                   user
                   code
+                  created_at
                 }
                 creator {
                   name
@@ -284,9 +281,9 @@ export default {
     },
     downloadCSV() {
       const csvContent =
-        "data:text/csv;charset=utf-8,Email,Code\n" +
+        "data:text/csv;charset=utf-8,Email,Code,DateTime\n" +
         Object.values(this.tickets)
-          .map((e) => e.user && [e.email, e.code].join(","))
+          .map((e) => e.user && [e.email, e.code, e.created_at].join(","))
           .join("\n");
 
       const encodedUri = encodeURI(csvContent);
