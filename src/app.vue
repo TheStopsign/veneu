@@ -351,6 +351,7 @@ export default {
       searchString: "",
       confirmLogout: false,
       theme: localStorage.getItem("theme"),
+      $offscreen: null,
     };
   },
   created() {
@@ -402,46 +403,72 @@ export default {
       location.href = this.isProduction() ? "/voyager" : "http://localhost:4000/voyager";
     },
     isProduction: () => process.env.NODE_ENV === "production",
+    ensureOffScreenInput() {
+      if (!this.$offscreen) {
+        this.$offscreen = document.createElement("input");
+        this.$offscreen.style.position = "fixed";
+        this.$offscreen.style.top = "0px";
+        this.$offscreen.style.opacity = "0.1";
+        this.$offscreen.style.width = "10px";
+        this.$offscreen.style.height = "10px";
+        this.$offscreen.style.transform = "translateX(-1000px)";
+        this.$offscreen.type = "text";
+        this.$offscreen.id = "__fake_input";
+        document.body.appendChild(this.$offscreen);
+      }
+      return this.$offscreen;
+    },
     setIosKeyboardHandling() {
-      let self = this;
+      function ensureOffScreenInput() {
+        let elem = document.querySelector("#__fake_input");
+        if (!elem) {
+          elem = document.createElement("input");
+          elem.style.position = "fixed";
+          elem.style.top = "0px";
+          elem.style.opacity = "0.1";
+          elem.style.width = "10px";
+          elem.style.height = "10px";
+          elem.style.transform = "translateX(-1000px)";
+          elem.type = "text";
+          elem.id = "__fake_input";
+          document.body.appendChild(elem);
+        }
+        return elem;
+      }
+      var fakeInput = ensureOffScreenInput();
+      function handleFocus(event) {
+        fakeInput.focus();
+
+        let last = event.target.getBoundingClientRect().top;
+
+        setTimeout(() => {
+          function detectMovement() {
+            const now = event.target.getBoundingClientRect().top;
+            const dist = Math.abs(last - now);
+
+            // Once any animations have stabilized, do your thing
+            if (dist > 0.01) {
+              requestAnimationFrame(detectMovement);
+              last = now;
+            } else {
+              event.target.focus();
+              event.target.addEventListener("focus", handleFocus, { once: true });
+            }
+          }
+          requestAnimationFrame(detectMovement);
+        }, 50);
+      }
       document.ontouchstart = function (e) {
         e.preventDefault();
         var inputs = document.getElementsByTagName("input");
-        var len = inputs.length,
-          focused = false;
+        var len = inputs.length;
         for (let i = 0; i < len; i++) {
           var element = inputs[i]; // the input field
 
-          var virtualKeyboardHeight = function () {
-            var sx = document.body.scrollLeft,
-              sy = document.body.scrollTop;
-            var naturalHeight = window.innerHeight;
-            window.scrollTo(sx, document.body.scrollHeight);
-            var keyboardHeight = naturalHeight - window.innerHeight;
-            window.scrollTo(sx, sy);
-            let target = getScrollTarget(element),
-              offset = element.getBoundingClientRect().top + window.scrollY - element.offsetHeight,
-              duration = 200;
-            setScrollPosition(target, offset, duration);
-            return keyboardHeight;
-          };
-
-          element.onfocus = function () {
-            focused = true;
-            setTimeout(function () {
-              virtualKeyboardHeight();
-            }, 100);
-          };
-
-          window.onresize = function () {
-            if (focused) {
-              virtualKeyboardHeight();
-            }
-          };
-
-          element.onblur = function () {
-            focused = false;
-          };
+          if (element.getAttribute("listener") !== "true") {
+            element.setAttribute("listener", "true");
+            element.addEventListener("focus", handleFocus, { once: true });
+          }
         }
       };
     },
