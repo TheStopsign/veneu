@@ -351,7 +351,6 @@ export default {
       searchString: "",
       confirmLogout: false,
       theme: localStorage.getItem("theme"),
-      $offscreen: null,
     };
   },
   created() {
@@ -371,10 +370,7 @@ export default {
     //   this.$refs.scrollContents.$el.offsetHeight + "px";
     // this.$refs.scrollContents.$el.parentElement.style.position = "absolute";
     if (this.$q.platform.is.ios) {
-      let self = this;
-      document.addEventListener("DOMContentLoaded", function () {
-        self.setIosKeyboardHandling();
-      });
+      this.setIosKeyboardHandling();
     }
   },
   methods: {
@@ -418,49 +414,36 @@ export default {
       }
       return this.$offscreen;
     },
-    async setIosKeyboardHandling() {
+    setIosKeyboardHandling() {
       let self = this;
-      async function ensureOffScreenInput() {
-        let elem = document.querySelector("#__fake_input");
-        if (!elem) {
-          elem = document.createElement("input");
-          elem.style.position = "fixed";
-          elem.style.top = "0px";
-          elem.style.opacity = "0.1";
-          elem.style.width = "10px";
-          elem.style.height = "10px";
-          elem.style.transform = "translateX(-1000px)";
-          elem.type = "text";
-          elem.id = "__fake_input";
-          document.body.appendChild(elem);
-          await self.$nextTick();
-        }
-        return elem;
+      console.log("window.scrollTo");
+      function scrollToElement(el) {
+        let target = getScrollTarget(el);
+        let offset = el.offsetTop; // do not subtract the el.scrollHeight here
+        let duration = 1000;
+        setScrollPosition(target, offset, duration);
       }
-      var fakeInput = await ensureOffScreenInput();
-      async function handleFocus(event) {
-        fakeInput.focus();
-        await self.$nextTick();
-        let last = event.target.getBoundingClientRect().top;
-        setTimeout(async () => {
-          async function detectMovement() {
-            const now = event.target.getBoundingClientRect().top;
-            const dist = Math.abs(last - now);
+      function handleFocus(event) {
+        window.scrollTo({ top: 0 });
+        self.$nextTick(function () {
+          let last = event.target.getBoundingClientRect().top;
+          setTimeout(() => {
+            function detectMovement() {
+              const now = event.target.getBoundingClientRect().top;
+              const dist = Math.abs(last - now);
 
-            // Once any animations have stabilized, do your thing
-            if (dist > 0.01) {
-              await self.$nextTick();
-              requestAnimationFrame(detectMovement);
-              last = now;
-            } else {
-              event.target.focus();
-              await self.$nextTick();
-              event.target.addEventListener("focus", handleFocus, { once: true });
+              // Once any animations have stabilized, do your thing
+              if (dist > 0.01) {
+                requestAnimationFrame(detectMovement);
+                last = now;
+              } else {
+                scrollToElement(event.target);
+                event.target.addEventListener("focus", handleFocus, { once: true });
+              }
             }
-          }
-          await self.$nextTick();
-          requestAnimationFrame(detectMovement);
-        }, 50);
+            requestAnimationFrame(detectMovement);
+          }, 50);
+        });
       }
       document.ontouchstart = function (e) {
         e.preventDefault();
