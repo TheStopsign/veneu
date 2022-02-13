@@ -575,6 +575,9 @@ export default {
 </script>
 
 <style>
+#pagescroll .absolute.full-width {
+  height: 100%;
+}
 .toolbar-btns {
   white-space: nowrap;
 }

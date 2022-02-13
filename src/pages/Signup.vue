@@ -1,38 +1,36 @@
 <template>
-  <q-page id="login-page" class="container">
-    <div class="vertical-center">
-      <VeneuLogo />
-      <ApolloMutation
-        :mutation="require('../graphql/CreateUser.gql')"
-        :variables="{ email }"
-        class="form q-px-md"
-        @done="handleSignup"
-      >
-        <template slot-scope="{ mutate }">
-          <q-form @submit.prevent="formValid && mutate()" class="q-gutter-y-md q-pa-md q-ma-md neu-convex">
-            <div>
-              <i><h1>Signup</h1></i>
-            </div>
-            <q-input
-              standout="bg-primary text-white"
-              color="primary"
-              class="text-primary q-pa-none q-ma-none q-mt-md"
-              v-model="email"
-              label="Email"
-              @focus="onFocus()"
-            >
-              <template v-slot:prepend>
-                <q-icon name="email" />
-              </template>
-            </q-input>
-            <q-bar class="bg-none q-pa-none q-gutter-x-md q-gutter-y-none q-pl-md">
-              <q-btn label="Back" type="reset" color="primary" flat @click="handleBack" />
-              <q-btn label="Submit" type="submit" color="primary" icon-right="check" class="q-ml-sm full-width" />
-            </q-bar>
-          </q-form>
-        </template>
-      </ApolloMutation>
-    </div>
+  <q-page id="signup-page">
+    <VeneuLogo />
+    <ApolloMutation
+      :mutation="require('../graphql/CreateUser.gql')"
+      :variables="{ email }"
+      class="form q-px-md"
+      @done="handleSignup"
+    >
+      <template slot-scope="{ mutate }">
+        <q-form @submit.prevent="formValid && mutate()" class="q-gutter-y-md q-pa-md q-ma-md neu-convex">
+          <div>
+            <i><h1>Signup</h1></i>
+          </div>
+          <q-input
+            standout="bg-primary text-white"
+            color="primary"
+            class="text-primary q-pa-none q-ma-none q-mt-md"
+            v-model="email"
+            label="Email"
+            @focus="onFocus()"
+          >
+            <template v-slot:prepend>
+              <q-icon name="email" />
+            </template>
+          </q-input>
+          <q-bar class="bg-none q-pa-none">
+            <q-btn label="Back" type="reset" color="primary" flat @click="handleBack" class="q-mr-md" />
+            <q-btn label="Submit" type="submit" color="primary" icon-right="check" class="q-ml-md full-width" />
+          </q-bar>
+        </q-form>
+      </template>
+    </ApolloMutation>
   </q-page>
 </template>
 
@@ -82,12 +80,8 @@ export default {
 </script>
 
 <style scoped>
-#login-page {
-  text-align: center;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
+.form {
+  margin-bottom: 16px;
 }
 h1 {
   padding: 0;
