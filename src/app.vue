@@ -1,5 +1,5 @@
 <template>
-  <q-layout id="app" view="lHr Lpr lfr" class="text-primary">
+  <q-layout id="app" view="lhr lpr lfr" class="text-primary">
     <q-ajax-bar position="top" color="primary" size="0.25rem" />
     <ApolloQuery :query="require('./graphql/Me.gql')">
       <template slot-scope="{ result: { data, error } }">
