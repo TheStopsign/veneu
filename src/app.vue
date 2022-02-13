@@ -418,8 +418,9 @@ export default {
       }
       return this.$offscreen;
     },
-    setIosKeyboardHandling() {
-      function ensureOffScreenInput() {
+    async setIosKeyboardHandling() {
+      let self = this;
+      async function ensureOffScreenInput() {
         let elem = document.querySelector("#__fake_input");
         if (!elem) {
           elem = document.createElement("input");
@@ -432,29 +433,32 @@ export default {
           elem.type = "text";
           elem.id = "__fake_input";
           document.body.appendChild(elem);
+          await self.$nextTick();
         }
         return elem;
       }
-      var fakeInput = ensureOffScreenInput();
-      function handleFocus(event) {
+      var fakeInput = await ensureOffScreenInput();
+      async function handleFocus(event) {
         fakeInput.focus();
-
+        await self.$nextTick();
         let last = event.target.getBoundingClientRect().top;
-
-        setTimeout(() => {
-          function detectMovement() {
+        setTimeout(async () => {
+          async function detectMovement() {
             const now = event.target.getBoundingClientRect().top;
             const dist = Math.abs(last - now);
 
             // Once any animations have stabilized, do your thing
             if (dist > 0.01) {
+              await self.$nextTick();
               requestAnimationFrame(detectMovement);
               last = now;
             } else {
               event.target.focus();
+              await self.$nextTick();
               event.target.addEventListener("focus", handleFocus, { once: true });
             }
           }
+          await self.$nextTick();
           requestAnimationFrame(detectMovement);
         }, 50);
       }
