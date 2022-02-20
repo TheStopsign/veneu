@@ -1,5 +1,5 @@
 <template>
-  <div :ref="randomID" class="nav-tree q-mt-sm" :class="flat ? '' : nav ? '' : ''" style="overflow-x: auto">
+  <div :ref="randomID" class="nav-tree q-mt-sm" :class="flat ? '' : nav ? '' : ''" style="overflow-x: show">
     <div class="q-mt-md">
       <q-icon size="xs" name="account_tree" class="q-mr-sm q-pb-xs" />{{ label || "Select a resource" }}
     </div>

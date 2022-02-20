@@ -3,18 +3,18 @@
     <ApolloMutation
       :mutation="require('../graphql/CreateRegistrationSection.gql')"
       :variables="{ name, course: selected_auth.shared_resource._id, meeting_times }"
-      class="form q-pt-md q-pb-xl q-px-md"
+      class="form q-pt-md q-pb-xl"
       @done="handleCreateRegistrationSection"
     >
       <template slot-scope="{ mutate }">
-        <q-form @submit.prevent="mutate()" class="q-gutter-y-md q-ma-md q-py-md q-pt-lg neu-convex">
+        <q-form @submit.prevent="mutate()" class="q-gutter-y-lg q-ma-md q-py-md q-pt-lg">
           <div>
-            <i><h1>Create a New Registration Section</h1></i>
+            <i><h1 class="q-px-md">Create a New Registration Section</h1></i>
           </div>
           <q-input
             standout="bg-primary text-white q-ma-none"
             color="primary"
-            class="text-primary q-mt-none q-mx-md q-mt-md"
+            class="text-primary q-mt-none q-mx-md q-mt-lg"
             v-model="name"
             label="Section Name"
             placeholder="e.g. S-2021 01"
@@ -25,7 +25,7 @@
             label="For Course..."
             :selectable="me.auths.filter((a) => a.shared_resource_type === 'Course').map((a) => a._id)"
             v-model="selected_auth"
-            class="q-px-md"
+            class="q-px-md q-mt-lg"
           />
           <div
             class="row full-width q-px-md q-pb-md"
@@ -54,7 +54,7 @@
                 />
               </div>
             </div>
-            <div class="col-12 col-sm q-mr-md q-mt-sm">
+            <div class="col-12 col-sm q-mr-md q-mt-md">
               <div class="row full-width q-px-none">
                 <q-input
                   standout="primary"
@@ -79,7 +79,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-12 col-sm q-mr-md q-mt-sm">
+            <div class="col-12 col-sm q-mr-md q-mt-md">
               <div class="row full-width q-px-none">
                 <q-input
                   standout="primary"
@@ -106,11 +106,11 @@
             </div>
           </div>
           <div class="row full-width q-px-md">
-            <q-btn label="Add a weekly meeting time" class="row full-width" @click="handleAddMeeting" />
+            <q-btn label="Add a weekly meeting time" class="row full-width q-mt-sm" @click="handleAddMeeting" />
           </div>
-          <q-bar class="q-pa-none q-ml-md q-pr-md q-gutter-x-md">
-            <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
-            <q-btn type="submit" color="primary" label="Continue" class="q-ml-sm full-width" :disabled="!formValid()" />
+          <q-bar class="q-pa-none q-px-md q-mt-lg">
+            <q-btn label="Back" class="q-ml-md q-mr-md" @click="handleBack" />
+            <q-btn type="submit" color="primary" label="Continue" class="full-width" :disabled="!formValid()" />
           </q-bar>
         </q-form>
       </template>

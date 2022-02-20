@@ -1,14 +1,14 @@
 <template>
   <q-page id="create-lecture">
-    <div class="q-pt-md q-pb-xl q-px-md">
-      <q-form class="q-gutter-y-md q-ma-md q-py-md neu-convex">
+    <div class="q-pt-md q-pb-xl">
+      <q-form class="q-gutter-y-lg q-ma-md">
         <div>
-          <i><h1>New Lecture...</h1></i>
+          <i><h1 class="q-px-md">New Lecture...</h1></i>
         </div>
         <q-input
           standout="bg-primary text-white q-ma-none"
           color="primary"
-          class="text-primary q-mx-md q-mt-md"
+          class="text-primary q-mx-md q-mt-lg"
           v-model="name"
           label="Lecture Name"
           placeholder="e.g. S-2021 01"
@@ -23,7 +23,7 @@
               .filter((a) => ['Course', 'UserGroup', 'RegistrationSection'].includes(a.shared_resource_type))
               .map((a) => a._id)
           "
-          class="q-px-md"
+          class="q-px-md q-mt-lg"
         />
         <div class="row full-width q-px-md q-py-md">
           <q-date
@@ -36,7 +36,7 @@
         </div>
         <div class="row full-width q-px-md items-center justify-center">What are the start and end times?</div>
         <div class="row full-width q-pl-md q-pb-md">
-          <div class="col-12 col-sm q-pr-md q-mt-sm">
+          <div class="col-12 col-sm q-pr-md q-mt-md">
             <div class="row full-width q-px-none">
               <q-input
                 standout="primary"
@@ -61,7 +61,7 @@
               </div>
             </div>
           </div>
-          <div class="col-12 col-sm q-pr-md q-mt-sm">
+          <div class="col-12 col-sm q-pr-md q-mt-md">
             <div class="row full-width q-px-none">
               <q-input
                 standout="primary"
@@ -87,12 +87,12 @@
             </div>
           </div>
         </div>
-        <q-bar class="q-pa-none q-ml-md q-pr-md q-gutter-x-md">
-          <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
+        <q-bar class="q-px-none q-px-md q-mt-md">
+          <q-btn label="Back" class="q-mr-md" @click="handleBack" />
           <q-btn
             color="primary"
             label="Continue"
-            class="q-ml-sm full-width"
+            class="full-width"
             :disabled="!formValid()"
             @click="handleSubmit() && mutate()"
           />

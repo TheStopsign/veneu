@@ -199,7 +199,7 @@
                   </q-dialog>
                 </q-item-section>
               </q-item>
-              <div class="row full-width q-pl-md q-mt-md" :class="$q.screen.lt.md ? 'q-pr-md' : 'q-pr-xs'">
+              <div class="row full-width q-pl-md q-mt-lg" :class="$q.screen.lt.md ? 'q-pr-md' : 'q-pr-xs'">
                 <q-btn size="1.35rem" label="New" icon="add" class="full-width">
                   <q-menu anchor="bottom middle" self="top middle" :offset="[0, 8]">
                     <q-list class="q-pa-xs text-primary">
@@ -250,7 +250,7 @@
                   </q-menu>
                 </q-btn>
               </div>
-              <div class="row full-width q-mt-md q-pl-md" :class="$q.screen.lt.md ? 'q-pr-md' : 'q-pr-xs'">
+              <div class="row full-width q-mt-lg q-pl-md" :class="$q.screen.lt.md ? 'q-pr-md' : 'q-pr-xs'">
                 <div class="col-6 q-pr-sm">
                   <q-btn size="sm" label="Calendar" icon="today" class="full-width" :to="{ name: 'Calendar' }" />
                 </div>
@@ -262,7 +262,7 @@
                 ref="nav"
                 :me="data.me"
                 label="Navigation"
-                class="q-pl-md"
+                class="q-pl-md q-mt-lg"
                 :class="$q.screen.lt.md ? 'q-pr-md' : 'q-pr-xs'"
                 nav
                 :key="$route.name + $route.params._id"
@@ -271,7 +271,7 @@
               <course-list :me="data.me" />
             </q-list> -->
               <q-list
-                class="text-primary neu-convex q-ml-md q-mb-md q-pa-xs"
+                class="text-primary neu-convex q-ml-md q-mb-md q-pa-xs q-mt-lg"
                 :class="$q.screen.lt.md ? 'q-mr-md' : 'q-mr-xs'"
               >
                 <q-expansion-item

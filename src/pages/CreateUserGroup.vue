@@ -7,18 +7,18 @@
         parent_resource: selected_auth.shared_resource._id,
         parent_resource_type: selected_auth.shared_resource_type,
       }"
-      class="form q-pt-md q-pb-xl q-px-md"
+      class="form q-pb-xl"
       @done="handleCreateUserGroup"
     >
       <template slot-scope="{ mutate }">
-        <q-form @submit.prevent="formValid && mutate()" class="q-gutter-y-md q-ma-md q-py-md neu-convex">
+        <q-form @submit.prevent="formValid && mutate()" class="q-gutter-y-lg q-ma-md q-py-md">
           <div>
-            <i><h1>Create a New Group</h1></i>
+            <i><h1 class="q-px-md">Create a New Group</h1></i>
           </div>
           <q-input
             standout="bg-primary text-white q-ma-none"
             color="primary"
-            class="text-primary q-mt-none q-mx-md q-mt-md"
+            class="text-primary q-mt-none q-mx-md q-mt-lg"
             v-model="name"
             label="Group Name"
             placeholder="e.g. Team 2"
@@ -32,12 +32,12 @@
                 .filter((a) => ['Course', 'RegistrationSection', 'UserGroup'].includes(a.shared_resource_type))
                 .map((a) => a._id)
             "
-            class="q-px-md"
+            class="q-px-md q-mt-lg"
             v-model="selected_auth"
           />
-          <q-bar class="q-pa-none q-ml-md q-pr-md q-gutter-x-md">
-            <q-btn type="button" label="Back" class="q-ml-md" @click="handleBack" />
-            <q-btn type="submit" color="primary" label="Continue" class="q-ml-md full-width" :disable="!formValid()" />
+          <q-bar class="q-py-none q-px-md q-mt-lg">
+            <q-btn type="button" label="Back" class="q-mr-md" @click="handleBack" />
+            <q-btn type="submit" color="primary" label="Continue" class="full-width" :disable="!formValid()" />
           </q-bar>
         </q-form>
       </template>

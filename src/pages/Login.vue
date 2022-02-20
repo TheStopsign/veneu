@@ -4,15 +4,15 @@
     <ApolloMutation
       :mutation="require('../graphql/Login.gql')"
       :variables="{ email, password }"
-      class="form q-px-md q-pb-md"
+      class="form q-pb-xl"
       @done="handleLogin"
     >
       <template slot-scope="{ mutate }">
-        <q-form @submit.prevent="formValid && mutate()" class="q-gutter-y-md q-pa-md q-ma-md neu-convex">
+        <q-form @submit.prevent="formValid && mutate()" class="q-gutter-y-lg q-px-md">
           <div>
             <i><h1>Login</h1></i>
           </div>
-          <q-input standout="bg-primary text-white" color="primary" v-model="email" label="Email" class="q-mt-md">
+          <q-input standout="bg-primary text-white" color="primary" v-model="email" label="Email" class="q-mt-lg">
             <template v-slot:prepend>
               <q-icon name="email" />
             </template>
@@ -23,9 +23,9 @@
             </template>
           </q-input>
 
-          <q-bar class="bg-none q-pa-none q-gutter-x-md q-gutter-y-none q-pl-md">
-            <q-btn label="Back" type="reset" color="primary" flat @click="handleBack" />
-            <q-btn label="Submit" type="submit" color="primary" icon-right="check" class="q-ml-sm full-width" />
+          <q-bar class="bg-none q-pa-none q-gutter-y-none">
+            <q-btn label="Back" type="reset" color="primary" flat @click="handleBack" class="q-mr-md" />
+            <q-btn label="Submit" type="submit" color="primary" icon-right="check" class="full-width" />
           </q-bar>
         </q-form>
       </template>

@@ -1,6 +1,6 @@
 <template>
   <q-page :id="original ? 'edit-course' : 'save-course'">
-    <q-form @submit.prevent="handleSaveCourse" class="q-ma-md q-pa-md q-pt-lg">
+    <q-form @submit.prevent="handleSaveCourse" class="q-ma-md q-px-md q-pt-lg q-pb-xl">
       <div>
         <i
           ><h1>{{ original ? "Editing " + original.name : "New Course..." }}</h1></i
@@ -9,14 +9,14 @@
       <q-input
         standout="bg-primary text-white q-ma-none"
         color="primary"
-        class="text-primary q-mt-md"
+        class="text-primary q-mt-lg"
         v-model="name"
         label="Name"
         placeholder="e.g. Computer Science I"
       >
       </q-input>
 
-      <WYSIWYG v-model="description" placeholder="Add a description..." class="q-mt-md" />
+      <WYSIWYG v-model="description" placeholder="Add a description..." class="q-mt-lg" />
 
       <div class="row full-width">
         <q-input
@@ -26,7 +26,7 @@
           v-model="prefix"
           label="Department"
           placeholder="e.g. CSCI"
-          class="col-12 col-sm q-mt-md q-mr-md"
+          class="col-12 col-sm q-mt-lg q-mr-md"
         >
           <template v-slot:prepend>
             <q-icon name="sort_by_alpha" />
@@ -39,7 +39,7 @@
           v-model="suffix"
           label="Number"
           placeholder="e.g. 101"
-          class="col-12 col-sm q-mt-md"
+          class="col-12 col-sm q-mt-lg"
         >
           <template v-slot:prepend>
             <q-icon name="pin" />
@@ -47,11 +47,11 @@
         </q-input>
       </div>
 
-      <div class="row full-width q-mt-sm q-pt-none">
+      <div class="row full-width q-mt-md q-pt-none">
         <q-date v-model="start" class="col-12 col-sm q-mt-md q-mr-md" subtitle="Start date" />
         <q-date v-model="end" class="col-12 col-sm q-mt-md" subtitle="End date" />
       </div>
-      <q-bar class="q-pa-none q-gutter-x-md q-mt-md q-pl-md save-actions">
+      <q-bar class="q-pa-none q-gutter-x-md q-mt-lg q-pl-md save-actions">
         <q-btn flat color="primary" @click="handleBack" label="Back" />
         <q-btn type="submit" color="primary" label="Finish" class="full-width" :disabled="formValid() ? false : true" />
       </q-bar>

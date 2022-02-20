@@ -4,18 +4,18 @@
     <ApolloMutation
       :mutation="require('../graphql/CreateUser.gql')"
       :variables="{ email }"
-      class="form q-px-md"
+      class="form q-pb-xl"
       @done="handleSignup"
     >
       <template slot-scope="{ mutate }">
-        <q-form @submit.prevent="formValid && mutate()" class="q-gutter-y-md q-pa-md q-ma-md neu-convex">
+        <q-form @submit.prevent="formValid && mutate()" class="q-gutter-y-lg q-px-md">
           <div>
             <i><h1>Signup</h1></i>
           </div>
           <q-input
             standout="bg-primary text-white"
             color="primary"
-            class="text-primary q-pa-none q-ma-none q-mt-md"
+            class="text-primary q-pa-none q-ma-none q-mt-lg"
             v-model="email"
             label="Email"
             @focus="onFocus()"
@@ -26,7 +26,7 @@
           </q-input>
           <q-bar class="bg-none q-pa-none">
             <q-btn label="Back" type="reset" color="primary" flat @click="handleBack" class="q-mr-md" />
-            <q-btn label="Submit" type="submit" color="primary" icon-right="check" class="q-ml-md full-width" />
+            <q-btn label="Submit" type="submit" color="primary" icon-right="check" class="full-width" />
           </q-bar>
         </q-form>
       </template>

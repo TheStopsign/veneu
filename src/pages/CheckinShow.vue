@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md q-pb-xl">
     <q-skeleton
       v-if="checkinQuery.loading"
       class="bg-primary q-pa-md"

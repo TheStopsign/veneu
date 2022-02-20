@@ -1,19 +1,19 @@
 <template>
   <q-page id="create-checkin">
-    <div class="q-pt-md q-pb-xl q-px-md">
-      <q-form class="q-gutter-y-md q-ma-md q-py-md neu-convex">
+    <div class="q-pt-md q-pb-xl" style="overflow: show">
+      <q-form class="q-gutter-y-md q-ma-md">
         <div>
-          <i><h1>New Checkin...</h1></i>
+          <i><h1 class="q-px-md">New Checkin...</h1></i>
         </div>
         <q-input
           standout="bg-primary text-white q-ma-none"
           color="primary"
-          class="text-primary q-mx-md q-mt-md"
+          class="text-primary q-mx-md q-mt-lg"
           v-model="name"
           label="Checkin Name"
           placeholder="e.g. S-2021 01"
         />
-        <WYSIWYG v-model="description" placeholder="Add a description..." class="q-mx-md" />
+        <WYSIWYG v-model="description" placeholder="Add a description..." class="q-mx-md q-mt-lg" />
         <ResourceSelector
           v-model="selected_auth"
           :me="me"
@@ -24,7 +24,7 @@
               .map((a) => a._id)
               .concat([me._id])
           "
-          class="q-mx-md"
+          class="q-mx-md q-mt-lg"
         />
         <q-checkbox
           v-model="ticketing_requires_authentication"
@@ -38,21 +38,15 @@
           color="primary"
           class="row full-width justify-center"
         />
-        <q-checkbox
+        <!-- <q-checkbox
           v-model="ticketing_allows_duplicates"
           label="Ticketing allows more than one entry per user (email)"
           color="primary"
           class="row full-width justify-center"
-        />
-        <q-bar class="q-pa-none q-ml-md q-pr-md q-gutter-x-md">
-          <q-btn label="Back" class="q-ml-sm" @click="handleBack" />
-          <q-btn
-            color="primary"
-            label="Continue"
-            class="q-ml-sm full-width"
-            :disabled="!formValid()"
-            @click="handleSubmit()"
-          />
+        /> -->
+        <q-bar class="q-py-none q-px-md q-mt-lg">
+          <q-btn label="Back" class="q-mr-md" @click="handleBack" />
+          <q-btn color="primary" label="Continue" class="full-width" :disabled="!formValid()" @click="handleSubmit()" />
         </q-bar>
       </q-form>
     </div>
